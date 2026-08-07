@@ -1,0 +1,339 @@
+package com.example.ui.screens
+
+import android.widget.Toast
+import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Backspace
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
+import com.example.data.UserProfileEntity
+import com.example.ui.theme.RoyalBlue
+import kotlinx.coroutines.delay
+
+@Composable
+fun PinUnlockScreen(
+    userProfile: UserProfileEntity?,
+    onVerifyPin: (String) -> Boolean,
+    onUnlockSuccess: () -> Unit
+) {
+    val context = LocalContext.current
+    var pinInput by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var failedAttempts by remember { mutableStateOf(0) }
+    var isLockedOut by remember { mutableStateOf(false) }
+    var lockoutSeconds by remember { mutableStateOf(0) }
+
+    // Lockout timer coroutine
+    LaunchedEffect(isLockedOut) {
+        if (isLockedOut) {
+            lockoutSeconds = 30
+            while (lockoutSeconds > 0) {
+                delay(1000)
+                lockoutSeconds -= 1
+            }
+            isLockedOut = false
+            failedAttempts = 0
+            errorMessage = null
+        }
+    }
+
+    fun triggerBiometricPrompt() {
+        val activity = context as? FragmentActivity ?: return
+        try {
+            val executor = ContextCompat.getMainExecutor(activity)
+            val biometricPrompt = BiometricPrompt(
+                activity,
+                executor,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        onUnlockSuccess()
+                    }
+
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        if (errorCode != BiometricPrompt.ERROR_USER_CANCELED && errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+                            errorMessage = errString.toString()
+                        }
+                    }
+
+                    override fun onAuthenticationFailed() {
+                        errorMessage = "Biometric authentication failed."
+                    }
+                }
+            )
+
+            val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Unlock PromptPay")
+                .setSubtitle("Confirm fingerprint, face, or device PIN")
+                .setNegativeButtonText("Use 5-Digit PIN")
+                .build()
+
+            biometricPrompt.authenticate(promptInfo)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    // Auto-trigger biometric prompt if lockMode is BIOMETRIC
+    LaunchedEffect(userProfile?.lockMode) {
+        if (userProfile?.lockMode == "BIOMETRIC") {
+            triggerBiometricPrompt()
+        }
+    }
+
+    fun handlePinSubmit(input: String) {
+        if (isLockedOut) return
+        if (onVerifyPin(input)) {
+            onUnlockSuccess()
+        } else {
+            failedAttempts += 1
+            pinInput = ""
+            if (failedAttempts >= 5) {
+                isLockedOut = true
+                errorMessage = "Too many failed attempts. Please wait 30 seconds."
+            } else {
+                val remaining = 5 - failedAttempts
+                errorMessage = "Incorrect PIN. $remaining attempts remaining."
+            }
+        }
+    }
+
+    fun onDigitClick(digit: String) {
+        if (isLockedOut) return
+        if (pinInput.length < 5) {
+            val newInput = pinInput + digit
+            pinInput = newInput
+            if (newInput.length == 5) {
+                handlePinSubmit(newInput)
+            }
+        }
+    }
+
+    fun onDeleteClick() {
+        if (pinInput.isNotEmpty()) {
+            pinInput = pinInput.dropLast(1)
+        }
+    }
+
+    fun onClearClick() {
+        pinInput = ""
+    }
+
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("pin_unlock_screen"),
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Box(
+                    modifier = Modifier
+                        .size(72.dp)
+                        .clip(CircleShape)
+                        .background(RoyalBlue),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (!userProfile?.photoUri.isNullOrBlank()) {
+                        coil.compose.AsyncImage(
+                            model = userProfile!!.photoUri,
+                            contentDescription = "Profile Photo",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                        )
+                    } else {
+                        Text(
+                            text = (userProfile?.name?.take(1) ?: "P").uppercase(),
+                            color = Color.White,
+                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Welcome Back, ${userProfile?.name?.ifBlank { "User" } ?: "User"}",
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = if (isLockedOut) "Account temporarily locked" else "Enter your 5-digit PIN to unlock",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // PIN Dots Indicator (5 slots)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    for (i in 0 until 5) {
+                        val isFilled = i < pinInput.length
+                        Box(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clip(CircleShape)
+                                .background(if (isFilled) RoyalBlue else Color.Transparent)
+                                .border(
+                                    width = 2.dp,
+                                    color = if (isFilled) RoyalBlue else MaterialTheme.colorScheme.outline,
+                                    shape = CircleShape
+                                )
+                        )
+                    }
+                }
+
+                if (isLockedOut) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Try again in ${lockoutSeconds}s",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                } else if (errorMessage != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = errorMessage!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+
+                // Text field for test accessibility
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = pinInput,
+                    onValueChange = { input ->
+                        if (!isLockedOut) {
+                            val digits = input.filter { it.isDigit() }.take(5)
+                            pinInput = digits
+                            if (pinInput.length == 5) {
+                                handlePinSubmit(pinInput)
+                            }
+                        }
+                    },
+                    label = { Text("5-Digit PIN") },
+                    enabled = !isLockedOut,
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .testTag("pin_unlock_input"),
+                    shape = RoundedCornerShape(12.dp)
+                )
+            }
+
+            // Keypad
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                val numRows = listOf(
+                    listOf("1", "2", "3"),
+                    listOf("4", "5", "6"),
+                    listOf("7", "8", "9"),
+                    listOf("BIO", "0", "DEL")
+                )
+
+                for (row in numRows) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(0.85f),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        for (key in row) {
+                            Box(
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        when (key) {
+                                            "BIO", "DEL" -> MaterialTheme.colorScheme.surfaceContainerHigh
+                                            else -> MaterialTheme.colorScheme.surfaceContainerLow
+                                        }
+                                    )
+                                    .clickable(enabled = !isLockedOut) {
+                                        when (key) {
+                                            "BIO" -> triggerBiometricPrompt()
+                                            "DEL" -> onDeleteClick()
+                                            else -> onDigitClick(key)
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                when (key) {
+                                    "DEL" -> Icon(
+                                        Icons.AutoMirrored.Filled.Backspace,
+                                        contentDescription = "Delete",
+                                        tint = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    "BIO" -> Icon(
+                                        Icons.Default.Fingerprint,
+                                        contentDescription = "Biometric Unlock",
+                                        tint = RoyalBlue
+                                    )
+                                    else -> Text(key, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (userProfile?.lockMode == "BIOMETRIC") {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = { triggerBiometricPrompt() },
+                        enabled = !isLockedOut,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.Fingerprint, contentDescription = null, tint = RoyalBlue)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Use Biometric / Passcode", color = RoyalBlue, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+    }
+}

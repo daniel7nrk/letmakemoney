@@ -1,0 +1,6 @@
+{
+  "name": "PromptPay",
+  "description": "On-device mobile money and bank transaction SMS expense tracker with local Room storage.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
