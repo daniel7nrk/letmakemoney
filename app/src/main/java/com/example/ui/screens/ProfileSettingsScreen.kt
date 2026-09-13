@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,7 +39,9 @@ import com.example.ui.theme.RoyalBlue
 fun ProfileSettingsScreen(
     userProfile: UserProfileEntity?,
     selectedCountry: Country,
+    isScamFilteringEnabled: Boolean = true,
     onSelectCountry: (Country) -> Unit,
+    onToggleScamFiltering: (Boolean) -> Unit = {},
     onUpdateLockMode: (String) -> Unit,
     onSavePin: (String) -> Unit,
     onVerifyPin: (String) -> Boolean,
@@ -184,6 +187,101 @@ fun ProfileSettingsScreen(
 
             // Security Group
             Text("Security & Privacy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+
+            // MoMo Scam & Fraud Protection Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("scam_filtering_card"),
+                shape = RoundedCornerShape(20.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, if (isScamFilteringEnabled) Color(0xFFC8E6C9) else Color(0xFFFFCC80)),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isScamFilteringEnabled) Color(0xFFF1F8E9) else Color(0xFFFFF8E1)
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(CircleShape)
+                                    .background(if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Shield,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Column {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text("MoMo Scam Filtering", fontWeight = FontWeight.Bold)
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)
+                                    ) {
+                                        Text(
+                                            text = if (isScamFilteringEnabled) "ON" else "OFF",
+                                            color = Color.White,
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                }
+                                Text(
+                                    text = if (isScamFilteringEnabled)
+                                        "Protection Active: Detects fraudulent USSD structures, balance anomalies & fake senders."
+                                    else
+                                        "Protection Paused: Incoming SMS will bypass fraud verification.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        Switch(
+                            checked = isScamFilteringEnabled,
+                            onCheckedChange = { onToggleScamFiltering(it) },
+                            modifier = Modifier.testTag("scam_filtering_switch")
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Explicit Button for quick Turn On / Turn Off
+                    Button(
+                        onClick = { onToggleScamFiltering(!isScamFilteringEnabled) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("toggle_scam_filtering_button"),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isScamFilteringEnabled) Color(0xFFD32F2F) else Color(0xFF2E7D32)
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Shield,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (isScamFilteringEnabled) "Turn Off Scam Filtering" else "Turn On Scam Filtering",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
 
             Card(
                 modifier = Modifier.fillMaxWidth(),

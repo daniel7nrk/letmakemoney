@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.RateReview
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -37,6 +38,8 @@ fun NotificationsScreen(
     allNotifications: List<AppNotificationEntity> = emptyList(),
     scamAlerts: List<ScamAlertEntity> = emptyList(),
     pendingTransactions: List<TransactionEntity> = emptyList(),
+    isScamFilteringEnabled: Boolean = true,
+    onToggleScamFiltering: (Boolean) -> Unit = {},
     onNavigateToTransactionDetail: (Long) -> Unit = {},
     onNavigateToPendingReview: () -> Unit = {},
     onNavigateToReports: () -> Unit = {},
@@ -46,6 +49,7 @@ fun NotificationsScreen(
     onDeleteNotification: (AppNotificationEntity) -> Unit = {},
     onClearAllNotifications: () -> Unit = {},
     onTriggerPendingReminder: () -> Unit = {},
+    onTriggerWeeklyReport: () -> Unit = {},
     onTriggerReportReady: () -> Unit = {},
     onTriggerNewLogin: () -> Unit = {},
     onBack: () -> Unit
@@ -144,6 +148,94 @@ fun NotificationsScreen(
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            // MoMo Scam Filtering Status & Toggle Banner
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("notifications_scam_filtering_banner"),
+                shape = RoundedCornerShape(16.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, if (isScamFilteringEnabled) Color(0xFFC8E6C9) else Color(0xFFFFCC80)),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isScamFilteringEnabled) Color(0xFFF1F8E9) else Color(0xFFFFF8E1)
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Shield,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    "MoMo Scam Detection",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)
+                                ) {
+                                    Text(
+                                        text = if (isScamFilteringEnabled) "ON" else "OFF",
+                                        color = Color.White,
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                                    )
+                                }
+                            }
+                            Text(
+                                text = if (isScamFilteringEnabled)
+                                    "Active: Incoming fake MoMo SMS are filtered & flagged."
+                                else
+                                    "Turned Off: Scam messages bypass fraud filter.",
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = { onToggleScamFiltering(!isScamFilteringEnabled) },
+                        modifier = Modifier
+                            .testTag("scam_filtering_toggle_button"),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isScamFilteringEnabled) Color(0xFFD32F2F) else Color(0xFF2E7D32)
+                        ),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = if (isScamFilteringEnabled) "Turn Off" else "Turn On",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+            }
+
             // Testing / Trigger Bar for Notification Types
             Card(
                 shape = RoundedCornerShape(12.dp),
@@ -165,6 +257,14 @@ fun NotificationsScreen(
                                 label = { Text("Pending Review", fontSize = 11.sp) },
                                 leadingIcon = { Icon(Icons.Default.RateReview, contentDescription = null, modifier = Modifier.size(14.dp)) },
                                 modifier = Modifier.testTag("trigger_pending_reminder")
+                            )
+                        }
+                        item {
+                            AssistChip(
+                                onClick = onTriggerWeeklyReport,
+                                label = { Text("Weekly Report", fontSize = 11.sp) },
+                                leadingIcon = { Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(14.dp)) },
+                                modifier = Modifier.testTag("trigger_weekly_report")
                             )
                         }
                         item {

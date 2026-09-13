@@ -1,9 +1,6 @@
 package com.example.ui
 
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Home
@@ -11,7 +8,10 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -61,6 +61,7 @@ fun AppNavigation(
     val selectedCountry by viewModel.selectedCountry.collectAsState()
     val isLoadingOlder by viewModel.isLoadingOlder.collectAsState()
     val deepLinkEvent by viewModel.deepLinkEvent.collectAsState()
+    val isScamFilteringEnabled by viewModel.isScamFilteringEnabled.collectAsState()
 
     var initialLaunchHandled by remember { mutableStateOf(false) }
 
@@ -335,7 +336,9 @@ fun AppNavigation(
                 ProfileSettingsScreen(
                     userProfile = userProfile,
                     selectedCountry = selectedCountry,
+                    isScamFilteringEnabled = isScamFilteringEnabled,
                     onSelectCountry = { viewModel.selectCountry(it) },
+                    onToggleScamFiltering = { viewModel.setScamFilteringEnabled(it) },
                     onUpdateLockMode = { mode -> viewModel.updateLockMode(mode) },
                     onSavePin = { pin -> viewModel.savePin(pin) },
                     onVerifyPin = { pin -> viewModel.verifyPin(pin) },
@@ -355,6 +358,8 @@ fun AppNavigation(
                     allNotifications = allNotifications,
                     scamAlerts = scamAlerts,
                     pendingTransactions = pendingTransactions,
+                    isScamFilteringEnabled = isScamFilteringEnabled,
+                    onToggleScamFiltering = { viewModel.setScamFilteringEnabled(it) },
                     onNavigateToTransactionDetail = { txId ->
                         navController.navigate(Screen.TransactionDetail.createRoute(txId))
                     },
@@ -381,6 +386,9 @@ fun AppNavigation(
                     },
                     onTriggerPendingReminder = {
                         viewModel.triggerPendingReviewReminder()
+                    },
+                    onTriggerWeeklyReport = {
+                        viewModel.triggerWeeklyReportNotification()
                     },
                     onTriggerReportReady = {
                         viewModel.triggerMonthlyReportNotification()
@@ -441,6 +449,24 @@ fun AppNavigation(
                         label = { Text("SMS Message Body") },
                         modifier = Modifier.height(100.dp)
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if (isScamFilteringEnabled) "Scam Filtering: ON" else "Scam Filtering: OFF",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)
+                        )
+                        TextButton(
+                            onClick = { viewModel.setScamFilteringEnabled(!isScamFilteringEnabled) }
+                        ) {
+                            Text(if (isScamFilteringEnabled) "Turn Off" else "Turn On")
+                        }
+                    }
                 }
             },
             confirmButton = {

@@ -136,7 +136,50 @@ object NotificationHelper {
         notificationManager.notify(1002, builder.build())
     }
 
-    fun showMonthlyReportNotification(context: Context, monthName: String = "This Month") {
+    fun showWeeklyReportNotification(
+        context: Context,
+        totalSpent: Double,
+        currency: String,
+        txCount: Int,
+        weekLabel: String = "this week"
+    ) {
+        createNotificationChannel(context)
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("navigate_to", "reports")
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            1004,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val formattedAmount = String.format("%,.0f %s", totalSpent, currency)
+        val text = "You spent $formattedAmount across $txCount transactions $weekLabel. Tap to view your breakdown."
+
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_menu_agenda)
+            .setContentTitle("📊 Weekly Spending Report")
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(1004, builder.build())
+    }
+
+    fun showMonthlyReportNotification(
+        context: Context,
+        monthName: String = "This Month",
+        totalSpent: Double = 0.0,
+        currency: String = "RWF",
+        txCount: Int = 0
+    ) {
         createNotificationChannel(context)
 
         val intent = Intent(context, MainActivity::class.java).apply {
@@ -150,10 +193,18 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val text = if (totalSpent > 0) {
+            val formattedAmount = String.format("%,.0f %s", totalSpent, currency)
+            "You spent $formattedAmount across $txCount transactions in $monthName. Tap to view your monthly breakdown."
+        } else {
+            "Your financial report for $monthName is ready to review. Tap to check your summary."
+        }
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_menu_agenda)
-            .setContentTitle("Monthly Report Ready")
-            .setContentText("Your financial report for $monthName is ready to review.")
+            .setContentTitle("📈 Monthly Spending Report")
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
@@ -198,7 +249,7 @@ object NotificationHelper {
 
         val builder = NotificationCompat.Builder(context, IMMEDIATE_CHANNEL_ID)
             .setSmallIcon(android.R.drawable.stat_sys_warning)
-            .setContentTitle("⚠️ Possible Scam Detected")
+            .setContentTitle("🚫 Scam Alert Detected")
             .setContentText("Sender: $sender. $reason")
             .setStyle(NotificationCompat.BigTextStyle().bigText("Sender: $sender\n\n$reason\n\nTap to review or mark as real transaction."))
             .setColor(0xFFD32F2F.toInt())
@@ -212,6 +263,45 @@ object NotificationHelper {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify((5000 + scamAlertId).toInt(), builder.build())
+    }
+
+    fun showNeedsReviewNotification(
+        context: Context,
+        scamAlertId: Long,
+        sender: String,
+        reason: String
+    ) {
+        createNotificationChannel(context)
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("navigate_to", "scam_alerts")
+            putExtra("scam_alert_id", scamAlertId)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            (6000 + scamAlertId).toInt(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val builder = NotificationCompat.Builder(context, IMMEDIATE_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.stat_sys_warning)
+            .setContentTitle("⚠️ Transaction Needs Review")
+            .setContentText("Sender: $sender. $reason")
+            .setStyle(NotificationCompat.BigTextStyle().bigText("Sender: $sender\n\n$reason\n\nTap to review transaction."))
+            .setColor(0xFFF57C00.toInt())
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify((6000 + scamAlertId).toInt(), builder.build())
     }
 
     fun cancelScamAlertNotification(context: Context, scamAlertId: Long) {

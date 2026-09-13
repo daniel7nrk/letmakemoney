@@ -95,41 +95,75 @@ class SmsReceiver : BroadcastReceiver() {
         }
 
         val scamDetection = com.example.detector.ScamDetector.detectScam(
+            context = context,
             sender = sender,
             body = body,
             recentTransactions = recentTransactions,
-            recentScams = recentScams,
-            currentAccountBalance = currentBalance
+            recentScams = recentScams
         )
 
-        if (scamDetection.isScam) {
-            val scamAlert = com.example.data.ScamAlertEntity(
-                sender = sender,
-                body = body,
-                dateEpochMillis = System.currentTimeMillis(),
-                primaryReason = scamDetection.primaryReason,
-                detectedSignals = scamDetection.detectedSignals.joinToString(", ")
-            )
-            val scamId = repository.insertScamAlert(scamAlert)
+        when (scamDetection.classification) {
+            com.example.detector.ScamClassification.LIKELY_SCAM -> {
+                val scamAlert = com.example.data.ScamAlertEntity(
+                    sender = sender,
+                    body = body,
+                    dateEpochMillis = System.currentTimeMillis(),
+                    primaryReason = scamDetection.primaryReason,
+                    detectedSignals = scamDetection.detectedSignals.joinToString(", ")
+                )
+                val scamId = repository.insertScamAlert(scamAlert)
 
-            // Persist in-app notification
-            val notif = AppNotificationEntity(
-                title = "⚠️ Possible Scam Detected",
-                message = "From $sender: ${scamDetection.primaryReason}",
-                type = "Scam Alerts",
-                scamAlertId = scamId,
-                targetRoute = "scam_alerts"
-            )
-            repository.insertNotification(notif)
+                val notif = AppNotificationEntity(
+                    title = "🚫 Scam Alert Detected",
+                    message = "From $sender: ${scamDetection.primaryReason}",
+                    type = "Scam Alerts",
+                    scamAlertId = scamId,
+                    targetRoute = "scam_alerts"
+                )
+                repository.insertNotification(notif)
 
-            // System tray notification
-            NotificationHelper.showScamAlertNotification(
-                context = context,
-                scamAlertId = scamId,
-                sender = sender,
-                reason = scamDetection.primaryReason
-            )
-            return
+                NotificationHelper.showScamAlertNotification(
+                    context = context,
+                    scamAlertId = scamId,
+                    sender = sender,
+                    reason = scamDetection.primaryReason
+                )
+                return
+            }
+
+            com.example.detector.ScamClassification.NEEDS_REVIEW -> {
+                val scamAlert = com.example.data.ScamAlertEntity(
+                    sender = sender,
+                    body = body,
+                    dateEpochMillis = System.currentTimeMillis(),
+                    primaryReason = scamDetection.primaryReason,
+                    detectedSignals = scamDetection.detectedSignals.joinToString(", ")
+                )
+                val scamId = repository.insertScamAlert(scamAlert)
+
+                val notif = AppNotificationEntity(
+                    title = "⚠️ Transaction Needs Review",
+                    message = "From $sender: ${scamDetection.primaryReason}",
+                    type = "Pending Review",
+                    scamAlertId = scamId,
+                    targetRoute = "scam_alerts"
+                )
+                repository.insertNotification(notif)
+
+                NotificationHelper.showNeedsReviewNotification(
+                    context = context,
+                    scamAlertId = scamId,
+                    sender = sender,
+                    reason = scamDetection.primaryReason
+                )
+                return
+            }
+
+            com.example.detector.ScamClassification.CONFIRMED_REAL -> {
+                scamDetection.extractedNewBalance?.let { newBal ->
+                    com.example.detector.TrustedSenderManager.setLastBalance(context, sender, newBal)
+                }
+            }
         }
 
         val parsed = SmsParser.parseSms(

@@ -32,6 +32,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val categories: StateFlow<List<CategoryEntity>>
     val userProfile: StateFlow<UserProfileEntity?>
 
+    val isScamFilteringEnabled: MutableStateFlow<Boolean> = MutableStateFlow(
+        com.example.detector.TrustedSenderManager.isScamFilteringEnabled(application)
+    )
+
     val selectedCountry: MutableStateFlow<Country> = MutableStateFlow(Country.RWANDA)
 
     val isLoadingOlder: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -248,44 +252,85 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             val scamDetection = com.example.detector.ScamDetector.detectScam(
+                context = getApplication(),
                 sender = sender,
                 body = body,
                 recentTransactions = recentTx,
-                recentScams = recentScams,
-                currentAccountBalance = currentBalance
+                recentScams = recentScams
             )
 
-            if (scamDetection.isScam) {
-                val scamAlert = com.example.data.ScamAlertEntity(
-                    sender = sender,
-                    body = body,
-                    dateEpochMillis = System.currentTimeMillis(),
-                    primaryReason = scamDetection.primaryReason,
-                    detectedSignals = scamDetection.detectedSignals.joinToString(", ")
-                )
-                val scamId = repository.insertScamAlert(scamAlert)
+            when (scamDetection.classification) {
+                com.example.detector.ScamClassification.LIKELY_SCAM -> {
+                    val scamAlert = com.example.data.ScamAlertEntity(
+                        sender = sender,
+                        body = body,
+                        dateEpochMillis = System.currentTimeMillis(),
+                        primaryReason = scamDetection.primaryReason,
+                        detectedSignals = scamDetection.detectedSignals.joinToString(", ")
+                    )
+                    val scamId = repository.insertScamAlert(scamAlert)
 
-                val notif = AppNotificationEntity(
-                    title = "⚠️ Possible Scam Detected",
-                    message = "From $sender: ${scamDetection.primaryReason}",
-                    type = "Scam Alerts",
-                    scamAlertId = scamId,
-                    targetRoute = "scam_alerts"
-                )
-                repository.insertNotification(notif)
+                    val notif = AppNotificationEntity(
+                        title = "🚫 Scam Alert Detected",
+                        message = "From $sender: ${scamDetection.primaryReason}",
+                        type = "Scam Alerts",
+                        scamAlertId = scamId,
+                        targetRoute = "scam_alerts"
+                    )
+                    repository.insertNotification(notif)
 
-                NotificationHelper.showScamAlertNotification(
-                    context = getApplication(),
-                    scamAlertId = scamId,
-                    sender = sender,
-                    reason = scamDetection.primaryReason
-                )
-                android.widget.Toast.makeText(
-                    getApplication(),
-                    "⚠️ Possible Scam Detected & Flagged!",
-                    android.widget.Toast.LENGTH_LONG
-                ).show()
-                return@launch
+                    NotificationHelper.showScamAlertNotification(
+                        context = getApplication(),
+                        scamAlertId = scamId,
+                        sender = sender,
+                        reason = scamDetection.primaryReason
+                    )
+                    android.widget.Toast.makeText(
+                        getApplication(),
+                        "🚫 Likely Scam Detected: ${scamDetection.primaryReason}",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                    return@launch
+                }
+
+                com.example.detector.ScamClassification.NEEDS_REVIEW -> {
+                    val scamAlert = com.example.data.ScamAlertEntity(
+                        sender = sender,
+                        body = body,
+                        dateEpochMillis = System.currentTimeMillis(),
+                        primaryReason = scamDetection.primaryReason,
+                        detectedSignals = scamDetection.detectedSignals.joinToString(", ")
+                    )
+                    val scamId = repository.insertScamAlert(scamAlert)
+
+                    val notif = AppNotificationEntity(
+                        title = "⚠️ Transaction Needs Review",
+                        message = "From $sender: ${scamDetection.primaryReason}",
+                        type = "Pending Review",
+                        scamAlertId = scamId,
+                        targetRoute = "scam_alerts"
+                    )
+                    repository.insertNotification(notif)
+
+                    NotificationHelper.showNeedsReviewNotification(
+                        context = getApplication(),
+                        scamAlertId = scamId,
+                        sender = sender,
+                        reason = scamDetection.primaryReason
+                    )
+                    android.widget.Toast.makeText(
+                        getApplication(),
+                        "⚠️ Needs Review: ${scamDetection.primaryReason}",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                    return@launch
+                }
+
+                com.example.detector.ScamClassification.CONFIRMED_REAL -> {
+                    scamDetection.extractedNewBalance?.let { newBal ->
+                        com.example.detector.TrustedSenderManager.setLastBalance(getApplication(), sender, newBal)
+                    }
+                }
             }
 
             val parsed = SmsParser.parseSms(sender, body, catList, userCurrency)
@@ -365,8 +410,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun setScamFilteringEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            com.example.detector.TrustedSenderManager.setScamFilteringEnabled(getApplication(), enabled)
+            isScamFilteringEnabled.value = enabled
+            android.widget.Toast.makeText(
+                getApplication(),
+                if (enabled) "MoMo scam filtering turned ON (Protection Active)" else "MoMo scam filtering turned OFF (Protection Paused)",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
     fun overrideScamAlert(scamAlert: com.example.data.ScamAlertEntity) {
         viewModelScope.launch {
+            com.example.detector.TrustedSenderManager.addTrustedSender(getApplication(), scamAlert.sender)
+
             repository.deleteScamAlertById(scamAlert.id)
             repository.deleteNotificationsByScamAlertId(scamAlert.id)
             NotificationHelper.cancelScamAlertNotification(getApplication(), scamAlert.id)
@@ -482,16 +541,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun triggerWeeklyReportNotification() {
+        viewModelScope.launch {
+            com.example.worker.SpendingReportWorker.generateAndSendWeeklyReport(getApplication())
+        }
+    }
+
     fun triggerMonthlyReportNotification() {
         viewModelScope.launch {
-            val notif = AppNotificationEntity(
-                title = "Monthly Report Ready",
-                message = "Your financial summary for this month is ready to review.",
-                type = "Reports",
-                targetRoute = "reports"
-            )
-            repository.insertNotification(notif)
-            NotificationHelper.showMonthlyReportNotification(getApplication())
+            com.example.worker.SpendingReportWorker.generateAndSendMonthlyReport(getApplication())
         }
     }
 

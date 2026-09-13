@@ -18,6 +18,7 @@ import com.example.ui.AppNavigation
 import com.example.ui.MainViewModel
 import com.example.ui.theme.MyApplicationTheme
 import com.example.worker.PendingReviewWorker
+import com.example.worker.SpendingReportWorker
 import java.util.concurrent.TimeUnit
 
 class MainActivity : FragmentActivity() {
@@ -30,8 +31,9 @@ class MainActivity : FragmentActivity() {
 
         requestSmsAndNotificationPermissions()
 
-        // Schedule WorkManager for pending transaction reviews
+        // Schedule WorkManager for pending transaction reviews & spending reports
         schedulePendingReviewWorker()
+        scheduleSpendingReportWorker()
 
         handleIntent(intent)
 
@@ -86,6 +88,19 @@ class MainActivity : FragmentActivity() {
             val workRequest = PeriodicWorkRequestBuilder<PendingReviewWorker>(1, TimeUnit.DAYS).build()
             WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
                 "pending_review_worker",
+                ExistingPeriodicWorkPolicy.KEEP,
+                workRequest
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun scheduleSpendingReportWorker() {
+        try {
+            val workRequest = PeriodicWorkRequestBuilder<SpendingReportWorker>(1, TimeUnit.DAYS).build()
+            WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+                "spending_report_worker",
                 ExistingPeriodicWorkPolicy.KEEP,
                 workRequest
             )
