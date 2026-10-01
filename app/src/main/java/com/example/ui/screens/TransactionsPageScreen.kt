@@ -11,6 +11,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.*
@@ -49,6 +51,7 @@ fun TransactionsPageScreen(
 ) {
     var selectedCategoryFilter by remember { mutableStateOf("All") }
     var selectedDayIndex by remember { mutableStateOf<Int?>(null) }
+    var categoryDropdownExpanded by remember { mutableStateOf(false) }
 
     val currencyCode = selectedCountry.currencyCode
 
@@ -121,16 +124,6 @@ fun TransactionsPageScreen(
     }
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddTransactionClick,
-                containerColor = RoyalBlue,
-                contentColor = Color.White,
-                modifier = Modifier.testTag("fab_add_transaction")
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Transaction")
-            }
-        },
         modifier = Modifier
             .fillMaxSize()
             .testTag("transactions_page_screen")
@@ -324,31 +317,91 @@ fun TransactionsPageScreen(
                 }
             }
 
-            // Filter Chips Row
+            // Category Filter Dropdown Menu
             item {
-                Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.FilterList, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.FilterList, contentDescription = null, modifier = Modifier.size(18.dp), tint = RoyalBlue)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Category Filters", fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.labelLarge)
+                        Text("Category Filter", fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        item {
-                            FilterChip(
-                                selected = selectedCategoryFilter == "All",
-                                onClick = { selectedCategoryFilter = "All" },
-                                label = { Text("All Categories") }
-                            )
+                    Box {
+                        Surface(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { categoryDropdownExpanded = true }
+                                .border(
+                                    width = 1.dp,
+                                    color = if (selectedCategoryFilter != "All") RoyalBlue else Color(0xFFD1D5DB),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .testTag("category_filter_dropdown"),
+                            color = if (selectedCategoryFilter != "All") RoyalBlue.copy(alpha = 0.08f) else Color.White
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = if (selectedCategoryFilter == "All") "All Categories" else selectedCategoryFilter,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                    color = if (selectedCategoryFilter != "All") RoyalBlue else MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "Select category filter",
+                                    tint = if (selectedCategoryFilter != "All") RoyalBlue else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
-                        items(categories) { cat ->
-                            FilterChip(
-                                selected = selectedCategoryFilter == cat.name,
-                                onClick = { selectedCategoryFilter = cat.name },
-                                label = { Text(cat.name) }
+
+                        DropdownMenu(
+                            expanded = categoryDropdownExpanded,
+                            onDismissRequest = { categoryDropdownExpanded = false },
+                            modifier = Modifier.background(Color.White)
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        "All Categories",
+                                        fontWeight = if (selectedCategoryFilter == "All") FontWeight.Bold else FontWeight.Normal,
+                                        color = if (selectedCategoryFilter == "All") RoyalBlue else MaterialTheme.colorScheme.onSurface
+                                    )
+                                },
+                                onClick = {
+                                    selectedCategoryFilter = "All"
+                                    categoryDropdownExpanded = false
+                                },
+                                leadingIcon = if (selectedCategoryFilter == "All") {
+                                    { Icon(Icons.Default.Check, contentDescription = null, tint = RoyalBlue, modifier = Modifier.size(16.dp)) }
+                                } else null
                             )
+                            categories.forEach { cat ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            cat.name,
+                                            fontWeight = if (selectedCategoryFilter == cat.name) FontWeight.Bold else FontWeight.Normal,
+                                            color = if (selectedCategoryFilter == cat.name) RoyalBlue else MaterialTheme.colorScheme.onSurface
+                                        )
+                                    },
+                                    onClick = {
+                                        selectedCategoryFilter = cat.name
+                                        categoryDropdownExpanded = false
+                                    },
+                                    leadingIcon = if (selectedCategoryFilter == cat.name) {
+                                        { Icon(Icons.Default.Check, contentDescription = null, tint = RoyalBlue, modifier = Modifier.size(16.dp)) }
+                                    } else null
+                                )
+                            }
                         }
                     }
                 }

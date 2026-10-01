@@ -1,12 +1,15 @@
 package com.example.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material3.*
+import androidx.compose.ui.platform.testTag
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -159,36 +162,102 @@ fun AppNavigation(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                     tonalElevation = 8.dp
                 ) {
-                    bottomNavItems.forEach { item ->
-                        val selected = currentRoute == item.route
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = {
-                                navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = { item.icon?.let { Icon(it, contentDescription = item.title) } },
-                            label = {
-                                Text(
-                                    text = item.title,
-                                    maxLines = 1,
-                                    softWrap = false,
-                                    fontSize = 10.5.sp,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = RoyalBlue,
-                                selectedTextColor = RoyalBlue,
-                                indicatorColor = RoyalBlue.copy(alpha = 0.15f)
-                            )
+                    // 1. Home
+                    NavigationBarItem(
+                        selected = currentRoute == Screen.Home.route,
+                        onClick = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                        label = { Text("Home", maxLines = 1, fontSize = 10.sp) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = RoyalBlue,
+                            selectedTextColor = RoyalBlue,
+                            indicatorColor = RoyalBlue.copy(alpha = 0.15f)
                         )
+                    )
+
+                    // 2. Transactions
+                    NavigationBarItem(
+                        selected = currentRoute == Screen.Transactions.route,
+                        onClick = {
+                            navController.navigate(Screen.Transactions.route) {
+                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        icon = { Icon(Icons.Default.ReceiptLong, contentDescription = "Transactions") },
+                        label = { Text("Transactions", maxLines = 1, softWrap = false, fontSize = 9.sp) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = RoyalBlue,
+                            selectedTextColor = RoyalBlue,
+                            indicatorColor = RoyalBlue.copy(alpha = 0.15f)
+                        )
+                    )
+
+                    // 3. Center [+] Button: ALWAYS in the middle between Transactions and Reports
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        FloatingActionButton(
+                            onClick = { navController.navigate(Screen.AddTransaction.route) },
+                            containerColor = RoyalBlue,
+                            contentColor = Color.White,
+                            shape = CircleShape,
+                            elevation = FloatingActionButtonDefaults.elevation(4.dp),
+                            modifier = Modifier
+                                .size(46.dp)
+                                .testTag("fab_add_transaction")
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Add Transaction", modifier = Modifier.size(24.dp))
+                        }
                     }
+
+                    // 4. Reports
+                    NavigationBarItem(
+                        selected = currentRoute == Screen.Reports.route,
+                        onClick = {
+                            navController.navigate(Screen.Reports.route) {
+                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        icon = { Icon(Icons.Default.BarChart, contentDescription = "Reports") },
+                        label = { Text("Reports", maxLines = 1, fontSize = 10.sp) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = RoyalBlue,
+                            selectedTextColor = RoyalBlue,
+                            indicatorColor = RoyalBlue.copy(alpha = 0.15f)
+                        )
+                    )
+
+                    // 5. Profile
+                    NavigationBarItem(
+                        selected = currentRoute == Screen.Profile.route,
+                        onClick = {
+                            navController.navigate(Screen.Profile.route) {
+                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+                        label = { Text("Profile", maxLines = 1, fontSize = 10.sp) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = RoyalBlue,
+                            selectedTextColor = RoyalBlue,
+                            indicatorColor = RoyalBlue.copy(alpha = 0.15f)
+                        )
+                    )
                 }
             }
         }
