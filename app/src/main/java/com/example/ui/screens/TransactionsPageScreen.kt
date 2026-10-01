@@ -139,7 +139,8 @@ fun TransactionsPageScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 16.dp),
+            contentPadding = PaddingValues(bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item { Spacer(modifier = Modifier.height(8.dp)) }
@@ -251,14 +252,21 @@ fun TransactionsPageScreen(
                         HorizontalDivider(color = Color(0xFFF3F4F6))
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        // Chart Color Legend
+                        // Chart Color Legend (2 balanced rows to prevent vertical text squishing)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            horizontalArrangement = Arrangement.SpaceAround,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             LegendBadge(color = Color(0xFF10B981), label = "Below Avg")
                             LegendBadge(color = Color(0xFFF59E0B), label = "Around Avg")
+                        }
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             LegendBadge(color = Color(0xFFEF4444), label = "Above Avg")
                             LegendBadge(color = Color(0xFFD1D5DB), label = "No Spend")
                         }
@@ -425,16 +433,18 @@ fun LegendBadge(color: Color, label: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
-                .size(10.dp)
+                .size(8.dp)
                 .clip(CircleShape)
                 .background(color)
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = label,
-            fontSize = 10.sp,
+            fontSize = 11.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            softWrap = false
         )
     }
 }

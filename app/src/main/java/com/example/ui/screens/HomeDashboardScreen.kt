@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.TransactionEntity
@@ -151,7 +152,7 @@ fun HomeDashboardScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(24.dp)
+                            .padding(20.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -160,15 +161,29 @@ fun HomeDashboardScreen(
                         ) {
                             Text(
                                 text = "Total Monthly Spending",
-                                color = Color.White.copy(alpha = 0.8f),
-                                style = MaterialTheme.typography.titleMedium
+                                color = Color.White.copy(alpha = 0.85f),
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f, fill = false)
                             )
 
-                            AssistChip(
-                                onClick = { },
-                                label = { Text("+12.5% vs last month", fontSize = 11.sp, color = Color.White) },
-                                colors = AssistChipDefaults.assistChipColors(containerColor = Color.White.copy(alpha = 0.2f))
-                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color.White.copy(alpha = 0.22f)
+                            ) {
+                                Text(
+                                    text = "+12.5% vs last mo",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.White,
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -177,7 +192,7 @@ fun HomeDashboardScreen(
                             text = FormatUtil.formatCurrency(totalExpense, currencyCode),
                             style = MaterialTheme.typography.headlineLarge.copy(
                                 fontWeight = FontWeight.ExtraBold,
-                                fontSize = 36.sp
+                                fontSize = 34.sp
                             ),
                             color = Color.White
                         )
@@ -200,8 +215,10 @@ fun HomeDashboardScreen(
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "100% On-Device • Encrypted Room DB",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = Color.White
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.White,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }

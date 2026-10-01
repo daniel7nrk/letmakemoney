@@ -76,7 +76,7 @@ fun ProfileSettingsScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(20.dp),
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // User Profile Card
@@ -89,7 +89,7 @@ fun ProfileSettingsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp),
+                        .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
@@ -169,7 +169,10 @@ fun ProfileSettingsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             Icon(Icons.Default.Notifications, contentDescription = null, tint = RoyalBlue)
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
@@ -177,6 +180,7 @@ fun ProfileSettingsScreen(
                                 Text("Local daily notifications", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
+                        Spacer(modifier = Modifier.width(12.dp))
                         Switch(
                             checked = pushNotificationsEnabled,
                             onCheckedChange = { pushNotificationsEnabled = it }
@@ -205,10 +209,13 @@ fun ProfileSettingsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             Box(
                                 modifier = Modifier
-                                    .size(44.dp)
+                                    .size(38.dp)
                                     .clip(CircleShape)
                                     .background(if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)),
                                 contentAlignment = Alignment.Center
@@ -217,37 +224,27 @@ fun ProfileSettingsScreen(
                                     imageVector = Icons.Default.Shield,
                                     contentDescription = null,
                                     tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(14.dp))
-                            Column {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text("MoMo Scam Filtering", fontWeight = FontWeight.Bold)
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Surface(
-                                        shape = RoundedCornerShape(12.dp),
-                                        color = if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)
-                                    ) {
-                                        Text(
-                                            text = if (isScamFilteringEnabled) "ON" else "OFF",
-                                            color = Color.White,
-                                            fontSize = 10.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                        )
-                                    }
-                                }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text("MoMo Scam Filtering", fontWeight = FontWeight.Bold, maxLines = 1)
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)
+                            ) {
                                 Text(
-                                    text = if (isScamFilteringEnabled)
-                                        "Protection Active: Detects fraudulent USSD structures, balance anomalies & fake senders."
-                                    else
-                                        "Protection Paused: Incoming SMS will bypass fraud verification.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    text = if (isScamFilteringEnabled) "ON" else "OFF",
+                                    color = Color.White,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
                         }
+
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         Switch(
                             checked = isScamFilteringEnabled,
@@ -256,7 +253,16 @@ fun ProfileSettingsScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = if (isScamFilteringEnabled)
+                            "Protection Active: Detects fraudulent USSD structures, balance anomalies & fake senders."
+                        else
+                            "Protection Paused: Incoming SMS will bypass fraud verification.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
                     // Explicit Button for quick Turn On / Turn Off
                     Button(
@@ -306,6 +312,7 @@ fun ProfileSettingsScreen(
                                 Text("Use device fingerprint, face, or passcode prompt", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
+                        Spacer(modifier = Modifier.width(12.dp))
                         Switch(
                             checked = currentLockMode == "BIOMETRIC",
                             onCheckedChange = { isChecked ->
@@ -337,7 +344,7 @@ fun ProfileSettingsScreen(
                             onClick = { onUpdateLockMode("PIN") }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text("5-Digit PIN Required", fontWeight = FontWeight.SemiBold)
                             Text("Require 5-digit PIN on app launch", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -356,7 +363,7 @@ fun ProfileSettingsScreen(
                             onClick = { onUpdateLockMode("NONE") }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text("No Lock (Direct Launch)", fontWeight = FontWeight.SemiBold)
                             Text("Explicitly disable PIN/Biometric prompt on launch", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
