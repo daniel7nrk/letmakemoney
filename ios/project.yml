@@ -1,0 +1,17 @@
+name: PromptPay
+options:
+  bundleIdPrefix: com.promptpay
+targets:
+  PromptPay:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - PromptPay
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.promptpay.app
+      INFOPLIST_FILE: PromptPay/Info.plist
+      SWIFT_VERSION: "5.9"
+      ENABLE_PREVIEWS: YES
+      DEVELOPMENT_TEAM: ""
+      CODE_SIGNING_ALLOWED: NO
