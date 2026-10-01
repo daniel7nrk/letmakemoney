@@ -441,3 +441,22 @@ fun TransactionCardItem(
         }
     }
 }
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun HomeDashboardPreview() {
+    HomeDashboardScreen(
+        userProfile = null,
+        selectedCountry = com.example.model.Country.RWANDA,
+        transactions = emptyList(),
+        pendingTransactions = emptyList(),
+        onNavigateToPendingReview = {},
+        onNavigateToReports = {},
+        onNavigateToAddTransaction = {},
+        onNavigateToNotifications = {},
+        onNavigateToProfile = {},
+        onTransactionClick = {},
+        onSimulateSmsClick = {}
+    )
+}
+

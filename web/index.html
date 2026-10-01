@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptPay - Mobile Money & Bank Expense Dashboard</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2E6FF2">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
+  
+  <!-- Modern Clean Styles -->
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">P</div>
+        <div class="sidebar-title">PromptPay</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-item active" data-tab="dashboard">
+          <div class="nav-item-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            <span>Dashboard</span>
+          </div>
+        </a>
+
+        <a href="#transactions" class="nav-item" data-tab="transactions">
+          <div class="nav-item-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-8"/><path d="M16 12h-8"/><path d="M10 16H8"/></svg>
+            <span>Transactions</span>
+          </div>
+        </a>
+
+        <a href="#pending-review" class="nav-item" data-tab="pending-review">
+          <div class="nav-item-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Pending Review</span>
+          </div>
+          <span class="nav-badge warning" id="badge-pending-count" style="display:none;">0</span>
+        </a>
+
+        <a href="#reports" class="nav-item" data-tab="reports">
+          <div class="nav-item-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            <span>Reports & Analytics</span>
+          </div>
+        </a>
+
+        <a href="#scam-alerts" class="nav-item" data-tab="scam-alerts">
+          <div class="nav-item-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+            <span>Fraud & Scam Alerts</span>
+          </div>
+          <span class="nav-badge" id="badge-scam-count" style="display:none;">0</span>
+        </a>
+
+        <a href="#categories" class="nav-item" data-tab="categories">
+          <div class="nav-item-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>
+            <span>Categories</span>
+          </div>
+        </a>
+
+        <a href="#settings" class="nav-item" data-tab="settings">
+          <div class="nav-item-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Settings</span>
+          </div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-avatar">JD</div>
+        <div class="user-meta">
+          <span class="user-name">Jane Doe</span>
+          <span class="user-country" id="user-profile-country">Rwanda</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="header-title-group">
+          <h1 id="page-header-title">Financial Overview</h1>
+          <p id="page-header-subtitle">Real-time mobile money and bank SMS expense intelligence</p>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn btn-secondary" id="btn-simulate-sms">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>Simulate Incoming SMS</span>
+          </button>
+          <button class="btn btn-primary" id="btn-add-transaction">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <span>Add Transaction</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Views Body -->
+      <main class="content-body">
+
+        <!-- 1. DASHBOARD TAB VIEW -->
+        <section id="tab-dashboard" class="tab-view active">
+          
+          <!-- Pending Review Warning Banner -->
+          <div id="banner-pending-review" class="alert-banner warning" style="display:none;">
+            <div class="alert-left">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span id="banner-pending-msg">You have transactions waiting for review.</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="window.promptPayApp.switchTab('pending-review')">Review Now</button>
+          </div>
+
+          <!-- Scam Alert Warning Banner -->
+          <div id="banner-scam-alert" class="alert-banner danger" style="display:none;">
+            <div class="alert-left">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span id="banner-scam-msg">Fraud alert detected in recent messages.</span>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="window.promptPayApp.switchTab('scam-alerts')">Inspect Alerts</button>
+          </div>
+
+          <!-- Metric Cards Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon primary">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Net Monthly Balance</span>
+                <span class="stat-value" id="metric-net-balance">0 RWF</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon success">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Total Monthly Income</span>
+                <span class="stat-value" id="metric-income">0 RWF</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon danger">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17h10V7"/><path d="m17 17-10-10"/></svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Total Monthly Expenses</span>
+                <span class="stat-value" id="metric-expense">0 RWF</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon warning">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Pending Reviews</span>
+                <span class="stat-value" id="metric-pending-count">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Charts Grid -->
+          <div class="charts-grid">
+            <!-- Timeline Chart -->
+            <div class="card chart-container">
+              <div class="chart-header">
+                <span class="chart-title">Spending Flow Over Time</span>
+                <span class="badge badge-neutral">Daily Expenses</span>
+              </div>
+              <div id="chart-timeline" class="chart-canvas"></div>
+            </div>
+
+            <!-- Category Donut Chart -->
+            <div class="card chart-container">
+              <div class="chart-header">
+                <span class="chart-title">Category Breakdown</span>
+                <span class="badge badge-neutral">Distribution</span>
+              </div>
+              <div id="chart-categories" class="chart-canvas" style="flex-direction: column;"></div>
+            </div>
+          </div>
+
+          <!-- Recent Activity Card -->
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+              <span style="font-size:16px;font-weight:700;">Recent Transactions</span>
+              <button class="btn btn-secondary btn-sm" onclick="window.promptPayApp.switchTab('transactions')">View All</button>
+            </div>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Merchant / Description</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th style="text-align:right;">Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-activity-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. TRANSACTIONS TAB VIEW -->
+        <section id="tab-transactions" class="tab-view">
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+              <span style="font-size:18px;font-weight:700;">All Transactions Log</span>
+              <div style="display:flex;gap:10px;">
+                <button class="btn btn-secondary btn-sm" id="btn-export-backup">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>Export Backup (JSON)</span>
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Merchant / Description</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th style="text-align:right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="all-transactions-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. PENDING REVIEW TAB VIEW -->
+        <section id="tab-pending-review" class="tab-view">
+          <div style="margin-bottom:8px;">
+            <h2 style="font-size:18px;font-weight:700;">Uncategorized SMS Transactions</h2>
+            <p style="font-size:14px;color:var(--text-muted);">Confirm the merchant and assign the correct category to keep your budget accurate.</p>
+          </div>
+          <div id="pending-review-list"></div>
+        </section>
+
+        <!-- 4. REPORTS TAB VIEW -->
+        <section id="tab-reports" class="tab-view">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon success">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Income Captured</span>
+                <span class="stat-value" id="report-total-income">0 RWF</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon danger">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17h10V7"/><path d="m17 17-10-10"/></svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Expenses Logged</span>
+                <span class="stat-value" id="report-total-expense">0 RWF</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon primary">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Net Savings / Surplus</span>
+                <span class="stat-value" id="report-net-savings">0 RWF</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="charts-grid" style="margin-top:20px;">
+            <div class="card chart-container">
+              <span class="chart-title">Historical Spending Velocity</span>
+              <div id="report-chart-timeline" class="chart-canvas"></div>
+            </div>
+            <div class="card chart-container">
+              <span class="chart-title">Spending Distribution by Category</span>
+              <div id="report-chart-donut" class="chart-canvas" style="flex-direction:column;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. FRAUD & SCAM ALERTS TAB VIEW -->
+        <section id="tab-scam-alerts" class="tab-view">
+          <div style="margin-bottom:8px;">
+            <h2 style="font-size:18px;font-weight:700;">On-Device Scam & Fraud Defense Center</h2>
+            <p style="font-size:14px;color:var(--text-muted);">Review suspicious SMS messages intercepted by PromptPay's pattern recognition engine.</p>
+          </div>
+          <div id="scam-alerts-list"></div>
+        </section>
+
+        <!-- 6. CATEGORIES TAB VIEW -->
+        <section id="tab-categories" class="tab-view">
+          <div class="card" style="margin-bottom:24px;">
+            <h2 style="font-size:16px;font-weight:700;margin-bottom:16px;">Create Custom Category</h2>
+            <form id="form-add-category" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)) auto;gap:12px;align-items:flex-end;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Category Name</label>
+                <input type="text" id="cat-name" class="form-control" placeholder="e.g. Groceries" required>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Tag</label>
+                <input type="text" id="cat-tag" class="form-control" placeholder="Essential / Lifestyle">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Color</label>
+                <input type="color" id="cat-color" class="form-control" value="#2E6FF2" style="height:42px;padding:2px;">
+              </div>
+              <div class="form-group" style="margin-bottom:0;grid-column: span 2;">
+                <label class="form-label">SMS Keywords (comma separated)</label>
+                <input type="text" id="cat-keywords" class="form-control" placeholder="kfc, pizza, cafe">
+              </div>
+              <button type="submit" class="btn btn-primary" style="height:42px;">Add Category</button>
+            </form>
+          </div>
+
+          <h2 style="font-size:16px;font-weight:700;margin-bottom:12px;">Active Expense Categories</h2>
+          <div id="categories-list-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:16px;"></div>
+        </section>
+
+        <!-- 7. SETTINGS TAB VIEW -->
+        <section id="tab-settings" class="tab-view">
+          <div class="card" style="max-width:680px;">
+            <h2 style="font-size:18px;font-weight:700;margin-bottom:20px;">Settings & Preferences</h2>
+
+            <div class="form-group">
+              <label class="form-label">Country & Default Currency</label>
+              <select id="setting-country" class="form-control">
+                <option value="RWANDA">Rwanda (RWF)</option>
+                <option value="KENYA">Kenya (KES)</option>
+                <option value="UGANDA">Uganda (UGX)</option>
+                <option value="TANZANIA">Tanzania (TZS)</option>
+                <option value="BURUNDI">Burundi (BIF)</option>
+                <option value="SOUTH_SUDAN">South Sudan (SSP)</option>
+              </select>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:16px 0;">
+              <div>
+                <div style="font-weight:600;font-size:15px;">Enable Real-time Scam Filtering</div>
+                <div style="font-size:13px;color:var(--text-muted);">Automatically intercepts phishing links, fake balance alerts, and suspicious CTAs</div>
+              </div>
+              <input type="checkbox" id="setting-scam-toggle" style="width:20px;height:20px;cursor:pointer;" checked>
+            </div>
+
+            <div style="margin-top:24px;">
+              <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;">Offline Data Backup & Restore</h3>
+              <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">All transactions, categories, and settings are stored locally in your browser's IndexedDB. Export a backup or restore an existing one at any time.</p>
+              <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                <label class="btn btn-secondary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>Import Backup (.json)</span>
+                  <input type="file" id="file-import-backup" accept=".json" style="display:none;">
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: SIMULATE INCOMING SMS -->
+  <div class="modal-overlay" id="modal-simulate-sms">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Simulate Incoming Mobile Money SMS</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="form-simulate-sms">
+        <div class="modal-body">
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+            Test PromptPay's on-device pattern recognition, amount extraction, auto-categorization, and fraud detector in your browser:
+          </p>
+
+          <div style="margin-bottom:16px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">QUICK SAMPLE PRESETS:</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary btn-sm sms-preset-btn"
+                data-sender="MTN MoMo"
+                data-text="TxId: 981273. You have paid 4,250 RWF to Simba Supermarket on 25/07/2026. Bal: 18,200 RWF.">
+                MTN MoMo Expense
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm sms-preset-btn"
+                data-sender="MPESA"
+                data-text="QH714652 Confirmed. Ksh2,500 paid to Naivas Supermarket. 15/09/26 12:30 PM. New M-PESA balance is Ksh14,200.">
+                M-Pesa Supermarket
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm sms-preset-btn"
+                data-sender="+250788112233"
+                data-text="Dear Customer, you received 45,000 RWF! Click http://bit.ly/claim-pin to verify your PIN immediately.">
+                Phishing Scam Alert
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">SMS Sender Header</label>
+            <input type="text" id="sim-sender" class="form-control" value="MTN MoMo" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">SMS Message Body</label>
+            <textarea id="sim-body" class="form-control" rows="3" required>TxId: 981273. You have paid 4,250 RWF to Simba Supermarket on 25/07/2026. Bal: 18,200 RWF.</textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Process & Ingest SMS</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD MANUAL TRANSACTION -->
+  <div class="modal-overlay" id="modal-add-transaction">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Record Manual Transaction</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="form-add-transaction">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Transaction Type</label>
+            <select id="add-type" class="form-control">
+              <option value="expense">Expense (-)</option>
+              <option value="income">Income (+)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Amount</label>
+            <input type="number" id="add-amount" class="form-control" placeholder="e.g. 5000" step="any" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="add-category" class="form-control"></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description / Merchant</label>
+            <input type="text" id="add-description" class="form-control" placeholder="e.g. Local Market Coffee">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Payment Method</label>
+            <select id="add-method" class="form-control">
+              <option value="Mobile Money">Mobile Money</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Cash">Cash</option>
+              <option value="Credit / Debit Card">Credit / Debit Card</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Bootstrapper Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

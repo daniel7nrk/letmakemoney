@@ -1,0 +1,13 @@
+{
+  "name": "promptpay-web",
+  "version": "1.0.0",
+  "description": "Offline-First Mobile Money & Bank SMS Transaction Dashboard with Fraud Detection",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["finance", "momo", "sms", "fraud-detection", "offline-first", "pwa"],
+  "author": "PromptPay",
+  "license": "MIT"
+}

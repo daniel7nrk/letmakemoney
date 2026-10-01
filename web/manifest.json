@@ -1,0 +1,23 @@
+{
+  "name": "PromptPay Financial Dashboard",
+  "short_name": "PromptPay",
+  "description": "Offline-First Mobile Money & Bank Transaction Expense Tracker with On-Device Fraud Detection",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#2E6FF2",
+  "icons": [
+    {
+      "src": "./assets/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

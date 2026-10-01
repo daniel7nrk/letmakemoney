@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2E6FF2"/>
+      <stop offset="100%" stop-color="#1E4BB3"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#blueGrad)"/>
+  <!-- Shield Icon -->
+  <path d="M256 96 C336 128 392 144 416 160 C416 288 348 376 256 424 C164 376 96 288 96 160 C120 144 176 128 256 96 Z" fill="white" opacity="0.18"/>
+  <path d="M256 120 C324 148 372 162 392 176 C392 284 334 358 256 400 C178 358 120 284 120 176 C140 162 188 148 256 120 Z" fill="white"/>
+  <!-- Checkmark / Pulse inside shield -->
+  <path d="M256 148 L256 372 C316 336 364 274 368 188 C350 176 308 164 256 148 Z" fill="#2E6FF2" opacity="0.15"/>
+  <path d="M208 256 L240 288 L312 216" fill="none" stroke="#2E6FF2" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
