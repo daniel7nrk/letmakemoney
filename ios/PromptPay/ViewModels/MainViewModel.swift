@@ -179,7 +179,11 @@ public final class MainViewModel: ObservableObject {
     }
 
     public func updateTransaction(_ tx: Transaction) {
-        storage.updateTransaction(tx)
+        var lockedTx = tx
+        if let existing = transactions.first(where: { $0.id == tx.id }) {
+            lockedTx.source = existing.source
+        }
+        storage.updateTransaction(lockedTx)
         refreshAll()
     }
 

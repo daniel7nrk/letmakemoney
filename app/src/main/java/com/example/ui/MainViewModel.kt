@@ -157,7 +157,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     category = categoryName,
                     description = finalDesc,
                     notes = notes,
-                    status = "CONFIRMED"
+                    status = "CONFIRMED",
+                    source = tx.source // Source is immutable
                 )
                 repository.updateTransaction(updated)
                 repository.deleteNotificationsByTransactionId(id)
@@ -184,10 +185,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateTransaction(tx: TransactionEntity) {
         viewModelScope.launch {
-            repository.updateTransaction(tx)
-            if (tx.status == "CONFIRMED") {
-                repository.deleteNotificationsByTransactionId(tx.id)
-                NotificationHelper.cancelTransactionNotification(getApplication(), tx.id)
+            // Strictly enforce source immutability (SMS remains SMS, MANUAL remains MANUAL)
+            val existing = repository.getTransactionById(tx.id)
+            val lockedTx = if (existing != null) {
+                tx.copy(source = existing.source)
+            } else {
+                tx
+            }
+            repository.updateTransaction(lockedTx)
+            if (lockedTx.status == "CONFIRMED") {
+                repository.deleteNotificationsByTransactionId(lockedTx.id)
+                NotificationHelper.cancelTransactionNotification(getApplication(), lockedTx.id)
                 val remainingPending = repository.getPendingTransactionsList()
                 if (remainingPending.isEmpty()) {
                     NotificationHelper.cancelPendingReviewNotification(getApplication())

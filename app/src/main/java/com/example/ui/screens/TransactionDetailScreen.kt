@@ -128,7 +128,7 @@ fun TransactionDetailScreen(
                 Column(modifier = Modifier.padding(20.dp)) {
                     DetailRow("Payment Method", transaction.paymentMethod)
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
-                    DetailRow("Source", if (transaction.source == "SMS") "SMS Alert (Local)" else "Manual Entry")
+                    DetailRow("Source", if (transaction.source == "SMS") "SMS Alert (Fixed)" else "Manual Entry (Fixed)")
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
                     DetailRow("Status", transaction.status)
                 }

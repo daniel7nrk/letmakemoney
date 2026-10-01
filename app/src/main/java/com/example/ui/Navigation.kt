@@ -159,9 +159,9 @@ fun AppNavigation(
         bottomBar = {
             if (isBottomBarVisible) {
                 NavigationBar(
-                    modifier = Modifier.height(80.dp),
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                    tonalElevation = 8.dp
+                    tonalElevation = 8.dp,
+                    windowInsets = NavigationBarDefaults.windowInsets
                 ) {
                     // 1. Home
                     NavigationBarItem(
@@ -203,9 +203,7 @@ fun AppNavigation(
 
                     // 3. Center [+] Button: ALWAYS in the middle between Transactions and Reports
                     Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(80.dp),
+                        modifier = Modifier.weight(1f),
                         contentAlignment = Alignment.Center
                     ) {
                         FloatingActionButton(
