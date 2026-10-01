@@ -123,15 +123,14 @@ fun TransactionsPageScreen(
         }
     }
 
-    Scaffold(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .testTag("transactions_page_screen")
-    ) { innerPadding ->
+    ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .padding(horizontal = 16.dp),
             contentPadding = PaddingValues(bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)

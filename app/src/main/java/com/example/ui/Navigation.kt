@@ -159,6 +159,7 @@ fun AppNavigation(
         bottomBar = {
             if (isBottomBarVisible) {
                 NavigationBar(
+                    modifier = Modifier.height(80.dp),
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                     tonalElevation = 8.dp
                 ) {
@@ -192,7 +193,7 @@ fun AppNavigation(
                             }
                         },
                         icon = { Icon(Icons.Default.ReceiptLong, contentDescription = "Transactions") },
-                        label = { Text("Transactions", maxLines = 1, softWrap = false, fontSize = 9.sp) },
+                        label = { Text("Transactions", maxLines = 1, softWrap = false, fontSize = 8.5.sp) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = RoyalBlue,
                             selectedTextColor = RoyalBlue,
@@ -204,7 +205,7 @@ fun AppNavigation(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .fillMaxHeight(),
+                            .height(80.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         FloatingActionButton(

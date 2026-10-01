@@ -55,16 +55,16 @@ fun HomeDashboardScreen(
 
     val recentConfirmed = transactions.filter { it.status == "CONFIRMED" }.take(6)
 
-    Scaffold(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .testTag("home_dashboard_screen")
-    ) { innerPadding ->
+    ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 16.dp),
+            contentPadding = PaddingValues(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item { Spacer(modifier = Modifier.height(8.dp)) }

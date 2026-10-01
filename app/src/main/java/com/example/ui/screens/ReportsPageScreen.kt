@@ -42,17 +42,16 @@ fun ReportsPageScreen(
     val currencyCode = selectedCountry.currencyCode
     val confirmedTx = transactions.filter { it.status == "CONFIRMED" }
 
-    Scaffold(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .testTag("reports_page_screen")
-    ) { innerPadding ->
+    ) {
         if (confirmedTx.size < 5) {
             // Empty State: Not enough data
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
                     .padding(32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -92,9 +91,8 @@ fun ReportsPageScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
