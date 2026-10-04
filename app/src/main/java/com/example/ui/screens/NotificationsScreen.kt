@@ -148,21 +148,19 @@ fun NotificationsScreen(
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // MoMo Scam Filtering Status & Toggle Banner
+            // MoMo Scam Filtering Status Banner (Matching Image 4)
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("notifications_scam_filtering_banner"),
-                shape = RoundedCornerShape(16.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, if (isScamFilteringEnabled) Color(0xFFC8E6C9) else Color(0xFFFFCC80)),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (isScamFilteringEnabled) Color(0xFFF1F8E9) else Color(0xFFFFF8E1)
-                )
+                shape = RoundedCornerShape(18.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFFEDD5)),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF7ED))
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                        .padding(18.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -172,129 +170,142 @@ fun NotificationsScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)),
+                                .size(44.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFFFEF3C7)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Shield,
                                 contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp)
+                                tint = Color(0xFFB45309),
+                                modifier = Modifier.size(24.dp)
                             )
                         }
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    "MoMo Scam Detection",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)
-                                ) {
-                                    Text(
-                                        text = if (isScamFilteringEnabled) "ON" else "OFF",
-                                        color = Color.White,
-                                        fontSize = 9.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
+                            Text(
+                                "MoMo Scam Detection",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp,
+                                color = Color(0xFF0F172A)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = if (isScamFilteringEnabled)
-                                    "Active: Incoming fake MoMo SMS are filtered & flagged."
+                                    "Active: Fraudulent messages are filtered."
                                 else
                                     "Turned Off: Scam messages bypass fraud filter.",
-                                fontSize = 11.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                fontSize = 13.sp,
+                                color = Color(0xFF92400E)
                             )
                         }
                     }
 
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     Button(
                         onClick = { onToggleScamFiltering(!isScamFilteringEnabled) },
-                        modifier = Modifier
-                            .testTag("scam_filtering_toggle_button"),
-                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.testTag("scam_filtering_toggle_button"),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isScamFilteringEnabled) Color(0xFFD32F2F) else Color(0xFF2E7D32)
+                            containerColor = if (isScamFilteringEnabled) Color(0xFFDC2626) else RoyalBlue
                         ),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
                     ) {
                         Text(
                             text = if (isScamFilteringEnabled) "Turn Off" else "Turn On",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 11.sp
+                            fontSize = 13.sp,
+                            color = Color.White
                         )
                     }
                 }
             }
 
-            // Testing / Trigger Bar for Notification Types
-            Card(
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(10.dp)) {
-                    Text(
-                        text = "Trigger System & In-App Alerts (Test Suite):",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        item {
-                            AssistChip(
-                                onClick = onTriggerPendingReminder,
-                                label = { Text("Pending Review", fontSize = 11.sp) },
-                                leadingIcon = { Icon(Icons.Default.RateReview, contentDescription = null, modifier = Modifier.size(14.dp)) },
-                                modifier = Modifier.testTag("trigger_pending_reminder")
-                            )
-                        }
-                        item {
-                            AssistChip(
-                                onClick = onTriggerWeeklyReport,
-                                label = { Text("Weekly Report", fontSize = 11.sp) },
-                                leadingIcon = { Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(14.dp)) },
-                                modifier = Modifier.testTag("trigger_weekly_report")
-                            )
-                        }
-                        item {
-                            AssistChip(
-                                onClick = onTriggerReportReady,
-                                label = { Text("Monthly Report", fontSize = 11.sp) },
-                                leadingIcon = { Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(14.dp)) },
-                                modifier = Modifier.testTag("trigger_report_ready")
-                            )
-                        }
-                        item {
-                            AssistChip(
-                                onClick = onTriggerNewLogin,
-                                label = { Text("New Login", fontSize = 11.sp) },
-                                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(14.dp)) },
-                                modifier = Modifier.testTag("trigger_new_login")
-                            )
-                        }
+            // Test Suite Header & Outlined Buttons
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = "Trigger System & In-App Alerts (Test Suite):",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Color(0xFF0F172A)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onTriggerPendingReminder,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .testTag("trigger_pending_reminder"),
+                        shape = RoundedCornerShape(12.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White)
+                    ) {
+                        Icon(
+                            Icons.Default.RateReview,
+                            contentDescription = null,
+                            tint = RoyalBlue,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            "Pending Review",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = RoyalBlue
+                        )
+                    }
+
+                    OutlinedButton(
+                        onClick = onTriggerWeeklyReport,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .testTag("trigger_weekly_report"),
+                        shape = RoundedCornerShape(12.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White)
+                    ) {
+                        Icon(
+                            Icons.Default.Info,
+                            contentDescription = null,
+                            tint = RoyalBlue,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            "Weekly Report",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = RoyalBlue
+                        )
                     }
                 }
             }
 
             // Filter Chips Row
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("All", "Scam Alerts", "Transactions", "Pending Review", "Reports", "Security").forEach { f ->
-                    item {
-                        FilterChip(
-                            selected = selectedFilter == f,
-                            onClick = { selectedFilter = f },
-                            label = { Text(f) }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("All", "Transactions").forEach { f ->
+                    val isSel = selectedFilter == f
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (isSel) RoyalBlue else Color.White,
+                        border = androidx.compose.foundation.BorderStroke(
+                            1.dp,
+                            if (isSel) RoyalBlue else Color(0xFFE2E8F0)
+                        ),
+                        modifier = Modifier.clickable { selectedFilter = f }
+                    ) {
+                        Text(
+                            text = f,
+                            fontSize = 13.sp,
+                            fontWeight = if (isSel) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isSel) Color.White else Color(0xFF475569),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
                 }

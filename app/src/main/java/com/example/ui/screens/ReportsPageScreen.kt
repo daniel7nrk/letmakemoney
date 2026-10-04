@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material3.*
@@ -47,207 +48,233 @@ fun ReportsPageScreen(
             .fillMaxSize()
             .testTag("reports_page_screen")
     ) {
-        if (confirmedTx.size < 5) {
-            // Empty State: Not enough data
-            Column(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "Reports & Insights",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 26.sp
+                ),
+                color = Color(0xFF0F172A)
+            )
+
+            // Timeframe Segmented Switch (Weekly / Monthly / Yearly)
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xFFF1F5F9))
+                    .padding(4.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(96.dp)
-                        .clip(CircleShape)
-                        .background(RoyalBlue.copy(alpha = 0.1f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.PieChart,
-                        contentDescription = "Reports Data",
-                        tint = RoyalBlue,
-                        modifier = Modifier.size(54.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Financial Reports",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "Not enough transaction data yet to generate insights. Record at least 5 transactions via SMS alerts or manual entry.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "Reports & Insights",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
-                )
-
-                // Timeframe Segmented Switch
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                        .padding(4.dp)
-                ) {
-                    listOf("Weekly", "Monthly", "Yearly").forEach { period ->
-                        val isSel = selectedTimeframe == period
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight()
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(if (isSel) RoyalBlue else Color.Transparent)
-                                .clickable { selectedTimeframe = period },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = period,
-                                color = if (isSel) Color.White else MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                        }
+                listOf("Weekly", "Monthly", "Yearly").forEach { period ->
+                    val isSel = selectedTimeframe == period
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(if (isSel) RoyalBlue else Color.Transparent)
+                            .clickable { selectedTimeframe = period },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = period,
+                            color = if (isSel) Color.White else Color(0xFF64748B),
+                            fontWeight = if (isSel) FontWeight.Bold else FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        )
                     }
                 }
+            }
 
-                // Total Spending Insight Header Card
-                val totalSpend = confirmedTx.filter { it.amount != 0.0 }.sumOf { kotlin.math.abs(it.amount) }
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+            // Total Monthly Spending Card
+            val totalSpend = confirmedTx.filter { it.amount != 0.0 }.sumOf { kotlin.math.abs(it.amount) }
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                Column(modifier = Modifier.padding(22.dp)) {
+                    Text(
+                        "Total $selectedTimeframe Spending",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF64748B)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = FormatUtil.formatCurrency(totalSpend, currencyCode),
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 34.sp
+                        ),
+                        color = RoyalBlue
+                    )
+                }
+            }
+
+            // Smart Tip Card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(18.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFDBEAFE)),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF6FF))
+            ) {
+                Row(
+                    modifier = Modifier.padding(18.dp),
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
-                        Text("Total $selectedTimeframe Spending", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Spacer(modifier = Modifier.height(6.dp))
+                    Icon(
+                        Icons.Default.AutoAwesome,
+                        contentDescription = null,
+                        tint = RoyalBlue,
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
                         Text(
-                            text = FormatUtil.formatCurrency(totalSpend, currencyCode),
-                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                            "Smart Tip",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleMedium,
                             color = RoyalBlue
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "↓ 14.2% lower spending compared to last $selectedTimeframe",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary
+                            "Transactions are automatically sorted by category. Review your categories to keep reports accurate.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFF475569)
                         )
                     }
                 }
+            }
 
-                // Smart Tip Card
+            // Top Spending Categories
+            Text(
+                text = "Top Spending Categories",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                ),
+                color = Color(0xFF0F172A)
+            )
+
+            val categoryTotals = confirmedTx.groupBy { it.category }
+                .mapValues { entry -> entry.value.sumOf { kotlin.math.abs(it.amount) } }
+                .toList()
+                .sortedByDescending { it.second }
+
+            val maxCategorySpend = (categoryTotals.maxOfOrNull { it.second } ?: 1.0).coerceAtLeast(1.0)
+
+            if (categoryTotals.isEmpty()) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, RoyalBlue.copy(alpha = 0.2f)),
+                    shape = RoundedCornerShape(16.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
                     colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = RoyalBlue)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text("Smart Tip", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall, color = RoyalBlue)
-                            Text(
-                                "Transactions are automatically sorted by category. Food & Dining is your highest expense stream this month.",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
+                    Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
+                        Text("No categorized expenses yet", color = Color(0xFF64748B))
                     }
                 }
-
-                // Category Breakdowns Ranked by Spend
-                Text(
-                    text = "Top Spending Categories",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                )
-
-                val categoryTotals = confirmedTx.groupBy { it.category }
-                    .mapValues { entry -> entry.value.sumOf { kotlin.math.abs(it.amount) } }
-                    .toList()
-                    .sortedByDescending { it.second }
-
-                val maxCategorySpend = categoryTotals.maxOfOrNull { it.second } ?: 1.0
-
+            } else {
                 categoryTotals.forEach { (catName, amount) ->
                     val ratio = (amount / maxCategorySpend).toFloat()
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
+                        Column(modifier = Modifier.padding(18.dp)) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(catName, fontWeight = FontWeight.Bold)
-                                Text(FormatUtil.formatCurrency(amount, currencyCode), fontWeight = FontWeight.Bold, color = RoyalBlue)
+                                Text(
+                                    catName,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    color = Color(0xFF0F172A)
+                                )
+                                Text(
+                                    FormatUtil.formatCurrency(amount, currencyCode),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    color = RoyalBlue
+                                )
                             }
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
                             LinearProgressIndicator(
-                                progress = { ratio },
+                                progress = { ratio.coerceIn(0.05f, 1f) },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(8.dp)
-                                    .clip(CircleShape),
+                                    .height(6.dp)
+                                    .clip(RoundedCornerShape(3.dp)),
                                 color = RoyalBlue,
-                                trackColor = RoyalBlue.copy(alpha = 0.15f)
+                                trackColor = Color(0xFFF1F5F9)
                             )
                         }
                     }
                 }
-
-                // Export Data Card
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showExportDialog = true },
-                    shape = RoundedCornerShape(20.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Download, contentDescription = null, tint = RoyalBlue)
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Export Financial Data", fontWeight = FontWeight.Bold)
-                            Text("Download CSV / JSON summary for your records", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
             }
+
+            // Export Financial Data Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showExportDialog = true },
+                shape = RoundedCornerShape(18.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(18.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Download,
+                        contentDescription = null,
+                        tint = RoyalBlue,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "Export Financial Data",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = Color(0xFF0F172A)
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            "Download CSV / JSON summary for your records",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFF64748B)
+                        )
+                    }
+                    Icon(
+                        Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = Color(0xFF94A3B8),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 

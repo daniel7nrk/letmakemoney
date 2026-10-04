@@ -9,12 +9,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LockOpen
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Public
@@ -151,6 +150,16 @@ fun ProfileSettingsScreen(
 
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
+                    // Language Selector
+                    SettingsTile(
+                        icon = Icons.Default.Category,
+                        title = "Language",
+                        subtitle = "Change app language",
+                        onClick = { /* App language */ }
+                    )
+
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
                     // Category Management
                     SettingsTile(
                         icon = Icons.Default.Category,
@@ -191,103 +200,6 @@ fun ProfileSettingsScreen(
 
             // Security Group
             Text("Security & Privacy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-
-            // MoMo Scam & Fraud Protection Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("scam_filtering_card"),
-                shape = RoundedCornerShape(20.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, if (isScamFilteringEnabled) Color(0xFFC8E6C9) else Color(0xFFFFCC80)),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (isScamFilteringEnabled) Color(0xFFF1F8E9) else Color(0xFFFFF8E1)
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(CircleShape)
-                                    .background(if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Shield,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text("MoMo Scam Filtering", fontWeight = FontWeight.Bold, maxLines = 1)
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = if (isScamFilteringEnabled) Color(0xFF2E7D32) else Color(0xFFE65100)
-                            ) {
-                                Text(
-                                    text = if (isScamFilteringEnabled) "ON" else "OFF",
-                                    color = Color.White,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Switch(
-                            checked = isScamFilteringEnabled,
-                            onCheckedChange = { onToggleScamFiltering(it) },
-                            modifier = Modifier.testTag("scam_filtering_switch")
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = if (isScamFilteringEnabled)
-                            "Protection Active: Detects fraudulent USSD structures, balance anomalies & fake senders."
-                        else
-                            "Protection Paused: Incoming SMS will bypass fraud verification.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    // Explicit Button for quick Turn On / Turn Off
-                    Button(
-                        onClick = { onToggleScamFiltering(!isScamFilteringEnabled) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("toggle_scam_filtering_button"),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isScamFilteringEnabled) Color(0xFFD32F2F) else Color(0xFF2E7D32)
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Shield,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = if (isScamFilteringEnabled) "Turn Off Scam Filtering" else "Turn On Scam Filtering",
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -383,19 +295,30 @@ fun ProfileSettingsScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Sign Out
-            Button(
+            // Outlined Sign Out Button (Matching Image 5)
+            OutlinedButton(
                 onClick = onSignOut,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
+                    .height(54.dp)
                     .testTag("sign_out_button"),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White)
             ) {
-                Icon(Icons.Default.Logout, contentDescription = null)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                    contentDescription = null,
+                    tint = Color(0xFFEF4444),
+                    modifier = Modifier.size(20.dp)
+                )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Sign Out", fontWeight = FontWeight.Bold)
+                Text(
+                    "Sign Out",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    color = Color(0xFFEF4444)
+                )
             }
         }
     }

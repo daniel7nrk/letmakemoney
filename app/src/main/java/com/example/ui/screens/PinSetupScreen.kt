@@ -16,6 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -133,26 +134,51 @@ fun PinSetupScreen(
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-                // PIN Dots Indicator (5 slots)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Text(
+                    text = "5-Digit PIN",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF64748B)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Masked PIN Card (Filled RoyalBlue dots & Grey outline circles)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(64.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
-                    for (i in 0 until 5) {
-                        val isFilled = i < currentInput.length
-                        Box(
-                            modifier = Modifier
-                                .size(20.dp)
-                                .clip(CircleShape)
-                                .background(if (isFilled) RoyalBlue else Color.Transparent)
-                                .border(
-                                    width = 2.dp,
-                                    color = if (isFilled) RoyalBlue else MaterialTheme.colorScheme.outline,
-                                    shape = CircleShape
-                                )
-                        )
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(18.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            for (i in 0 until 5) {
+                                val isFilled = i < currentInput.length
+                                if (isFilled) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(14.dp)
+                                            .clip(CircleShape)
+                                            .background(RoyalBlue)
+                                    )
+                                } else {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(14.dp)
+                                            .clip(CircleShape)
+                                            .border(1.5.dp, Color(0xFF94A3B8), CircleShape)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -166,9 +192,8 @@ fun PinSetupScreen(
                     )
                 }
 
-                // Hidden field for test accessibility or direct text input
-                Spacer(modifier = Modifier.height(12.dp))
-                OutlinedTextField(
+                // Completely hidden text field with PasswordVisualTransformation so password can never be seen
+                androidx.compose.foundation.text.BasicTextField(
                     value = currentInput,
                     onValueChange = { input ->
                         val digits = input.filter { it.isDigit() }.take(5)
@@ -192,21 +217,22 @@ fun PinSetupScreen(
                             }
                         }
                     },
-                    label = { Text("5-Digit PIN") },
+                    visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .testTag("pin_setup_input"),
-                    shape = RoundedCornerShape(12.dp)
+                        .size(1.dp)
+                        .alpha(0.001f)
+                        .testTag("pin_setup_input")
                 )
             }
 
-            // Keypad
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Rounded Numeric Keypad
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 val numRows = listOf(
                     listOf("1", "2", "3"),
@@ -217,20 +243,15 @@ fun PinSetupScreen(
 
                 for (row in numRows) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(0.85f),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         for (key in row) {
-                            Box(
+                            val isSpecial = key == "C" || key == "DEL"
+                            Card(
                                 modifier = Modifier
-                                    .size(64.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        when (key) {
-                                            "C", "DEL" -> MaterialTheme.colorScheme.surfaceContainerHigh
-                                            else -> MaterialTheme.colorScheme.surfaceContainerLow
-                                        }
-                                    )
+                                    .weight(1f)
+                                    .height(60.dp)
                                     .clickable {
                                         when (key) {
                                             "C" -> onClearClick()
@@ -238,16 +259,37 @@ fun PinSetupScreen(
                                             else -> onDigitClick(key)
                                         }
                                     },
-                                contentAlignment = Alignment.Center
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (isSpecial) Color(0xFFEFF6FF) else Color.White
+                                ),
+                                border = androidx.compose.foundation.BorderStroke(
+                                    1.dp,
+                                    if (isSpecial) Color(0xFFDBEAFE) else Color(0xFFF1F5F9)
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = if (isSpecial) 0.dp else 1.dp)
                             ) {
-                                when (key) {
-                                    "DEL" -> Icon(
-                                        Icons.AutoMirrored.Filled.Backspace,
-                                        contentDescription = "Delete",
-                                        tint = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    "C" -> Text("C", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                                    else -> Text(key, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    when (key) {
+                                        "DEL" -> Icon(
+                                            Icons.AutoMirrored.Filled.Backspace,
+                                            contentDescription = "Delete",
+                                            tint = RoyalBlue,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                        "C" -> Text(
+                                            "C",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = RoyalBlue
+                                        )
+                                        else -> Text(
+                                            text = key,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF0F172A)
+                                        )
+                                    }
                                 }
                             }
                         }

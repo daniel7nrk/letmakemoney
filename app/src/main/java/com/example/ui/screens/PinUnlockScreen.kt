@@ -18,6 +18,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -144,14 +145,14 @@ fun PinUnlockScreen(
         modifier = Modifier
             .fillMaxSize()
             .testTag("pin_unlock_screen"),
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = Color(0xFFF8FAFC)
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
+                .padding(horizontal = 24.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -159,8 +160,9 @@ fun PinUnlockScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
+                // Avatar Circle
                 Box(
                     modifier = Modifier
                         .size(72.dp)
@@ -177,18 +179,31 @@ fun PinUnlockScreen(
                         )
                     } else {
                         Text(
-                            text = (userProfile?.name?.take(1) ?: "P").uppercase(),
+                            text = (userProfile?.name?.take(1) ?: "C").uppercase(),
                             color = Color.White,
-                            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 30.sp
+                            )
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = "Welcome Back, ${userProfile?.name?.ifBlank { "User" } ?: "User"}",
+                    text = "Welcome Back,",
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Color(0xFF0F172A),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = userProfile?.name?.ifBlank { "User" } ?: "User",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    color = Color(0xFF0F172A),
                     textAlign = TextAlign.Center
                 )
 
@@ -197,30 +212,55 @@ fun PinUnlockScreen(
                 Text(
                     text = if (isLockedOut) "Account temporarily locked" else "Enter your 5-digit PIN to unlock",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = Color(0xFF64748B),
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-                // PIN Dots Indicator (5 slots)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Text(
+                    text = "5-Digit PIN",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF64748B)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Masked PIN Card (Filled RoyalBlue dots & Grey outline circles)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(64.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
-                    for (i in 0 until 5) {
-                        val isFilled = i < pinInput.length
-                        Box(
-                            modifier = Modifier
-                                .size(20.dp)
-                                .clip(CircleShape)
-                                .background(if (isFilled) RoyalBlue else Color.Transparent)
-                                .border(
-                                    width = 2.dp,
-                                    color = if (isFilled) RoyalBlue else MaterialTheme.colorScheme.outline,
-                                    shape = CircleShape
-                                )
-                        )
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(18.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            for (i in 0 until 5) {
+                                val isFilled = i < pinInput.length
+                                if (isFilled) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(14.dp)
+                                            .clip(CircleShape)
+                                            .background(RoyalBlue)
+                                    )
+                                } else {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(14.dp)
+                                            .clip(CircleShape)
+                                            .border(1.5.dp, Color(0xFF94A3B8), CircleShape)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -241,9 +281,8 @@ fun PinUnlockScreen(
                     )
                 }
 
-                // Text field for test accessibility
-                Spacer(modifier = Modifier.height(12.dp))
-                OutlinedTextField(
+                // Completely hidden text field with PasswordVisualTransformation so password can never be seen
+                androidx.compose.foundation.text.BasicTextField(
                     value = pinInput,
                     onValueChange = { input ->
                         if (!isLockedOut) {
@@ -254,22 +293,22 @@ fun PinUnlockScreen(
                             }
                         }
                     },
-                    label = { Text("5-Digit PIN") },
-                    enabled = !isLockedOut,
+                    visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .testTag("pin_unlock_input"),
-                    shape = RoundedCornerShape(12.dp)
+                        .size(1.dp)
+                        .alpha(0.001f)
+                        .testTag("pin_unlock_input")
                 )
             }
 
-            // Keypad
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Rounded Numeric Keypad
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 val numRows = listOf(
                     listOf("1", "2", "3"),
@@ -280,20 +319,15 @@ fun PinUnlockScreen(
 
                 for (row in numRows) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(0.85f),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         for (key in row) {
-                            Box(
+                            val isSpecial = key == "BIO" || key == "DEL"
+                            Card(
                                 modifier = Modifier
-                                    .size(64.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        when (key) {
-                                            "BIO", "DEL" -> MaterialTheme.colorScheme.surfaceContainerHigh
-                                            else -> MaterialTheme.colorScheme.surfaceContainerLow
-                                        }
-                                    )
+                                    .weight(1f)
+                                    .height(60.dp)
                                     .clickable(enabled = !isLockedOut) {
                                         when (key) {
                                             "BIO" -> triggerBiometricPrompt()
@@ -301,36 +335,40 @@ fun PinUnlockScreen(
                                             else -> onDigitClick(key)
                                         }
                                     },
-                                contentAlignment = Alignment.Center
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (isSpecial) Color(0xFFEFF6FF) else Color.White
+                                ),
+                                border = androidx.compose.foundation.BorderStroke(
+                                    1.dp,
+                                    if (isSpecial) Color(0xFFDBEAFE) else Color(0xFFF1F5F9)
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = if (isSpecial) 0.dp else 1.dp)
                             ) {
-                                when (key) {
-                                    "DEL" -> Icon(
-                                        Icons.AutoMirrored.Filled.Backspace,
-                                        contentDescription = "Delete",
-                                        tint = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    "BIO" -> Icon(
-                                        Icons.Default.Fingerprint,
-                                        contentDescription = "Biometric Unlock",
-                                        tint = RoyalBlue
-                                    )
-                                    else -> Text(key, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    when (key) {
+                                        "DEL" -> Icon(
+                                            Icons.AutoMirrored.Filled.Backspace,
+                                            contentDescription = "Delete",
+                                            tint = RoyalBlue,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                        "BIO" -> Icon(
+                                            Icons.Default.Fingerprint,
+                                            contentDescription = "Biometric",
+                                            tint = RoyalBlue,
+                                            modifier = Modifier.size(26.dp)
+                                        )
+                                        else -> Text(
+                                            text = key,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF0F172A)
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
-                }
-
-                if (userProfile?.lockMode == "BIOMETRIC") {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedButton(
-                        onClick = { triggerBiometricPrompt() },
-                        enabled = !isLockedOut,
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(Icons.Default.Fingerprint, contentDescription = null, tint = RoyalBlue)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Use Biometric / Passcode", color = RoyalBlue, fontWeight = FontWeight.Bold)
                     }
                 }
             }

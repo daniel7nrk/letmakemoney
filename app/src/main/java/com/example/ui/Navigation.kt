@@ -1,7 +1,10 @@
 package com.example.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
@@ -174,11 +177,12 @@ fun AppNavigation(
                             }
                         },
                         icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                        label = { Text("Home", maxLines = 1, fontSize = 10.sp) },
+                        label = { Text("Home", maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Home.route) FontWeight.Bold else FontWeight.Normal) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = RoyalBlue,
                             selectedTextColor = RoyalBlue,
-                            indicatorColor = RoyalBlue.copy(alpha = 0.15f)
+                            unselectedTextColor = Color(0xFF64748B),
+                            indicatorColor = RoyalBlue.copy(alpha = 0.12f)
                         )
                     )
 
@@ -193,32 +197,48 @@ fun AppNavigation(
                             }
                         },
                         icon = { Icon(Icons.Default.ReceiptLong, contentDescription = "Transactions") },
-                        label = { Text("Transactions", maxLines = 1, softWrap = false, fontSize = 8.5.sp) },
+                        label = { Text("Transactions", maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Transactions.route) FontWeight.Bold else FontWeight.Normal) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = RoyalBlue,
                             selectedTextColor = RoyalBlue,
-                            indicatorColor = RoyalBlue.copy(alpha = 0.15f)
+                            unselectedTextColor = Color(0xFF64748B),
+                            indicatorColor = RoyalBlue.copy(alpha = 0.12f)
                         )
                     )
 
-                    // 3. Center [+] Button: ALWAYS in the middle between Transactions and Reports
-                    Box(
-                        modifier = Modifier.weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        FloatingActionButton(
-                            onClick = { navController.navigate(Screen.AddTransaction.route) },
-                            containerColor = RoyalBlue,
-                            contentColor = Color.White,
-                            shape = CircleShape,
-                            elevation = FloatingActionButtonDefaults.elevation(4.dp),
-                            modifier = Modifier
-                                .size(46.dp)
-                                .testTag("fab_add_transaction")
-                        ) {
-                            Icon(Icons.Default.Add, contentDescription = "Add Transaction", modifier = Modifier.size(24.dp))
-                        }
-                    }
+                    // 3. Center Add Button
+                    NavigationBarItem(
+                        selected = currentRoute == Screen.AddTransaction.route,
+                        onClick = {
+                            navController.navigate(Screen.AddTransaction.route) {
+                                launchSingleTop = true
+                            }
+                        },
+                        icon = {
+                            Box(
+                                modifier = Modifier
+                                    .size(width = 46.dp, height = 32.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(RoyalBlue)
+                                    .testTag("fab_add_transaction"),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = "Add Transaction",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        },
+                        label = { Text("Add", maxLines = 1, fontSize = 11.sp, color = RoyalBlue, fontWeight = FontWeight.Bold) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = RoyalBlue,
+                            selectedTextColor = RoyalBlue,
+                            unselectedTextColor = RoyalBlue,
+                            indicatorColor = Color.Transparent
+                        )
+                    )
 
                     // 4. Reports
                     NavigationBarItem(
@@ -231,11 +251,12 @@ fun AppNavigation(
                             }
                         },
                         icon = { Icon(Icons.Default.BarChart, contentDescription = "Reports") },
-                        label = { Text("Reports", maxLines = 1, fontSize = 10.sp) },
+                        label = { Text("Reports", maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Reports.route) FontWeight.Bold else FontWeight.Normal) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = RoyalBlue,
                             selectedTextColor = RoyalBlue,
-                            indicatorColor = RoyalBlue.copy(alpha = 0.15f)
+                            unselectedTextColor = Color(0xFF64748B),
+                            indicatorColor = RoyalBlue.copy(alpha = 0.12f)
                         )
                     )
 
@@ -250,11 +271,12 @@ fun AppNavigation(
                             }
                         },
                         icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                        label = { Text("Profile", maxLines = 1, fontSize = 10.sp) },
+                        label = { Text("Profile", maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Profile.route) FontWeight.Bold else FontWeight.Normal) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = RoyalBlue,
                             selectedTextColor = RoyalBlue,
-                            indicatorColor = RoyalBlue.copy(alpha = 0.15f)
+                            unselectedTextColor = Color(0xFF64748B),
+                            indicatorColor = RoyalBlue.copy(alpha = 0.12f)
                         )
                     )
                 }

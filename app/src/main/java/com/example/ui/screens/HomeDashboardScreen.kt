@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PendingActions
+import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material3.*
@@ -142,90 +143,59 @@ fun HomeDashboardScreen(
                 }
             }
 
-            // Total Balance / Spending Summary Card
+            // Total Monthly Spending Summary Card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = RoyalBlue)
+                    colors = CardDefaults.cardColors(containerColor = RoyalBlue),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp)
+                            .padding(24.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Total Monthly Spending",
-                                color = Color.White.copy(alpha = 0.85f),
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.weight(1f, fill = false)
-                            )
+                        Text(
+                            text = "Total Monthly Spending",
+                            color = Color.White.copy(alpha = 0.9f),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium)
+                        )
 
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = Color.White.copy(alpha = 0.22f)
-                            ) {
-                                Text(
-                                    text = "+12.5% vs last mo",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color.White,
-                                    maxLines = 1,
-                                    softWrap = false,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
                             text = FormatUtil.formatCurrency(totalExpense, currencyCode),
                             style = MaterialTheme.typography.headlineLarge.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 34.sp
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 36.sp
                             ),
                             color = Color.White
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(18.dp))
 
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color.White.copy(alpha = 0.15f))
-                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 Icons.Default.Security,
                                 contentDescription = null,
-                                tint = Color.White,
+                                tint = Color.White.copy(alpha = 0.9f),
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "100% On-Device • Encrypted Room DB",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.White,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                text = "100% On-Device · Encrypted Room",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.9f)
                             )
                         }
                     }
                 }
             }
 
-            // Quick Action Row
+            // Quick Action Row (3 Cards: Add Manual, Reports, Test SMS)
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -252,7 +222,7 @@ fun HomeDashboardScreen(
                 }
             }
 
-            // Pending Review Alert Banner (if pending items exist)
+            // Pending Review Alert Banner
             if (pendingTransactions.isNotEmpty()) {
                 item {
                     Card(
@@ -261,40 +231,42 @@ fun HomeDashboardScreen(
                             .clickable { onNavigateToPendingReview() }
                             .testTag("pending_review_banner"),
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF7ED)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFFEDD5))
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
+                                .padding(18.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 imageVector = Icons.Default.PendingActions,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                                modifier = Modifier.size(32.dp)
+                                tint = Color(0xFFD97706),
+                                modifier = Modifier.size(28.dp)
                             )
 
-                            Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
 
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = "${pendingTransactions.size} Transactions Need Review",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                                    color = Color(0xFF1E293B)
                                 )
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = "Assign categories to keep reports accurate.",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
+                                    color = Color(0xFF92400E)
                                 )
                             }
 
                             Icon(
                                 imageVector = Icons.Default.ChevronRight,
                                 contentDescription = "Review",
-                                tint = MaterialTheme.colorScheme.onTertiaryContainer
+                                tint = Color(0xFFD97706)
                             )
                         }
                     }
@@ -394,7 +366,6 @@ fun TransactionCardItem(
     onClick: () -> Unit
 ) {
     val displayName = transaction.merchant.ifBlank { transaction.description }.ifBlank { transaction.category }
-    val avatarInitial = displayName.trimStart().take(1).uppercase()
 
     Card(
         modifier = Modifier
@@ -402,8 +373,9 @@ fun TransactionCardItem(
             .clickable { onClick() }
             .testTag("transaction_item_${transaction.id}"),
         shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
             modifier = Modifier
@@ -411,19 +383,19 @@ fun TransactionCardItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Category / Merchant Icon Badge
+            // Light blue square with Phone/Mobile Money Icon
             Box(
                 modifier = Modifier
                     .size(44.dp)
-                    .clip(CircleShape)
-                    .background(RoyalBlue.copy(alpha = 0.1f)),
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFEFF6FF)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = avatarInitial,
-                    color = RoyalBlue,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                Icon(
+                    imageVector = Icons.Default.PhoneAndroid,
+                    contentDescription = null,
+                    tint = RoyalBlue,
+                    modifier = Modifier.size(22.dp)
                 )
             }
 
@@ -432,39 +404,29 @@ fun TransactionCardItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = displayName,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = Color(0xFF0F172A),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
-                ) {
+                if (transaction.category.isNotBlank() && transaction.category != displayName) {
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = transaction.category,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        text = "${transaction.category} · ${FormatUtil.formatDate(transaction.dateEpochMillis)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF64748B),
+                        maxLines = 1
                     )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = FormatUtil.formatDate(transaction.dateEpochMillis),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
-                )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
-            Text(
-                text = FormatUtil.formatCurrency(transaction.amount, currencyCode),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = if (transaction.amount < 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                maxLines = 1
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = Color(0xFF94A3B8),
+                modifier = Modifier.size(22.dp)
             )
         }
     }
