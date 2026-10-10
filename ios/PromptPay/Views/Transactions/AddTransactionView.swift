@@ -5,6 +5,7 @@ public struct AddTransactionView: View {
     @ObservedObject var viewModel: MainViewModel
 
     @State private var amountText: String = ""
+    @State private var feeText: String = "0"
     @State private var descriptionText: String = ""
     @State private var selectedCategory: String = "General"
 
@@ -37,6 +38,24 @@ public struct AddTransactionView: View {
                         TextField("0.00", text: $amountText)
                             .keyboardType(.decimalPad)
                             .font(.system(size: 24, weight: .bold))
+                            .padding(14)
+                            .background(Color.promptSurface)
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.promptBorder, lineWidth: 1)
+                            )
+                    }
+
+                    // Transaction Fee input (optional)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Transaction Fee (\(viewModel.selectedCountry.currencyCode)) - Optional")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundColor(.promptTextPrimary)
+
+                        TextField("0", text: $feeText)
+                            .keyboardType(.decimalPad)
+                            .font(.system(size: 18, weight: .semibold))
                             .padding(14)
                             .background(Color.promptSurface)
                             .cornerRadius(12)
@@ -94,10 +113,13 @@ public struct AddTransactionView: View {
                     // Submit button
                     Button(action: {
                         guard let amt = Double(amountText), amt > 0 else { return }
+                        let feeAmt = Double(feeText) ?? 0.0
                         viewModel.addManualTransaction(
                             amount: amt,
                             category: selectedCategory.isEmpty ? "General" : selectedCategory,
-                            description: descriptionText
+                            description: descriptionText,
+                            fee: feeAmt,
+                            feeCategory: "Transaction Fee"
                         )
                         presentationMode.wrappedValue.dismiss()
                     }) {

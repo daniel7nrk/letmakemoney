@@ -11,6 +11,8 @@ public struct Transaction: Identifiable, Codable, Equatable {
     public var source: String          // "SMS" or "MANUAL"
     public var status: String          // "PENDING" or "CONFIRMED"
     public var isRecurring: BooleanType
+    public var fee: Double
+    public var feeCategory: String
     public var notes: String
     public var paymentMethod: String
 
@@ -22,6 +24,8 @@ public struct Transaction: Identifiable, Codable, Equatable {
         description: String,
         merchant: String,
         category: String,
+        fee: Double = 0.0,
+        feeCategory: String = "Transaction Fee",
         source: String = "SMS",
         status: String = "CONFIRMED",
         isRecurring: Bool = false,
@@ -35,6 +39,8 @@ public struct Transaction: Identifiable, Codable, Equatable {
         self.description = description
         self.merchant = merchant
         self.category = category
+        self.fee = fee
+        self.feeCategory = feeCategory
         self.source = source
         self.status = status
         self.isRecurring = isRecurring

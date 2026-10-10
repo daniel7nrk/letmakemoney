@@ -173,14 +173,16 @@ class SmsReceiver : BroadcastReceiver() {
             userCurrency = userCurrency
         )
 
-        if (parsed != null) {
+        if (parsed != null && parsed.shouldRecord) {
             val transaction = TransactionEntity(
                 amount = parsed.amount,
                 currency = parsed.currency,
-                dateEpochMillis = System.currentTimeMillis(),
+                dateEpochMillis = parsed.timestampEpochMillis ?: System.currentTimeMillis(),
                 description = parsed.description,
                 merchant = parsed.merchant,
                 category = parsed.category,
+                fee = parsed.fee,
+                feeCategory = parsed.feeCategory,
                 source = "SMS",
                 status = parsed.status,
                 paymentMethod = sender

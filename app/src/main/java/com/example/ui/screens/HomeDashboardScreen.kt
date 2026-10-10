@@ -409,14 +409,56 @@ fun TransactionCardItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (transaction.category.isNotBlank() && transaction.category != displayName) {
-                    Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(2.dp))
+                val subText = if (transaction.category.isNotBlank() && transaction.category != displayName) {
+                    "${transaction.category} · ${FormatUtil.formatDate(transaction.dateEpochMillis)}"
+                } else {
+                    FormatUtil.formatDate(transaction.dateEpochMillis)
+                }
+                Text(
+                    text = subText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF64748B),
+                    maxLines = 1
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // Right side: Transaction Amount & Fee Display
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = FormatUtil.formatCurrency(transaction.amount, currencyCode),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    ),
+                    color = Color(0xFF0F172A)
+                )
+                Spacer(modifier = Modifier.height(3.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
                     Text(
-                        text = "${transaction.category} · ${FormatUtil.formatDate(transaction.dateEpochMillis)}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF64748B),
-                        maxLines = 1
+                        text = "Fee: ${FormatUtil.formatCurrency(transaction.fee, currencyCode)}",
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp, fontWeight = FontWeight.Medium),
+                        color = if (transaction.fee > 0) Color(0xFFD97706) else Color(0xFF64748B)
                     )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Surface(
+                        color = Color(0xFFFEF3C7),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = transaction.feeCategory.ifBlank { "Fee" },
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold),
+                            color = Color(0xFFB45309),
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                        )
+                    }
                 }
             }
 
@@ -426,7 +468,7 @@ fun TransactionCardItem(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null,
                 tint = Color(0xFF94A3B8),
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(20.dp)
             )
         }
     }

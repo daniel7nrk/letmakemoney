@@ -504,8 +504,8 @@ fun AppNavigation(
                 AddTransactionScreen(
                     categories = categories,
                     selectedCountry = selectedCountry,
-                    onSaveTransaction = { amount, cat, desc ->
-                        viewModel.addManualTransaction(amount, cat, desc)
+                    onSaveTransaction = { amount, cat, desc, fee, feeCategory ->
+                        viewModel.addManualTransaction(amount, cat, desc, fee = fee, feeCategory = feeCategory)
                     },
                     onBack = { navController.popBackStack() }
                 )

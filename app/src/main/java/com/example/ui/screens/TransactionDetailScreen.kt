@@ -106,6 +106,20 @@ fun TransactionDetailScreen(
                         color = androidx.compose.ui.graphics.Color.White
                     )
 
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Surface(
+                        color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = "Fee: ${FormatUtil.formatCurrency(transaction.fee, selectedCountry.currencyCode)} · ${transaction.feeCategory}",
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                            color = androidx.compose.ui.graphics.Color.White,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
@@ -129,6 +143,10 @@ fun TransactionDetailScreen(
                     DetailRow("Payment Method", transaction.paymentMethod)
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
                     DetailRow("Source", if (transaction.source == "SMS") "SMS Alert (Fixed)" else "Manual Entry (Fixed)")
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+                    DetailRow("Transaction Fee", FormatUtil.formatCurrency(transaction.fee, selectedCountry.currencyCode))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+                    DetailRow("Fee Category", transaction.feeCategory)
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
                     DetailRow("Status", transaction.status)
                 }

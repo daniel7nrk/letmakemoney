@@ -30,9 +30,25 @@ public struct TransactionCardView: View {
 
                     Spacer()
 
-                    Text(FormatUtil.formatAmount(transaction.amount, currency: transaction.currency))
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.promptTextPrimary)
+                    VStack(alignment: .trailing, spacing: 3) {
+                        Text(FormatUtil.formatAmount(transaction.amount, currency: transaction.currency))
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.promptTextPrimary)
+
+                        HStack(spacing: 4) {
+                            Text("Fee: \(FormatUtil.formatAmount(transaction.fee, currency: transaction.currency))")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(transaction.fee > 0 ? Color.orange : .promptTextSecondary)
+
+                            Text(transaction.feeCategory.isEmpty ? "Fee" : transaction.feeCategory)
+                                .font(.system(size: 9, weight: .bold))
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 1)
+                                .background(Color.yellow.opacity(0.2))
+                                .foregroundColor(Color.orange)
+                                .cornerRadius(4)
+                        }
+                    }
                 }
 
                 // Bottom row: Category badge, Fixed Source badge, and Date

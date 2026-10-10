@@ -191,11 +191,19 @@ fun PendingTransactionCard(
                     )
                 }
 
-                Text(
-                    text = FormatUtil.formatCurrency(transaction.amount, currencyCode),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
-                    color = RoyalBlue
-                )
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = FormatUtil.formatCurrency(transaction.amount, currencyCode),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
+                        color = RoyalBlue
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "Fee: ${FormatUtil.formatCurrency(transaction.fee, currencyCode)} (${transaction.feeCategory})",
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp, fontWeight = FontWeight.Medium),
+                        color = if (transaction.fee > 0) Color(0xFFD97706) else Color(0xFF64748B)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

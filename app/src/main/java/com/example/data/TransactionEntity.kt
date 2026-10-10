@@ -16,5 +16,7 @@ data class TransactionEntity(
     val status: String, // "PENDING" or "CONFIRMED"
     val isRecurring: Boolean = false,
     val notes: String = "",
-    val paymentMethod: String = "Mobile Money"
+    val paymentMethod: String = "Mobile Money",
+    val fee: Double = 0.0,
+    val feeCategory: String = "Transaction Fee"
 )

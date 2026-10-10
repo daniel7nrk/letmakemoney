@@ -120,7 +120,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         amount: Double,
         category: String,
         description: String,
-        dateEpochMillis: Long = System.currentTimeMillis()
+        dateEpochMillis: Long = System.currentTimeMillis(),
+        fee: Double = 0.0,
+        feeCategory: String = "Transaction Fee"
     ) {
         viewModelScope.launch {
             val currCode = selectedCountry.value.currencyCode
@@ -131,6 +133,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 description = description.ifBlank { "Manual Transaction" },
                 merchant = description.ifBlank { category },
                 category = category,
+                fee = fee,
+                feeCategory = feeCategory,
                 source = "MANUAL",
                 status = "CONFIRMED",
                 isRecurring = false,
@@ -344,13 +348,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val parsed = SmsParser.parseSms(sender, body, catList, userCurrency)
 
             if (parsed != null) {
+                if (!parsed.shouldRecord) {
+                    android.widget.Toast.makeText(
+                        getApplication(),
+                        "Received money / non-expense SMS: Not auto-recorded as an expense.",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                    return@launch
+                }
+
                 val newTx = TransactionEntity(
                     amount = parsed.amount,
                     currency = parsed.currency,
-                    dateEpochMillis = System.currentTimeMillis(),
+                    dateEpochMillis = parsed.timestampEpochMillis ?: System.currentTimeMillis(),
                     description = parsed.description,
                     merchant = parsed.merchant,
                     category = parsed.category,
+                    fee = parsed.fee,
+                    feeCategory = parsed.feeCategory,
                     source = "SMS",
                     status = parsed.status,
                     paymentMethod = sender

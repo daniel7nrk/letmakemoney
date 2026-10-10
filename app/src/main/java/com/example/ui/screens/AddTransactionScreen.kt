@@ -29,10 +29,11 @@ import com.example.ui.theme.RoyalBlue
 fun AddTransactionScreen(
     categories: List<CategoryEntity>,
     selectedCountry: Country,
-    onSaveTransaction: (Double, String, String) -> Unit,
+    onSaveTransaction: (Double, String, String, Double, String) -> Unit,
     onBack: () -> Unit
 ) {
     var amountInput by remember { mutableStateOf("4500") }
+    var feeInput by remember { mutableStateOf("0") }
     var descriptionInput by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(categories.firstOrNull()?.name ?: "Food & Dining") }
 
@@ -95,6 +96,18 @@ fun AddTransactionScreen(
                 }
             }
 
+            // Optional Fee Input
+            OutlinedTextField(
+                value = feeInput,
+                onValueChange = { feeInput = it.filter { char -> char.isDigit() || char == '.' } },
+                label = { Text("Transaction Fee (${selectedCountry.currencyCode}) - Optional") },
+                placeholder = { Text("e.g. 0, 20, 100") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("fee_text_field"),
+                shape = RoundedCornerShape(12.dp)
+            )
+
             // Description Input
             OutlinedTextField(
                 value = descriptionInput,
@@ -137,8 +150,9 @@ fun AddTransactionScreen(
             Button(
                 onClick = {
                     val doubleAmount = amountInput.toDoubleOrNull() ?: 0.0
+                    val doubleFee = feeInput.toDoubleOrNull() ?: 0.0
                     if (doubleAmount > 0) {
-                        onSaveTransaction(doubleAmount, selectedCategory, descriptionInput)
+                        onSaveTransaction(doubleAmount, selectedCategory, descriptionInput, doubleFee, "Transaction Fee")
                         onBack()
                     }
                 },

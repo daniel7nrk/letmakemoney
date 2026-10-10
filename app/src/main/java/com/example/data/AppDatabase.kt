@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
         ScamAlertEntity::class,
         AppNotificationEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -75,7 +75,8 @@ abstract class AppDatabase : RoomDatabase() {
                     CategoryEntity(id = 5, name = "Entertainment", iconName = "movie", tag = "Lifestyle", colorHex = "#FFB955", keywords = "netflix,cinema,movie,entertainment,spotify"),
                     CategoryEntity(id = 6, name = "Shopping", iconName = "shopping_bag", tag = "Lifestyle", colorHex = "#E1E3E4", keywords = "amazon,mall,shopping,store"),
                     CategoryEntity(id = 7, name = "Health", iconName = "medical_services", tag = "Essential", colorHex = "#FFDAD6", keywords = "pharmacy,hospital,doctor,clinic"),
-                    CategoryEntity(id = 8, name = "Bills", iconName = "payments", tag = "Fixed", colorHex = "#EDEEEF", keywords = "bill,tax,fee")
+                    CategoryEntity(id = 8, name = "Bills", iconName = "payments", tag = "Fixed", colorHex = "#EDEEEF", keywords = "bill,tax,fee"),
+                    CategoryEntity(id = 9, name = "Transaction Fees", iconName = "payments", tag = "Fixed", colorHex = "#FEF3C7", keywords = "fee,charges,tariff")
                 )
                 database.categoryDao().insertCategories(defaultCategories)
             }

@@ -102,14 +102,22 @@ public final class MainViewModel: ObservableObject {
             return (nil, nil)
         }
 
+        // If received money or non-expense SMS, do not record as expense
+        if !parsed.shouldRecord {
+            return (nil, nil)
+        }
+
         let initialStatus = (detection.classification == .needsReview) ? "PENDING" : parsed.status
 
         let newTx = Transaction(
             amount: parsed.amount,
             currency: parsed.currency,
+            dateEpochMillis: parsed.timestampEpochMillis ?? Int64(Date().timeIntervalSince1970 * 1000),
             description: parsed.description,
             merchant: parsed.merchant,
             category: parsed.category,
+            fee: parsed.fee,
+            feeCategory: parsed.feeCategory,
             source: "SMS",
             status: initialStatus,
             paymentMethod: sender
@@ -152,13 +160,21 @@ public final class MainViewModel: ObservableObject {
     }
 
     // MARK: - Manual & Editing Operations
-    public func addManualTransaction(amount: Double, category: String, description: String) {
+    public func addManualTransaction(
+        amount: Double,
+        category: String,
+        description: String,
+        fee: Double = 0.0,
+        feeCategory: String = "Transaction Fee"
+    ) {
         let tx = Transaction(
             amount: amount,
             currency: selectedCountry.currencyCode,
             description: description.isEmpty ? "Manual Expense" : description,
             merchant: description.isEmpty ? "Manual Expense" : description,
             category: category,
+            fee: fee,
+            feeCategory: feeCategory,
             source: "MANUAL",
             status: "CONFIRMED",
             paymentMethod: "Manual"

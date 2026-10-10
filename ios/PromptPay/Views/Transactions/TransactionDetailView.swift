@@ -33,6 +33,14 @@ public struct TransactionDetailView: View {
                         .font(.system(size: 34, weight: .bold))
                         .foregroundColor(.white)
 
+                    Text("Fee: \(FormatUtil.formatAmount(transaction.fee, currency: transaction.currency)) · \(transaction.feeCategory)")
+                        .font(.system(size: 13, weight: .semibold))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Color.white.opacity(0.2))
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+
                     Text(FormatUtil.formatDate(transaction.dateEpochMillis))
                         .font(.system(size: 13))
                         .foregroundColor(.white.opacity(0.75))
@@ -54,6 +62,10 @@ public struct TransactionDetailView: View {
                         value: transaction.source == "SMS" ? "SMS Alert (Fixed)" : "Manual Entry (Fixed)",
                         badgeColor: transaction.source == "SMS" ? .promptPurple : .promptSuccess
                     )
+                    Divider()
+                    DetailRowView(title: "Transaction Fee", value: FormatUtil.formatAmount(transaction.fee, currency: transaction.currency))
+                    Divider()
+                    DetailRowView(title: "Fee Category", value: transaction.feeCategory)
                     Divider()
                     DetailRowView(title: "Status", value: transaction.status)
                 }

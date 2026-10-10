@@ -98,6 +98,8 @@ fun ReportsPageScreen(
 
             // Total Monthly Spending Card
             val totalSpend = confirmedTx.filter { it.amount != 0.0 }.sumOf { kotlin.math.abs(it.amount) }
+            val totalFees = confirmedTx.sumOf { it.fee }
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
@@ -120,6 +122,53 @@ fun ReportsPageScreen(
                         ),
                         color = RoyalBlue
                     )
+                }
+            }
+
+            // Total Transaction Fees Card (Tracked separately with its own category)
+            if (totalFees > 0) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFDE68A)),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBEB)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                "Total $selectedTimeframe Transaction Fees",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFF92400E)
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = FormatUtil.formatCurrency(totalFees, currencyCode),
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 22.sp
+                                ),
+                                color = Color(0xFFB45309)
+                            )
+                        }
+                        Surface(
+                            color = Color(0xFFFEF3C7),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(
+                                text = "Category: Transaction Fees",
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                                color = Color(0xFF92400E),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
                 }
             }
 
