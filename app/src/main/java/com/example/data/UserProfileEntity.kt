@@ -11,6 +11,7 @@ data class UserProfileEntity(
     val photoUri: String? = null,
     val countryCode: String = "RWANDA",
     val currencyCode: String = "RWF",
+    val languageCode: String = "en",
     val pushNotificationsEnabled: Boolean = true,
     val biometricEnabled: Boolean = false,
     val hasCompletedOnboarding: Boolean = false,

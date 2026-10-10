@@ -33,13 +33,20 @@ import com.example.data.UserProfileEntity
 import com.example.model.Country
 import com.example.ui.theme.RoyalBlue
 
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.ui.platform.LocalContext
+import com.example.model.AppLanguage
+import com.example.ui.util.LocalAppStrings
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileSettingsScreen(
     userProfile: UserProfileEntity?,
     selectedCountry: Country,
+    selectedLanguage: AppLanguage = AppLanguage.ENGLISH,
     isScamFilteringEnabled: Boolean = true,
     onSelectCountry: (Country) -> Unit,
+    onSelectLanguage: (AppLanguage) -> Unit = {},
     onToggleScamFiltering: (Boolean) -> Unit = {},
     onUpdateLockMode: (String) -> Unit,
     onSavePin: (String) -> Unit,
@@ -48,9 +55,13 @@ fun ProfileSettingsScreen(
     onSignOut: () -> Unit,
     onBack: () -> Unit
 ) {
+    val strings = LocalAppStrings.current
+    val context = LocalContext.current
     var showCountryDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
     var showChangePinDialog by remember { mutableStateOf(false) }
     var pendingCountry by remember { mutableStateOf<Country?>(null) }
+    var pendingLanguage by remember { mutableStateOf<AppLanguage?>(null) }
     var pushNotificationsEnabled by remember { mutableStateOf(userProfile?.pushNotificationsEnabled ?: true) }
 
     val currentLockMode = userProfile?.lockMode ?: "PIN"
@@ -58,7 +69,7 @@ fun ProfileSettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings & Profile", fontWeight = FontWeight.Bold) },
+                title = { Text(strings.settingsTitle, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack, modifier = Modifier.testTag("profile_back_button")) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -131,7 +142,7 @@ fun ProfileSettingsScreen(
             }
 
             // Account Settings Section
-            Text("Account Settings", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+            Text(strings.settingsAccountGroup, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -143,19 +154,22 @@ fun ProfileSettingsScreen(
                     // Country & Currency Selector
                     SettingsTile(
                         icon = Icons.Default.Public,
-                        title = "Country & Currency",
+                        title = strings.settingsCountry,
                         subtitle = "${selectedCountry.countryName} (${selectedCountry.currencyCode})",
                         onClick = { showCountryDialog = true }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
-                    // Language Selector
+                    // Language Selector (English & French)
                     SettingsTile(
-                        icon = Icons.Default.Category,
-                        title = "Language",
-                        subtitle = "Change app language",
-                        onClick = { /* App language */ }
+                        icon = Icons.Default.Language,
+                        title = strings.settingsLanguage,
+                        subtitle = "${selectedLanguage.flag}  ${selectedLanguage.displayName} (${selectedLanguage.nativeName})",
+                        onClick = {
+                            pendingLanguage = selectedLanguage
+                            showLanguageDialog = true
+                        }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
@@ -163,8 +177,8 @@ fun ProfileSettingsScreen(
                     // Category Management
                     SettingsTile(
                         icon = Icons.Default.Category,
-                        title = "Category Management",
-                        subtitle = "Manage tags & keyword rules",
+                        title = strings.settingsCategoryManagement,
+                        subtitle = strings.settingsCategorySubtitle,
                         onClick = onNavigateToCategoryManagement
                     )
 
@@ -199,7 +213,7 @@ fun ProfileSettingsScreen(
             }
 
             // Security Group
-            Text("Security & Privacy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+            Text(strings.settingsSecurityGroup, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -220,12 +234,12 @@ fun ProfileSettingsScreen(
                             Icon(Icons.Default.Shield, contentDescription = null, tint = RoyalBlue)
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
-                                Text("MoMo Scam Detection", fontWeight = FontWeight.Bold)
+                                Text(strings.settingsMomoScam, fontWeight = FontWeight.Bold)
                                 Text(
                                     if (isScamFilteringEnabled)
-                                        "Active: Fraudulent messages are filtered"
+                                        if (selectedLanguage == AppLanguage.FRENCH) "Actif : Les SMS frauduleux sont filtrés" else "Active: Fraudulent messages are filtered"
                                     else
-                                        "Turned Off: Scam messages bypass fraud filter",
+                                        if (selectedLanguage == AppLanguage.FRENCH) "Désactivé : Les SMS suspects contournent le filtre" else "Turned Off: Scam messages bypass fraud filter",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -253,8 +267,8 @@ fun ProfileSettingsScreen(
                             Icon(Icons.Default.Fingerprint, contentDescription = null, tint = RoyalBlue)
                             Spacer(modifier = Modifier.width(16.dp))
                             Column {
-                                Text("Biometric / Passcode Lock", fontWeight = FontWeight.Bold)
-                                Text("Use device fingerprint, face, or passcode prompt", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(if (selectedLanguage == AppLanguage.FRENCH) "Verrouillage biométrique" else "Biometric / Passcode Lock", fontWeight = FontWeight.Bold)
+                                Text(if (selectedLanguage == AppLanguage.FRENCH) "Utiliser l'empreinte digitale, le visage ou le code" else "Use device fingerprint, face, or passcode prompt", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                         Spacer(modifier = Modifier.width(12.dp))
@@ -270,7 +284,7 @@ fun ProfileSettingsScreen(
 
                     // Lock Mode Options
                     Text(
-                        "App Lock Mode",
+                        strings.settingsLockMode,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -290,8 +304,8 @@ fun ProfileSettingsScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("5-Digit PIN Required", fontWeight = FontWeight.SemiBold)
-                            Text("Require 5-digit PIN on app launch", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(if (selectedLanguage == AppLanguage.FRENCH) "Code PIN à 5 chiffres requis" else "5-Digit PIN Required", fontWeight = FontWeight.SemiBold)
+                            Text(if (selectedLanguage == AppLanguage.FRENCH) "Exiger le code PIN au démarrage" else "Require 5-digit PIN on app launch", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
 
@@ -309,8 +323,8 @@ fun ProfileSettingsScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("No Lock (Direct Launch)", fontWeight = FontWeight.SemiBold)
-                            Text("Explicitly disable PIN/Biometric prompt on launch", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(if (selectedLanguage == AppLanguage.FRENCH) "Aucun verrouillage (Lancement direct)" else "No Lock (Direct Launch)", fontWeight = FontWeight.SemiBold)
+                            Text(if (selectedLanguage == AppLanguage.FRENCH) "Désactiver le verrouillage au lancement" else "Explicitly disable PIN/Biometric prompt on launch", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
 
@@ -319,8 +333,8 @@ fun ProfileSettingsScreen(
                     // Change PIN tile
                     SettingsTile(
                         icon = Icons.Default.Password,
-                        title = "Change 5-Digit PIN",
-                        subtitle = "Update your local security passcode",
+                        title = strings.settingsChangePin,
+                        subtitle = strings.settingsChangePinSubtitle,
                         onClick = { showChangePinDialog = true }
                     )
                 }
@@ -328,7 +342,7 @@ fun ProfileSettingsScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Outlined Sign Out Button (Matching Image 5)
+            // Outlined Sign Out Button
             OutlinedButton(
                 onClick = onSignOut,
                 modifier = Modifier
@@ -347,13 +361,67 @@ fun ProfileSettingsScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    "Sign Out",
+                    strings.settingsSignOut,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
                     color = Color(0xFFEF4444)
                 )
             }
         }
+    }
+
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = { Text(strings.settingsSelectLanguage, fontWeight = FontWeight.Bold) },
+            text = {
+                Column {
+                    Text(strings.settingsSelectLanguagePrompt)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    AppLanguage.entries.forEach { lang ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    pendingLanguage = lang
+                                }
+                                .padding(vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = (pendingLanguage ?: selectedLanguage) == lang,
+                                onClick = { pendingLanguage = lang }
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "${lang.flag}  ${lang.displayName} (${lang.nativeName})",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        pendingLanguage?.let {
+                            onSelectLanguage(it)
+                            val toastMsg = if (it == AppLanguage.FRENCH) "Langue changée en Français" else "Language changed to English"
+                            android.widget.Toast.makeText(context, toastMsg, android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                        showLanguageDialog = false
+                    }
+                ) {
+                    Text(strings.settingsConfirm, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLanguageDialog = false }) {
+                    Text(strings.settingsCancel)
+                }
+            }
+        )
     }
 
     if (showCountryDialog) {
@@ -391,12 +459,12 @@ fun ProfileSettingsScreen(
                         showCountryDialog = false
                     }
                 ) {
-                    Text("Confirm Change")
+                    Text(strings.settingsConfirm)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showCountryDialog = false }) {
-                    Text("Cancel")
+                    Text(strings.settingsCancel)
                 }
             }
         )

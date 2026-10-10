@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">PromptPay</string>
+    <string name="language_english">Anglais</string>
+    <string name="language_french">Français</string>
+    <string name="settings_language">Langue</string>
+    <string name="select_language">Choisir la langue</string>
+    <string name="confirm">Confirmer</string>
+    <string name="cancel">Annuler</string>
+</resources>

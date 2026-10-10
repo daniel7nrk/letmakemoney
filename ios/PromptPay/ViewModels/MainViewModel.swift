@@ -10,6 +10,7 @@ public final class MainViewModel: ObservableObject {
     @Published public var notifications: [AppNotification] = []
     @Published public var userProfile: UserProfile = UserProfile()
     @Published public var selectedCountry: Country = .rwanda
+    @Published public var selectedLanguage: AppLanguage = .english
     @Published public var isScamFilteringEnabled: Bool = true
     @Published public var isUnlocked: Bool = false
 
@@ -47,12 +48,25 @@ public final class MainViewModel: ObservableObject {
         if let profile = storage.loadUserProfile() {
             self.userProfile = profile
             self.selectedCountry = Country.fromCurrencyCode(profile.currencyCode)
+            self.selectedLanguage = AppLanguage.fromCode(profile.languageCode)
         }
         self.isScamFilteringEnabled = senderManager.isScamFilteringEnabled()
 
         if userProfile.lockMode == "NONE" || userProfile.pinHash == nil {
             self.isUnlocked = true
         }
+    }
+
+    public func selectLanguage(_ language: AppLanguage) {
+        self.selectedLanguage = language
+        var updated = userProfile
+        updated.languageCode = language.rawValue
+        self.userProfile = updated
+        storage.saveUserProfile(updated)
+    }
+
+    public func signOut() {
+        self.isUnlocked = false
     }
 
     // MARK: - Core Automated SMS Ingestion & Fraud Detection

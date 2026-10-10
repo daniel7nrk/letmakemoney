@@ -67,9 +67,12 @@ fun AppNavigation(
     val categories by viewModel.categories.collectAsState()
     val userProfile by viewModel.userProfile.collectAsState()
     val selectedCountry by viewModel.selectedCountry.collectAsState()
+    val selectedLanguage by viewModel.selectedLanguage.collectAsState()
     val isLoadingOlder by viewModel.isLoadingOlder.collectAsState()
     val deepLinkEvent by viewModel.deepLinkEvent.collectAsState()
     val isScamFilteringEnabled by viewModel.isScamFilteringEnabled.collectAsState()
+
+    val strings = com.example.ui.util.AppStrings.get(selectedLanguage)
 
     var initialLaunchHandled by remember { mutableStateOf(false) }
 
@@ -158,131 +161,132 @@ fun AppNavigation(
         Screen.Profile.route
     )
 
-    Scaffold(
-        bottomBar = {
-            if (isBottomBarVisible) {
-                NavigationBar(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                    tonalElevation = 8.dp,
-                    windowInsets = NavigationBarDefaults.windowInsets
-                ) {
-                    // 1. Home
-                    NavigationBarItem(
-                        selected = currentRoute == Screen.Home.route,
-                        onClick = {
-                            navController.navigate(Screen.Home.route) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                        label = { Text("Home", maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Home.route) FontWeight.Bold else FontWeight.Normal) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = RoyalBlue,
-                            selectedTextColor = RoyalBlue,
-                            unselectedTextColor = Color(0xFF64748B),
-                            indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+    CompositionLocalProvider(com.example.ui.util.LocalAppStrings provides strings) {
+        Scaffold(
+            bottomBar = {
+                if (isBottomBarVisible) {
+                    NavigationBar(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                        tonalElevation = 8.dp,
+                        windowInsets = NavigationBarDefaults.windowInsets
+                    ) {
+                        // 1. Home
+                        NavigationBarItem(
+                            selected = currentRoute == Screen.Home.route,
+                            onClick = {
+                                navController.navigate(Screen.Home.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                            label = { Text(strings.navHome, maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Home.route) FontWeight.Bold else FontWeight.Normal) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = RoyalBlue,
+                                selectedTextColor = RoyalBlue,
+                                unselectedTextColor = Color(0xFF64748B),
+                                indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                            )
                         )
-                    )
 
-                    // 2. Transactions
-                    NavigationBarItem(
-                        selected = currentRoute == Screen.Transactions.route,
-                        onClick = {
-                            navController.navigate(Screen.Transactions.route) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(Icons.Default.ReceiptLong, contentDescription = "Transactions") },
-                        label = { Text("Transactions", maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Transactions.route) FontWeight.Bold else FontWeight.Normal) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = RoyalBlue,
-                            selectedTextColor = RoyalBlue,
-                            unselectedTextColor = Color(0xFF64748B),
-                            indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                        // 2. Transactions
+                        NavigationBarItem(
+                            selected = currentRoute == Screen.Transactions.route,
+                            onClick = {
+                                navController.navigate(Screen.Transactions.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = { Icon(Icons.Default.ReceiptLong, contentDescription = "Transactions") },
+                            label = { Text(strings.navTransactions, maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Transactions.route) FontWeight.Bold else FontWeight.Normal) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = RoyalBlue,
+                                selectedTextColor = RoyalBlue,
+                                unselectedTextColor = Color(0xFF64748B),
+                                indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                            )
                         )
-                    )
 
-                    // 3. Center Add Button
-                    NavigationBarItem(
-                        selected = currentRoute == Screen.AddTransaction.route,
-                        onClick = {
-                            navController.navigate(Screen.AddTransaction.route) {
-                                launchSingleTop = true
-                            }
-                        },
-                        icon = {
-                            Box(
-                                modifier = Modifier
-                                    .size(width = 46.dp, height = 32.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(RoyalBlue)
-                                    .testTag("fab_add_transaction"),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Default.Add,
-                                    contentDescription = "Add Transaction",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        },
-                        label = { Text("Add", maxLines = 1, fontSize = 11.sp, color = RoyalBlue, fontWeight = FontWeight.Bold) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = RoyalBlue,
-                            selectedTextColor = RoyalBlue,
-                            unselectedTextColor = RoyalBlue,
-                            indicatorColor = Color.Transparent
+                        // 3. Center Add Button
+                        NavigationBarItem(
+                            selected = currentRoute == Screen.AddTransaction.route,
+                            onClick = {
+                                navController.navigate(Screen.AddTransaction.route) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            icon = {
+                                Box(
+                                    modifier = Modifier
+                                        .size(width = 46.dp, height = 32.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(RoyalBlue)
+                                        .testTag("fab_add_transaction"),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Default.Add,
+                                        contentDescription = "Add Transaction",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            },
+                            label = { Text(if (selectedLanguage == com.example.model.AppLanguage.FRENCH) "Ajouter" else "Add", maxLines = 1, fontSize = 11.sp, color = RoyalBlue, fontWeight = FontWeight.Bold) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = RoyalBlue,
+                                selectedTextColor = RoyalBlue,
+                                unselectedTextColor = RoyalBlue,
+                                indicatorColor = Color.Transparent
+                            )
                         )
-                    )
 
-                    // 4. Reports
-                    NavigationBarItem(
-                        selected = currentRoute == Screen.Reports.route,
-                        onClick = {
-                            navController.navigate(Screen.Reports.route) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(Icons.Default.BarChart, contentDescription = "Reports") },
-                        label = { Text("Reports", maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Reports.route) FontWeight.Bold else FontWeight.Normal) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = RoyalBlue,
-                            selectedTextColor = RoyalBlue,
-                            unselectedTextColor = Color(0xFF64748B),
-                            indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                        // 4. Reports
+                        NavigationBarItem(
+                            selected = currentRoute == Screen.Reports.route,
+                            onClick = {
+                                navController.navigate(Screen.Reports.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = { Icon(Icons.Default.BarChart, contentDescription = "Reports") },
+                            label = { Text(strings.navReports, maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Reports.route) FontWeight.Bold else FontWeight.Normal) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = RoyalBlue,
+                                selectedTextColor = RoyalBlue,
+                                unselectedTextColor = Color(0xFF64748B),
+                                indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                            )
                         )
-                    )
 
-                    // 5. Profile
-                    NavigationBarItem(
-                        selected = currentRoute == Screen.Profile.route,
-                        onClick = {
-                            navController.navigate(Screen.Profile.route) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                        label = { Text("Profile", maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Profile.route) FontWeight.Bold else FontWeight.Normal) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = RoyalBlue,
-                            selectedTextColor = RoyalBlue,
-                            unselectedTextColor = Color(0xFF64748B),
-                            indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                        // 5. Profile / Settings
+                        NavigationBarItem(
+                            selected = currentRoute == Screen.Profile.route,
+                            onClick = {
+                                navController.navigate(Screen.Profile.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+                            label = { Text(strings.navSettings, maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Profile.route) FontWeight.Bold else FontWeight.Normal) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = RoyalBlue,
+                                selectedTextColor = RoyalBlue,
+                                unselectedTextColor = Color(0xFF64748B),
+                                indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                            )
                         )
-                    )
+                    }
                 }
             }
-        }
-    ) { innerPadding ->
+        ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = Screen.Welcome.route,
@@ -436,8 +440,10 @@ fun AppNavigation(
                 ProfileSettingsScreen(
                     userProfile = userProfile,
                     selectedCountry = selectedCountry,
+                    selectedLanguage = selectedLanguage,
                     isScamFilteringEnabled = isScamFilteringEnabled,
                     onSelectCountry = { viewModel.selectCountry(it) },
+                    onSelectLanguage = { viewModel.selectLanguage(it) },
                     onToggleScamFiltering = { viewModel.setScamFilteringEnabled(it) },
                     onUpdateLockMode = { mode -> viewModel.updateLockMode(mode) },
                     onSavePin = { pin -> viewModel.savePin(pin) },
@@ -586,4 +592,5 @@ fun AppNavigation(
             }
         )
     }
+}
 }

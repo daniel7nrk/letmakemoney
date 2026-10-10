@@ -7,6 +7,7 @@ public struct UserProfile: Identifiable, Codable, Equatable {
     public var photoUri: String?
     public var countryCode: String
     public var currencyCode: String
+    public var languageCode: String
     public var pushNotificationsEnabled: Bool
     public var biometricEnabled: Bool
     public var hasCompletedOnboarding: Bool
@@ -20,6 +21,7 @@ public struct UserProfile: Identifiable, Codable, Equatable {
         photoUri: String? = nil,
         countryCode: String = "RWANDA",
         currencyCode: String = "RWF",
+        languageCode: String = "en",
         pushNotificationsEnabled: Bool = true,
         biometricEnabled: Bool = false,
         hasCompletedOnboarding: Bool = false,
@@ -32,6 +34,7 @@ public struct UserProfile: Identifiable, Codable, Equatable {
         self.photoUri = photoUri
         self.countryCode = countryCode
         self.currencyCode = currencyCode
+        self.languageCode = languageCode
         self.pushNotificationsEnabled = pushNotificationsEnabled
         self.biometricEnabled = biometricEnabled
         self.hasCompletedOnboarding = hasCompletedOnboarding

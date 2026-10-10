@@ -10,21 +10,20 @@ public struct MainTabView: View {
     }
 
     public var body: some View {
-        ZStack(alignment: .bottom) {
+        let strings = AppStrings.get(viewModel.selectedLanguage)
+
+        return ZStack(alignment: .bottom) {
             // Main content depending on selected tab
             Group {
                 switch selectedTab {
                 case 0:
-                    // Home / Dashboard placeholder or view
                     TransactionsView(viewModel: viewModel)
                 case 1:
                     TransactionsView(viewModel: viewModel)
                 case 2:
-                    // Reports placeholder or view
                     TransactionsView(viewModel: viewModel)
                 case 3:
-                    // Settings / Profile
-                    CountrySelectionView(viewModel: viewModel)
+                    ProfileSettingsView(viewModel: viewModel)
                 default:
                     TransactionsView(viewModel: viewModel)
                 }
@@ -38,7 +37,7 @@ public struct MainTabView: View {
                     // Home
                     TabBarItem(
                         icon: "house.fill",
-                        title: "Home",
+                        title: strings.navHome,
                         isSelected: selectedTab == 0
                     ) {
                         selectedTab = 0
@@ -47,7 +46,7 @@ public struct MainTabView: View {
                     // Transactions
                     TabBarItem(
                         icon: "list.bullet.rectangle.fill",
-                        title: "Transactions",
+                        title: strings.navTransactions,
                         isSelected: selectedTab == 1
                     ) {
                         selectedTab = 1
@@ -74,7 +73,7 @@ public struct MainTabView: View {
                     // Reports
                     TabBarItem(
                         icon: "chart.pie.fill",
-                        title: "Reports",
+                        title: strings.navReports,
                         isSelected: selectedTab == 2
                     ) {
                         selectedTab = 2
@@ -83,7 +82,7 @@ public struct MainTabView: View {
                     // Settings / More
                     TabBarItem(
                         icon: "gearshape.fill",
-                        title: "Settings",
+                        title: strings.navSettings,
                         isSelected: selectedTab == 3
                     ) {
                         selectedTab = 3

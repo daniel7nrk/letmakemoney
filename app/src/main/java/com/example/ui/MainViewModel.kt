@@ -37,6 +37,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     )
 
     val selectedCountry: MutableStateFlow<Country> = MutableStateFlow(Country.RWANDA)
+    val selectedLanguage: MutableStateFlow<com.example.model.AppLanguage> = MutableStateFlow(com.example.model.AppLanguage.ENGLISH)
 
     val isLoadingOlder: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -99,6 +100,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 if (profile != null) {
                     val country = Country.fromCurrencyCode(profile.currencyCode)
                     selectedCountry.value = country
+                    selectedLanguage.value = com.example.model.AppLanguage.fromCode(profile.languageCode)
                 }
             }
         }
@@ -112,6 +114,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 countryCode = country.countryName,
                 currencyCode = country.currencyCode
             )
+            repository.updateUserProfile(updated)
+        }
+    }
+
+    fun selectLanguage(language: com.example.model.AppLanguage) {
+        selectedLanguage.value = language
+        viewModelScope.launch {
+            val current = userProfile.value ?: UserProfileEntity(id = 1)
+            val updated = current.copy(languageCode = language.code)
             repository.updateUserProfile(updated)
         }
     }
