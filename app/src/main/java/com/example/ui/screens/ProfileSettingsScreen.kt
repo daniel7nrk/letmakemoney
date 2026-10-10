@@ -208,6 +208,39 @@ fun ProfileSettingsScreen(
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                    // MoMo Scam Detection Switch
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                            Icon(Icons.Default.Shield, contentDescription = null, tint = RoyalBlue)
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text("MoMo Scam Detection", fontWeight = FontWeight.Bold)
+                                Text(
+                                    if (isScamFilteringEnabled)
+                                        "Active: Fraudulent messages are filtered"
+                                    else
+                                        "Turned Off: Scam messages bypass fraud filter",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Switch(
+                            checked = isScamFilteringEnabled,
+                            onCheckedChange = onToggleScamFiltering,
+                            modifier = Modifier.testTag("scam_filtering_toggle_button")
+                        )
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
                     // Biometric Switch
                     Row(
                         modifier = Modifier
