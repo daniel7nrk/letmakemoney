@@ -483,10 +483,16 @@
 
             // Check if email confirmation is required or session exists
             if (data?.session) {
+              localStorage.setItem('rapport:profile', JSON.stringify({
+                name: name,
+                email: email,
+                role: "Account Executive",
+                quota: 420000
+              }));
               showAlert("Account created successfully! Redirecting...", false);
               setTimeout(() => {
                 window.location.href = 'index.html';
-              }, 1200);
+              }, 1000);
             } else {
               showAlert("Account created! Check your email to confirm registration or sign in.", false);
               btnSubmit.disabled = false;
@@ -519,10 +525,19 @@
               return;
             }
 
+            const user = data.user;
+            const userName = user?.user_metadata?.full_name || email.split('@')[0];
+            localStorage.setItem('rapport:profile', JSON.stringify({
+              name: userName,
+              email: email,
+              role: user?.user_metadata?.role || "Account Executive",
+              quota: 420000
+            }));
+
             showAlert("Welcome back! Redirecting...", false);
             setTimeout(() => {
               window.location.href = 'index.html';
-            }, 1000);
+            }, 800);
           } catch (err) {
             showAlert(err.message || "An unexpected error occurred.");
             btnSubmit.disabled = false;

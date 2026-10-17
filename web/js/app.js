@@ -1,4 +1,4 @@
-// Navigation and Interactive Controller with Supabase Integration
+// Navigation and Interactive Controller with Ubiquitous User Profile Sync
 import { getSupabase } from './supabaseClient.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -7,16 +7,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const supabase = getSupabase();
 
-  // --- Supabase User Auth State ---
+  // --- Element References for User Profile Everywhere ---
   const authLink = document.getElementById('btn-auth-link');
   const authLinkText = document.getElementById('auth-link-text');
-  const meName = document.getElementById('me-name-display');
-  const meRole = document.getElementById('me-role-display');
-  const meMail = document.getElementById('me-email-text');
-  const meAvatar = document.querySelector('.set-me__face .av');
-  const topAvatar = document.querySelector('.me img');
+  const meNameDisplay = document.getElementById('me-name-display');
+  const meRoleDisplay = document.getElementById('me-role-display');
+  const meEmailText = document.getElementById('me-email-text');
+  const leftAvatarImg = document.getElementById('left-avatar-img');
+  const topAvatarImg = document.getElementById('top-avatar-img');
+  const btnMe = document.getElementById('btn-me');
 
-  let currentUser = null;
+  const formProfile = document.getElementById('form-profile');
+  const inputName = document.getElementById('set-name');
+  const inputEmail = document.getElementById('set-email');
+  const selectRole = document.getElementById('set-role');
+  const inputQuota = document.getElementById('set-quota');
+  const btnSave = document.getElementById('btn-save');
+  const btnDiscard = document.getElementById('btn-discard');
+  const profileDirty = document.getElementById('profile-dirty');
+
+  // Default state
   let profileState = {
     name: "Sofia Reyes",
     email: "sofia@rapport.app",
@@ -24,23 +34,67 @@ document.addEventListener('DOMContentLoaded', async () => {
     quota: 420000
   };
 
+  // 1. Restore from localStorage first (Instant display without network lag)
+  try {
+    const saved = localStorage.getItem('rapport:profile');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      profileState = { ...profileState, ...parsed };
+    }
+  } catch (e) {}
+
+  // Function to reflect user profile in every single place across the UI
+  function applyProfileEverywhere(profile) {
+    if (meNameDisplay) meNameDisplay.textContent = profile.name;
+    if (meRoleDisplay) meRoleDisplay.textContent = profile.role;
+    if (meEmailText) meEmailText.textContent = profile.email;
+
+    if (inputName && document.activeElement !== inputName) inputName.value = profile.name;
+    if (inputEmail && document.activeElement !== inputEmail) inputEmail.value = profile.email;
+    if (selectRole && document.activeElement !== selectRole) selectRole.value = profile.role;
+    if (inputQuota && document.activeElement !== inputQuota) inputQuota.value = profile.quota;
+
+    if (leftAvatarImg) {
+      leftAvatarImg.alt = profile.name;
+      leftAvatarImg.title = profile.name;
+    }
+    if (topAvatarImg) {
+      topAvatarImg.alt = profile.name;
+      topAvatarImg.title = profile.name;
+    }
+    if (btnMe) {
+      btnMe.setAttribute('aria-label', `${profile.name} account`);
+      btnMe.setAttribute('title', profile.name);
+    }
+  }
+
+  // Initial render from state
+  applyProfileEverywhere(profileState);
+
+  // 2. Sync with Supabase Auth Session
+  let currentUser = null;
   if (supabase) {
     try {
       const { data } = await supabase.auth.getSession();
       if (data?.session?.user) {
         currentUser = data.session.user;
         const metaName = currentUser.user_metadata?.full_name;
+        const metaRole = currentUser.user_metadata?.role;
+
         profileState.name = metaName || currentUser.email.split('@')[0];
         profileState.email = currentUser.email;
+        if (metaRole) profileState.role = metaRole;
 
-        if (meName) meName.textContent = profileState.name;
-        if (meMail) meMail.textContent = profileState.email;
+        localStorage.setItem('rapport:profile', JSON.stringify(profileState));
+        applyProfileEverywhere(profileState);
+
         if (authLinkText) authLinkText.textContent = "Sign Out";
         if (authLink) {
           authLink.href = "#";
           authLink.addEventListener('click', async (e) => {
             e.preventDefault();
             await supabase.auth.signOut();
+            localStorage.removeItem('rapport:profile');
             window.location.reload();
           });
         }
@@ -48,6 +102,95 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (err) {
       console.warn("Supabase session check error:", err);
     }
+  }
+
+  // 3. Live Synchronization: as user types in the form, update everywhere in real-time
+  function checkDirty() {
+    const isDirty = (
+      inputName.value.trim() !== profileState.name ||
+      inputEmail.value.trim() !== profileState.email ||
+      selectRole.value !== profileState.role ||
+      Number(inputQuota.value) !== profileState.quota
+    );
+
+    if (btnSave) btnSave.disabled = !isDirty;
+    if (btnDiscard) btnDiscard.disabled = !isDirty;
+    if (profileDirty) profileDirty.textContent = isDirty ? 'Unsaved changes' : '';
+  }
+
+  if (inputName) {
+    inputName.addEventListener('input', () => {
+      const val = inputName.value.trim() || "Your Name";
+      if (meNameDisplay) meNameDisplay.textContent = val;
+      if (leftAvatarImg) leftAvatarImg.title = val;
+      if (topAvatarImg) topAvatarImg.title = val;
+      checkDirty();
+    });
+  }
+
+  if (inputEmail) {
+    inputEmail.addEventListener('input', () => {
+      const val = inputEmail.value.trim() || "your@email.com";
+      if (meEmailText) meEmailText.textContent = val;
+      checkDirty();
+    });
+  }
+
+  if (selectRole) {
+    selectRole.addEventListener('change', () => {
+      if (meRoleDisplay) meRoleDisplay.textContent = selectRole.value;
+      checkDirty();
+    });
+  }
+
+  if (inputQuota) {
+    inputQuota.addEventListener('input', checkDirty);
+  }
+
+  if (btnDiscard) {
+    btnDiscard.addEventListener('click', () => {
+      applyProfileEverywhere(profileState);
+      checkDirty();
+    });
+  }
+
+  if (formProfile) {
+    formProfile.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newName = inputName.value.trim() || profileState.name;
+      const newEmail = inputEmail.value.trim() || profileState.email;
+      const newRole = selectRole.value;
+      const newQuota = Number(inputQuota.value) || profileState.quota;
+
+      profileState = {
+        name: newName,
+        email: newEmail,
+        role: newRole,
+        quota: newQuota
+      };
+
+      localStorage.setItem('rapport:profile', JSON.stringify(profileState));
+      applyProfileEverywhere(profileState);
+
+      // Persist to Supabase if session active
+      if (currentUser && supabase) {
+        try {
+          await supabase.auth.updateUser({
+            data: { full_name: newName, role: newRole }
+          });
+        } catch (err) {
+          console.warn("Failed to persist user update in Supabase:", err);
+        }
+      }
+
+      checkDirty();
+      if (profileDirty) {
+        profileDirty.textContent = "Saved!";
+        setTimeout(() => {
+          if (profileDirty.textContent === "Saved!") profileDirty.textContent = "";
+        }, 2000);
+      }
+    });
   }
 
   // --- Top Navigation Tabs Routing ---
@@ -183,85 +326,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     });
   });
-
-  // --- Profile Form Interaction ---
-  const formProfile = document.getElementById('form-profile');
-  const inputName = document.getElementById('set-name');
-  const inputEmail = document.getElementById('set-email');
-  const selectRole = document.getElementById('set-role');
-  const inputQuota = document.getElementById('set-quota');
-  const btnSave = document.getElementById('btn-save');
-  const btnDiscard = document.getElementById('btn-discard');
-  const profileDirty = document.getElementById('profile-dirty');
-
-  // Sync inputs with profile state
-  if (inputName) inputName.value = profileState.name;
-  if (inputEmail) inputEmail.value = profileState.email;
-  if (selectRole) selectRole.value = profileState.role;
-  if (inputQuota) inputQuota.value = profileState.quota;
-
-  function checkDirty() {
-    const isDirty = (
-      inputName.value.trim() !== profileState.name ||
-      inputEmail.value.trim() !== profileState.email ||
-      selectRole.value !== profileState.role ||
-      Number(inputQuota.value) !== profileState.quota
-    );
-
-    if (btnSave) btnSave.disabled = !isDirty;
-    if (btnDiscard) btnDiscard.disabled = !isDirty;
-    if (profileDirty) profileDirty.textContent = isDirty ? 'Unsaved changes' : '';
-  }
-
-  [inputName, inputEmail, selectRole, inputQuota].forEach(el => {
-    if (!el) return;
-    el.addEventListener('input', checkDirty);
-    el.addEventListener('change', checkDirty);
-  });
-
-  if (btnDiscard) {
-    btnDiscard.addEventListener('click', () => {
-      inputName.value = profileState.name;
-      inputEmail.value = profileState.email;
-      selectRole.value = profileState.role;
-      inputQuota.value = profileState.quota;
-      checkDirty();
-    });
-  }
-
-  if (formProfile) {
-    formProfile.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const newName = inputName.value.trim() || profileState.name;
-      const newEmail = inputEmail.value.trim() || profileState.email;
-      const newRole = selectRole.value;
-      const newQuota = Number(inputQuota.value) || profileState.quota;
-
-      profileState = {
-        name: newName,
-        email: newEmail,
-        role: newRole,
-        quota: newQuota
-      };
-
-      if (meName) meName.textContent = profileState.name;
-      if (meRole) meRole.textContent = profileState.role;
-      if (meMail) meMail.textContent = profileState.email;
-
-      // If logged in with Supabase, persist updated profile metadata
-      if (currentUser && supabase) {
-        try {
-          await supabase.auth.updateUser({
-            data: { full_name: newName, role: newRole }
-          });
-        } catch (err) {
-          console.warn("Failed to persist user update in Supabase:", err);
-        }
-      }
-
-      checkDirty();
-    });
-  }
 
   // --- Theme Toggle ---
   const btnTheme = document.getElementById('btn-theme-toggle');

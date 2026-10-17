@@ -138,7 +138,7 @@
           <span class="dot-badge" id="bell-badge"></span>
         </button>
         <button type="button" class="me magnetic" id="btn-me" aria-label="Account menu">
-          <img src="photos/168-rapport/sofia-reyes-sm.jpg" width="40" height="40" alt="Sofia Reyes" />
+          <img src="photos/168-rapport/sofia-reyes-sm.jpg" width="40" height="40" alt="Sofia Reyes" id="top-avatar-img" />
         </button>
       </div>
     </header>
@@ -270,17 +270,17 @@
           <!-- Left Column: User Profile Aside Card -->
           <aside class="card set-me" aria-label="Your profile" data-me>
             <div class="set-me__face">
-              <img class="av av--xl" src="photos/168-rapport/sofia-reyes.jpg" width="120" height="120" alt="Sofia Reyes" loading="lazy" decoding="async" title="Sofia Reyes" />
+              <img class="av av--xl" id="left-avatar-img" src="photos/168-rapport/sofia-reyes.jpg" width="120" height="120" alt="Sofia Reyes" loading="lazy" decoding="async" title="Sofia Reyes" />
               <span class="set-me__dot" title="Online" aria-label="Online" role="img"></span>
             </div>
-            <h2 class="set-me__name" data-me-name>Sofia Reyes</h2>
-            <p class="set-me__role" data-me-role>Account Executive</p>
-            <p class="set-me__mail" data-me-mail>
+            <h2 class="set-me__name" data-me-name id="me-name-display">Sofia Reyes</h2>
+            <p class="set-me__role" data-me-role id="me-role-display">Account Executive</p>
+            <p class="set-me__mail" data-me-mail id="me-mail-display">
               <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
                 <rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/>
                 <path d="m4 7 8 6 8-6"/>
               </svg>
-              sofia@rapport.app
+              <span id="me-email-text">sofia@rapport.app</span>
             </p>
 
             <!-- Quota Attainment Tile -->
