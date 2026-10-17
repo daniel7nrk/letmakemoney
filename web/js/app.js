@@ -1,8 +1,54 @@
-// Navigation and Interactive Controller for Rapport Duplicate
+// Navigation and Interactive Controller with Supabase Integration
+import { getSupabase } from './supabaseClient.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Ensure html has js and is-ready classes for Rapport styling
   document.documentElement.classList.add('js', 'is-ready');
+
+  const supabase = getSupabase();
+
+  // --- Supabase User Auth State ---
+  const authLink = document.getElementById('btn-auth-link');
+  const authLinkText = document.getElementById('auth-link-text');
+  const meName = document.getElementById('me-name-display');
+  const meRole = document.getElementById('me-role-display');
+  const meMail = document.getElementById('me-email-text');
+  const meAvatar = document.querySelector('.set-me__face .av');
+  const topAvatar = document.querySelector('.me img');
+
+  let currentUser = null;
+  let profileState = {
+    name: "Sofia Reyes",
+    email: "sofia@rapport.app",
+    role: "Account Executive",
+    quota: 420000
+  };
+
+  if (supabase) {
+    try {
+      const { data } = await supabase.auth.getSession();
+      if (data?.session?.user) {
+        currentUser = data.session.user;
+        const metaName = currentUser.user_metadata?.full_name;
+        profileState.name = metaName || currentUser.email.split('@')[0];
+        profileState.email = currentUser.email;
+
+        if (meName) meName.textContent = profileState.name;
+        if (meMail) meMail.textContent = profileState.email;
+        if (authLinkText) authLinkText.textContent = "Sign Out";
+        if (authLink) {
+          authLink.href = "#";
+          authLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await supabase.auth.signOut();
+            window.location.reload();
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("Supabase session check error:", err);
+    }
+  }
 
   // --- Top Navigation Tabs Routing ---
   const topTabs = document.querySelectorAll('.tabs .tab');
@@ -37,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Update active state in top tabs
     let foundTab = null;
     topTabs.forEach(t => {
       if (t.dataset.target === targetName) {
@@ -148,16 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSave = document.getElementById('btn-save');
   const btnDiscard = document.getElementById('btn-discard');
   const profileDirty = document.getElementById('profile-dirty');
-  const meName = document.getElementById('me-name-display');
-  const meRole = document.getElementById('me-role-display');
-  const meMail = document.getElementById('me-email-text');
 
-  let profileState = {
-    name: "Sofia Reyes",
-    email: "sofia@rapport.app",
-    role: "Account Executive",
-    quota: 420000
-  };
+  // Sync inputs with profile state
+  if (inputName) inputName.value = profileState.name;
+  if (inputEmail) inputEmail.value = profileState.email;
+  if (selectRole) selectRole.value = profileState.role;
+  if (inputQuota) inputQuota.value = profileState.quota;
 
   function checkDirty() {
     const isDirty = (
@@ -189,17 +230,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (formProfile) {
-    formProfile.addEventListener('submit', (e) => {
+    formProfile.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const newName = inputName.value.trim() || profileState.name;
+      const newEmail = inputEmail.value.trim() || profileState.email;
+      const newRole = selectRole.value;
+      const newQuota = Number(inputQuota.value) || profileState.quota;
+
       profileState = {
-        name: inputName.value.trim() || profileState.name,
-        email: inputEmail.value.trim() || profileState.email,
-        role: selectRole.value,
-        quota: Number(inputQuota.value) || profileState.quota
+        name: newName,
+        email: newEmail,
+        role: newRole,
+        quota: newQuota
       };
+
       if (meName) meName.textContent = profileState.name;
       if (meRole) meRole.textContent = profileState.role;
       if (meMail) meMail.textContent = profileState.email;
+
+      // If logged in with Supabase, persist updated profile metadata
+      if (currentUser && supabase) {
+        try {
+          await supabase.auth.updateUser({
+            data: { full_name: newName, role: newRole }
+          });
+        } catch (err) {
+          console.warn("Failed to persist user update in Supabase:", err);
+        }
+      }
+
       checkDirty();
     });
   }
