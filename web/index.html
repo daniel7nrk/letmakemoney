@@ -1,26 +1,162 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
+<!doctype html>
+<html lang="en" class="js is-ready" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>PromptPay — Mobile Money & Bank Expense Intelligence</title>
-  
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ebe8e1">
-  <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
-  
-  <!-- Urbanist Font & Rapport Design System -->
+  <title>Rapport — Workspace Settings</title>
+  <meta name="theme-color" content="#ebe8e1" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400..700&display=swap" rel="stylesheet" />
-  
-  <link rel="stylesheet" href="css/rapport.css">
-  <link rel="stylesheet" href="css/rapport-settings.css">
-  <link rel="stylesheet" href="css/theme-override.css">
+  <link rel="stylesheet" href="css/rapport.css" />
+  <link rel="stylesheet" href="css/rapport-settings.css" />
+  <style>
+    /* Custom enhancements for the duplicate page */
+    .cc-preview-pill {
+      position: fixed;
+      right: max(16px, env(safe-area-inset-right));
+      bottom: max(16px, env(safe-area-inset-bottom));
+      z-index: 2147483647;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 14px;
+      box-sizing: border-box;
+      background: #ff5c3d;
+      color: #161616;
+      font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 2px solid #fff;
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, .35);
+      border-radius: 4px;
+      transition: background 0.15s ease;
+    }
+    .cc-preview-pill:hover {
+      background: #ff7a5f;
+    }
+    .dock__btn[aria-current="page"] {
+      position: relative;
+    }
+    .dock__btn[aria-current="page"]:after {
+      content: "";
+      background: #fff;
+      border-radius: 50%;
+      width: 5px;
+      height: 5px;
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .tabs__pill {
+      position: absolute;
+      background: var(--ink);
+      border-radius: 999px;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1;
+      opacity: 0;
+    }
+    .set-nav__pill {
+      position: absolute;
+      background: var(--glass-3);
+      border-radius: 999px;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      z-index: 0;
+    }
+    :root[data-theme="dark"] .set-nav__pill {
+      background: rgba(255, 255, 255, 0.14);
+    }
+    .seg {
+      background: var(--well);
+      border-radius: 999px;
+      padding: 3px;
+      display: inline-flex;
+      gap: 2px;
+    }
+    .seg__btn {
+      border: none;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .seg__btn[aria-checked="true"],
+    .seg__btn.active {
+      background: var(--glass-3);
+      color: var(--text);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    :root[data-theme="dark"] .seg__btn.active {
+      background: rgba(255, 255, 255, 0.18);
+    }
+    .switch {
+      width: 44px;
+      height: 24px;
+      background: var(--line-2);
+      border: none;
+      border-radius: 999px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      flex-shrink: 0;
+    }
+    .switch:after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .switch[aria-checked="true"] {
+      background: var(--pine);
+    }
+    .switch[aria-checked="true"]:after {
+      transform: translateX(20px);
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--pill);
+      color: var(--on-pill);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-pop);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+    }
+    .toast.is-show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+  </style>
 </head>
 <body>
-
-  <!-- Ambient Mesh Gradient -->
+  <!-- Ambient Gradient Mesh Background -->
   <div class="mesh" aria-hidden="true">
     <i class="mesh__a"></i>
     <i class="mesh__b"></i>
@@ -28,770 +164,534 @@
   </div>
 
   <div class="app">
-    
-    <!-- Top Bar -->
+    <!-- Top Header -->
     <header class="top">
-      <a class="brand" href="#/dashboard" aria-label="PromptPay — Dashboard">
-        <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M7 4.5h6.5a5 5 0 0 1 0 10H7z"/><path d="M11.5 14.5l5 5M7 4.5v15"/></svg>
-        </span>
-        <span class="brand__name">promptpay</span>
+      <a class="brand magnetic" href="#" aria-label="Rapport">
+        <span class="brand__mark" aria-hidden="true">R</span>
+        <span class="brand__name">rapport</span>
       </a>
 
-      <!-- Center Tabs Pill -->
-      <nav class="tabs" aria-label="Main Navigation">
+      <!-- Center Nav Tabs -->
+      <nav class="tabs" aria-label="Main">
         <div class="tabs__track">
-          <a class="tab active" href="#/dashboard" data-route="dashboard" id="tab-nav-dashboard">Overview</a>
-          <a class="tab" href="#/transactions" data-route="transactions" id="tab-nav-transactions">Transactions</a>
-          <a class="tab" href="#/pending-review" data-route="pending-review" id="tab-nav-pending">Pending</a>
-          <a class="tab" href="#/reports" data-route="reports" id="tab-nav-reports">Reports</a>
-          <a class="tab" href="#/scam-alerts" data-route="scam-alerts" id="tab-nav-scams">Scam Defense</a>
-          <a class="tab" href="#/categories" data-route="categories" id="tab-nav-categories">Categories</a>
-          <a class="tab" href="#/settings" data-route="settings" id="tab-nav-settings">Settings</a>
+          <a class="tab" href="#/overview" data-route="overview">Overview</a>
+          <a class="tab" href="#/pipeline" data-route="pipeline">Pipeline</a>
+          <a class="tab" href="#/customers" data-route="customers">Customers</a>
+          <a class="tab" href="#/schedule" data-route="schedule">Schedule</a>
+          <a class="tab" href="#/finance" data-route="finance">Finance</a>
+          <a class="tab" href="#/growth" data-route="growth">Growth</a>
+          <a class="tab" href="#/projects" data-route="projects">Projects</a>
+          <span class="tabs__pill" aria-hidden="true"></span>
         </div>
       </nav>
 
-      <!-- Top Tools -->
+      <!-- Right Header Actions -->
       <div class="top__tools">
-        <button type="button" class="ibtn ibtn--glass" id="btn-quick-sim" aria-label="Simulate SMS" title="Simulate Incoming SMS">
-          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <button type="button" class="ibtn ibtn--glass magnetic" id="btn-activity" aria-label="Activity" title="Activity">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 13.5 6.3 6a2 2 0 0 1 1.9-1.5h7.6A2 2 0 0 1 17.7 6l2.3 7.5V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>
+            <path d="M4 13.5h4.5l1.5 2.5h4l1.5-2.5H20"/>
+          </svg>
         </button>
-        <button type="button" class="ibtn ibtn--glass" id="btn-quick-scam" aria-label="Alerts" title="Fraud Alerts">
-          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>
-          <span class="dot-badge" id="bell-badge" style="display:none;"></span>
+        <button type="button" class="ibtn ibtn--glass magnetic" id="btn-bell" aria-label="Notifications" title="Notifications">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/>
+            <path d="M10 20.5a2 2 0 0 0 4 0"/>
+          </svg>
+          <span class="dot-badge" id="bell-badge"></span>
         </button>
-        <button type="button" class="me" id="btn-user-avatar" aria-label="Account profile">
-          <div style="width:100%;height:100%;border-radius:50%;background:#cfdfcd;display:grid;place-items:center;font-weight:700;color:#2f5c50;font-size:15px;" id="user-avatar-text">JD</div>
+        <button type="button" class="me magnetic" id="btn-me" aria-label="Account menu">
+          <img src="/rapport/photos/168-rapport/sofia-reyes-sm.jpg" width="40" height="40" alt="Sofia Reyes" />
         </button>
       </div>
     </header>
 
-    <!-- Floating Dock -->
-    <nav class="dock" aria-label="Quick Navigation">
-      <button type="button" class="dock__btn" data-route="dashboard" aria-label="Dashboard">
-        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-        <span class="dock__tip">Overview</span>
+    <!-- Floating Left Dock -->
+    <nav class="dock" aria-label="Quick actions">
+      <button type="button" class="dock__btn" data-act="search" aria-label="Search (⌘K)">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5"/>
+          <path d="m16 16 4 4"/>
+        </svg>
+        <span class="dock__tip">Search <kbd>⌘K</kbd></span>
       </button>
-      <button type="button" class="dock__btn" data-act="add-tx" aria-label="Add Transaction">
-        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        <span class="dock__tip">New Entry</span>
+      <button type="button" class="dock__btn" data-act="new" aria-label="Create new">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <span class="dock__tip">Create</span>
       </button>
-      <button type="button" class="dock__btn" data-route="transactions" aria-label="Transactions">
-        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-8"/><path d="M16 12h-8"/><path d="M10 16H8"/></svg>
-        <span class="dock__tip">Transactions</span>
+      <button type="button" class="dock__btn" data-act="favs" aria-label="Favourite customers">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>
+        </svg>
+        <span class="dock__tip">Favourites</span>
       </button>
-      <button type="button" class="dock__btn" data-route="pending-review" aria-label="Pending Review">
-        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <span class="dock__tip">Pending</span>
+      <button type="button" class="dock__btn" data-act="today" aria-label="Today's agenda">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3.5" y="5" width="17" height="15.5" rx="3"/>
+          <path d="M3.5 10h17M8 3v4M16 3v4"/>
+        </svg>
+        <span class="dock__tip">Today</span>
       </button>
-      <button type="button" class="dock__btn" data-route="reports" aria-label="Reports">
-        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-        <span class="dock__tip">Reports</span>
+      <button type="button" class="dock__btn" data-act="call" aria-label="Log a call">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/>
+          <path d="M11 18.5h2"/>
+        </svg>
+        <span class="dock__tip">Log a call</span>
       </button>
-      <button type="button" class="dock__btn" data-route="scam-alerts" aria-label="Scam Alerts">
-        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
-        <span class="dock__tip">Fraud Defense</span>
+      <button type="button" class="dock__btn" data-act="compose" aria-label="Compose email">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.5 3.5 3.5 10.6l6.6 2.8 2.8 6.6z"/>
+          <path d="m10.1 13.4 4.2-4.2"/>
+        </svg>
+        <span class="dock__tip">Compose</span>
       </button>
-      <button type="button" class="dock__btn" data-route="categories" aria-label="Categories">
-        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>
-        <span class="dock__tip">Categories</span>
+      <button type="button" class="dock__btn" data-act="share" aria-label="Copy link">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="6" cy="12" r="2.5"/>
+          <circle cx="17.5" cy="6" r="2.5"/>
+          <circle cx="17.5" cy="18" r="2.5"/>
+          <path d="m8.2 10.8 7.1-3.6M8.2 13.2l7.1 3.6"/>
+        </svg>
+        <span class="dock__tip">Copy link</span>
       </button>
-      
+      <button type="button" class="dock__btn" data-act="export" aria-label="Export CSV">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 15.5V4M7 8.5l5-5 5 5M5 14.5v3.5A2 2 0 0 0 7 20h10a2 2 0 0 0 2-2v-3.5"/>
+        </svg>
+        <span class="dock__tip">Export CSV</span>
+      </button>
       <span class="dock__sep" aria-hidden="true"></span>
-      
-      <button type="button" class="dock__btn" data-route="settings" aria-label="Settings">
-        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8l2 2.1 2.9-.4.7 2.8 2.6 1.4-1 2.8 1 2.8-2.6 1.4-.7 2.8-2.9-.4-2 2.1-2-2.1-2.9.4-.7-2.8-2.6-1.4 1-2.8-1-2.8 2.6-1.4.7-2.8 2.9.4Z"/></svg>
+      <a class="dock__btn is-active" href="#/settings" data-route="settings" aria-label="Settings" aria-current="page">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2.8l2 2.1 2.9-.4.7 2.8 2.6 1.4-1 2.8 1 2.8-2.6 1.4-.7 2.8-2.9-.4-2 2.1-2-2.1-2.9.4-.7-2.8-2.6-1.4 1-2.8-1-2.8 2.6-1.4.7-2.8 2.9.4Z"/>
+        </svg>
         <span class="dock__tip">Settings</span>
-      </button>
-      <button type="button" class="dock__btn dock__theme" id="btn-theme-toggle" aria-label="Switch Theme">
+      </a>
+      <button type="button" class="dock__btn dock__theme" data-act="theme" id="btn-theme-toggle" aria-label="Switch theme">
         <svg class="ico ico--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z"/></svg>
         <svg class="ico ico--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg>
         <span class="dock__tip">Theme</span>
       </button>
     </nav>
 
-    <!-- Page Header (Rapport Style) -->
-    <section class="head">
-      <div class="head__lead">
-        <h1 class="head__title" id="page-head-title">Workspace<br><span style="font-weight:400;color:var(--muted);" id="page-head-sub">Overview</span></h1>
-      </div>
-
-      <div class="head__stats">
-        <div class="stat">
-          <div class="stat__ico">
-            <svg class="ico" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <!-- Main Content Area -->
+    <main id="main" class="main">
+      <section class="view is-active" data-view="settings">
+        <!-- Page Head Title & Metric Badges -->
+        <header class="head">
+          <div class="head__lead">
+            <h1 class="head__title" tabindex="-1">Workspace<br>Settings</h1>
           </div>
-          <div>
-            <div class="stat__value"><span class="tnum" id="stat-fact-categories">8</span></div>
-            <div class="stat__label" id="lbl-fact-categories">Active categories</div>
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat__ico">
-            <svg class="ico" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>
-          </div>
-          <div>
-            <div class="stat__value"><span class="tnum" id="stat-fact-alerts">Active</span></div>
-            <div class="stat__label" id="lbl-fact-alerts">MoMo Scam shield</div>
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat__ico">
-            <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          </div>
-          <div>
-            <div class="stat__value"><span class="tnum" id="stat-fact-kb">Offline</span></div>
-            <div class="stat__label" id="lbl-fact-kb">IndexedDB Storage</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="head__actions">
-        <button type="button" class="btn btn--ghost" id="btn-simulate-sms">
-          <svg class="ico" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          <span id="btn-simulate-text">Simulate SMS</span>
-        </button>
-        <button type="button" class="btn btn--ink" id="btn-add-transaction">
-          <svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-          <span id="btn-add-text">Add Transaction</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- Main Content Area with Views -->
-    <main id="main">
-
-      <!-- 1. DASHBOARD OVERVIEW VIEW -->
-      <section class="view active" id="view-dashboard" data-view="dashboard">
-        
-        <!-- Banners -->
-        <div id="banner-pending-review" class="card" style="display:none;margin-bottom:16px;background:color-mix(in srgb, var(--butter) 15%, transparent);border-color:color-mix(in srgb, var(--butter) 40%, transparent);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <svg class="ico" viewBox="0 0 24 24" style="color:var(--text);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span id="banner-pending-msg">You have transactions waiting for review.</span>
-          </div>
-          <button class="btn btn--ghost btn--sm" id="btn-review-now-banner" onclick="window.promptPayApp.switchTab('pending-review')">Review Now</button>
-        </div>
-
-        <div id="banner-scam-alert" class="card" style="display:none;margin-bottom:16px;background:color-mix(in srgb, var(--tomato) 12%, transparent);border-color:color-mix(in srgb, var(--tomato) 35%, transparent);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <svg class="ico" viewBox="0 0 24 24" style="color:var(--tomato);"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            <span id="banner-scam-msg">Fraud alert detected in recent messages.</span>
-          </div>
-          <button class="btn btn--danger btn--sm" id="btn-inspect-alerts-banner" onclick="window.promptPayApp.switchTab('scam-alerts')">Inspect Alerts</button>
-        </div>
-
-        <!-- 4 Metric Cards -->
-        <div class="grid" style="grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));margin-bottom:20px;">
-          <div class="card">
-            <div class="card__sub" id="lbl-net-balance">Net Monthly Balance</div>
-            <div style="font-size:26px;font-weight:700;letter-spacing:-0.02em;margin-top:6px;" class="tnum" id="metric-net-balance">0 RWF</div>
-          </div>
-          <div class="card">
-            <div class="card__sub" id="lbl-total-income">Total Monthly Income</div>
-            <div style="font-size:26px;font-weight:700;color:var(--good);letter-spacing:-0.02em;margin-top:6px;" class="tnum" id="metric-income">0 RWF</div>
-          </div>
-          <div class="card">
-            <div class="card__sub" id="lbl-total-expenses">Total Monthly Expenses</div>
-            <div style="font-size:26px;font-weight:700;color:var(--bad);letter-spacing:-0.02em;margin-top:6px;" class="tnum" id="metric-expense">0 RWF</div>
-          </div>
-          <div class="card">
-            <div class="card__sub" id="lbl-pending-reviews">Pending Reviews</div>
-            <div style="font-size:26px;font-weight:700;letter-spacing:-0.02em;margin-top:6px;" class="tnum" id="metric-pending-count">0</div>
-          </div>
-        </div>
-
-        <!-- Charts Grid -->
-        <div class="grid" style="grid-template-columns:minmax(0, 1.8fr) minmax(0, 1fr);margin-bottom:20px;">
-          <div class="card chart-container">
-            <div class="card__head">
-              <div>
-                <h3 class="card__title" id="lbl-spending-flow">Spending Flow Over Time</h3>
-                <span class="card__sub" id="lbl-daily-expenses">Daily Expenses</span>
-              </div>
-            </div>
-            <div id="chart-timeline" class="chart-canvas"></div>
-          </div>
-
-          <div class="card chart-container">
-            <div class="card__head">
-              <div>
-                <h3 class="card__title" id="lbl-category-breakdown">Category Breakdown</h3>
-                <span class="card__sub" id="lbl-distribution">Distribution</span>
-              </div>
-            </div>
-            <div id="chart-categories" class="chart-canvas" style="flex-direction:column;"></div>
-          </div>
-        </div>
-
-        <!-- Recent Activity Table -->
-        <div class="card">
-          <div class="card__head">
-            <div>
-              <h3 class="card__title" id="lbl-recent-tx">Recent Transactions</h3>
-              <span class="card__sub">Latest mobile money and cash expenses</span>
-            </div>
-            <button class="btn btn--ghost btn--sm" id="btn-view-all-tx" onclick="window.promptPayApp.switchTab('transactions')">View All</button>
-          </div>
-          <div class="table-wrap">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th id="th-recent-merchant">Merchant / Description</th>
-                  <th id="th-recent-category">Category</th>
-                  <th id="th-recent-source">Type</th>
-                  <th id="th-recent-status">Status</th>
-                  <th id="th-recent-date">Date</th>
-                  <th style="text-align:right;" id="th-recent-amount">Amount & Fee</th>
-                </tr>
-              </thead>
-              <tbody id="recent-activity-body"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- 2. TRANSACTIONS LOG VIEW -->
-      <section class="view" id="view-transactions" data-view="transactions">
-        <div class="card">
-          <div class="card__head" style="flex-wrap:wrap;gap:14px;">
-            <div>
-              <h3 class="card__title" id="lbl-all-tx-log">All Transactions Log</h3>
-              <div class="filter-pills-group" style="margin-top:10px;">
-                <button class="filter-pill active" data-filter="ALL" id="pill-filter-all">All</button>
-                <button class="filter-pill" data-filter="SMS" id="pill-filter-sms">Phone SMS Only</button>
-                <button class="filter-pill" data-filter="MANUAL" id="pill-filter-manual">Manual Only</button>
-              </div>
-            </div>
-            <button class="btn btn--ghost btn--sm" id="btn-export-backup">
-              <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span id="btn-export-text">Export Backup (JSON)</span>
-            </button>
-          </div>
-          <div class="table-wrap">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th id="th-all-merchant">Merchant / Description</th>
-                  <th id="th-all-category">Category</th>
-                  <th id="th-all-source">Type / Source</th>
-                  <th id="th-all-status">Status</th>
-                  <th id="th-all-date">Date</th>
-                  <th id="th-all-amount">Amount</th>
-                  <th id="th-all-fee">Fee (Side)</th>
-                  <th style="text-align:right;" id="th-all-action">Action</th>
-                </tr>
-              </thead>
-              <tbody id="all-transactions-body"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- 3. PENDING REVIEW VIEW -->
-      <section class="view" id="view-pending-review" data-view="pending-review">
-        <div style="margin-bottom:14px;">
-          <h2 style="font-size:20px;font-weight:700;letter-spacing:-0.015em;" id="lbl-pending-title">Uncategorized SMS Transactions</h2>
-          <p class="card__sub" id="lbl-pending-subtitle">Confirm the merchant and assign the correct category to keep your budget accurate.</p>
-        </div>
-        <div id="pending-review-list"></div>
-      </section>
-
-      <!-- 4. REPORTS & ANALYTICS VIEW -->
-      <section class="view" id="view-reports" data-view="reports">
-        <div class="grid" style="grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));margin-bottom:20px;">
-          <div class="card">
-            <div class="card__sub" id="lbl-income-captured">Income Captured</div>
-            <div style="font-size:26px;font-weight:700;color:var(--good);letter-spacing:-0.02em;margin-top:6px;" class="tnum" id="report-total-income">0 RWF</div>
-          </div>
-          <div class="card">
-            <div class="card__sub" id="lbl-expenses-logged">Expenses Logged</div>
-            <div style="font-size:26px;font-weight:700;color:var(--bad);letter-spacing:-0.02em;margin-top:6px;" class="tnum" id="report-total-expense">0 RWF</div>
-          </div>
-          <div class="card">
-            <div class="card__sub" id="lbl-net-savings">Net Savings / Surplus</div>
-            <div style="font-size:26px;font-weight:700;letter-spacing:-0.02em;margin-top:6px;" class="tnum" id="report-net-savings">0 RWF</div>
-          </div>
-        </div>
-
-        <div class="grid" style="grid-template-columns:minmax(0, 1.8fr) minmax(0, 1fr);">
-          <div class="card chart-container">
-            <span class="card__title" id="lbl-historical-velocity">Historical Spending Velocity</span>
-            <div id="report-chart-timeline" class="chart-canvas"></div>
-          </div>
-          <div class="card chart-container">
-            <span class="card__title" id="lbl-spending-distribution">Spending Distribution by Category</span>
-            <div id="report-chart-donut" class="chart-canvas" style="flex-direction:column;"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 5. FRAUD & SCAM DEFENSE VIEW -->
-      <section class="view" id="view-scam-alerts" data-view="scam-alerts">
-        <div style="margin-bottom:14px;">
-          <h2 style="font-size:20px;font-weight:700;letter-spacing:-0.015em;" id="lbl-fraud-title">On-Device Scam & Fraud Defense Center</h2>
-          <p class="card__sub" id="lbl-fraud-subtitle">Review suspicious SMS messages intercepted by PromptPay's pattern recognition engine.</p>
-        </div>
-        <div class="scam-scroll-box" id="scam-alerts-list"></div>
-      </section>
-
-      <!-- 6. CATEGORIES VIEW -->
-      <section class="view" id="view-categories" data-view="categories">
-        <div class="card" style="margin-bottom:24px;">
-          <h2 style="font-size:18px;font-weight:700;margin-bottom:16px;" id="lbl-create-category">Create Custom Category</h2>
-          <form id="form-add-category" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)) auto;gap:14px;align-items:flex-end;">
-            <label class="field" style="margin-bottom:0;">
-              <span class="field__label" id="lbl-cat-name">Category Name</span>
-              <input type="text" id="cat-name" placeholder="e.g. Groceries" required />
-            </label>
-            <label class="field" style="margin-bottom:0;">
-              <span class="field__label" id="lbl-cat-tag">Tag</span>
-              <input type="text" id="cat-tag" placeholder="Essential / Lifestyle" />
-            </label>
-            <label class="field" style="margin-bottom:0;">
-              <span class="field__label" id="lbl-cat-color">Color</span>
-              <input type="color" id="cat-color" value="#2E6FF2" style="height:44px;padding:2px;" />
-            </label>
-            <label class="field" style="margin-bottom:0;grid-column:span 2;">
-              <span class="field__label" id="lbl-cat-keywords">SMS Keywords (comma separated)</span>
-              <input type="text" id="cat-keywords" placeholder="kfc, pizza, cafe" />
-            </label>
-            <button type="submit" class="btn btn--ink" id="btn-save-category" style="height:44px;">Add Category</button>
-          </form>
-        </div>
-
-        <h2 style="font-size:18px;font-weight:700;margin-bottom:14px;" id="lbl-active-categories">Active Expense Categories</h2>
-        <div id="categories-list-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:16px;"></div>
-      </section>
-
-      <!-- 7. SETTINGS VIEW (EXACT RAPPORT TEMPLATE LAYOUT) -->
-      <section class="view" id="view-settings" data-view="settings">
-        <div class="set-grid">
-          
-          <!-- Left Column Profile Card (.set-me) -->
-          <div class="card set-me">
-            <div class="set-me__face">
-              <div class="av av--xl" style="background:#cfe0d2;color:#2f5c50;box-shadow:0 0 0 4px var(--glass-3), 0 18px 34px -20px #281e148c;" id="profile-card-avatar">JD</div>
-              <span class="set-me__dot" title="Local Online"></span>
-            </div>
-
-            <div class="set-me__name" id="profile-card-name">Jane Doe</div>
-            <div class="set-me__role" id="profile-card-role">Mobile Money User</div>
-            <div class="set-me__mail">
-              <svg class="ico" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              <span id="profile-card-email">jane.doe@promptpay.app</span>
-            </div>
-
-            <!-- Quota / Monthly Budget Gauge Card -->
-            <div class="set-me__quota">
-              <div class="set-me__qhead">
-                <span id="lbl-budget-quota-head">Monthly Budget</span>
-                <b class="tnum" id="stat-budget-pct">90%</b>
-              </div>
-              <span class="meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90">
-                <span class="meter__fill" style="background:var(--butter);width:90%;"></span>
+          <dl class="head__stats">
+            <div class="stat" data-stat="members">
+              <span class="stat__ico">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="9" cy="8.5" r="3.5"/>
+                  <path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5"/>
+                  <path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.8c1.8.6 3 2.2 3.5 4.7"/>
+                </svg>
               </span>
-              <p class="card__sub" id="stat-budget-desc" style="color:inherit;opacity:.8;margin-top:10px;">
-                <b class="tnum" id="stat-spent-amt">45,000 RWF</b> spent of 50,000 RWF
-              </p>
+              <div class="stat__body">
+                <dd class="stat__value"><b data-count="5">5</b></dd>
+                <dt class="stat__label">Team members</dt>
+              </div>
+            </div>
+            <div class="stat" data-stat="alerts">
+              <span class="stat__ico">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/>
+                  <path d="M10 20.5a2 2 0 0 0 4 0"/>
+                </svg>
+              </span>
+              <div class="stat__body">
+                <dd class="stat__value"><b data-count="3">3</b></dd>
+                <dt class="stat__label">Alerts switched on</dt>
+              </div>
+            </div>
+            <div class="stat" data-stat="kb">
+              <span class="stat__ico">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <ellipse cx="12" cy="6" rx="7.5" ry="2.8"/>
+                  <path d="M4.5 6v12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V6M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/>
+                </svg>
+              </span>
+              <div class="stat__body">
+                <dd class="stat__value"><b data-count="57">57</b></dd>
+                <dt class="stat__label">KB saved in this browser</dt>
+              </div>
+            </div>
+          </dl>
+        </header>
+
+        <!-- Two Column Settings Layout -->
+        <div class="set-grid">
+          <!-- Left Column: User Profile Summary Aside Card -->
+          <aside class="card set-me" aria-label="Your profile" data-me>
+            <div class="set-me__face">
+              <img class="av av--xl" id="me-avatar" src="/rapport/photos/168-rapport/sofia-reyes.jpg" width="120" height="120" alt="Sofia Reyes" loading="lazy" decoding="async" title="Sofia Reyes" />
+              <span class="set-me__dot" title="Online" aria-label="Online" role="img"></span>
+            </div>
+            <h2 class="set-me__name" data-me-name id="me-name-display">Sofia Reyes</h2>
+            <p class="set-me__role" data-me-role id="me-role-display">Account Executive</p>
+            <p class="set-me__mail" data-me-mail id="me-mail-display">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/>
+                <path d="m4 7 8 6 8-6"/>
+              </svg>
+              <span id="me-email-text">sofia@rapport.app</span>
+            </p>
+
+            <!-- Quota Attainment Tile -->
+            <div class="set-me__quota">
+              <div class="set-me__qhead"><span>Q4 quota</span><b class="tnum">90%</b></div>
+              <span class="meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90" aria-label="Quarter quota attainment">
+                <span class="meter__fill meter__fill--pine" data-fill="0.9" style="transform: scaleX(0.9); transform-origin: left center;"></span>
+              </span>
+              <p class="card__sub"><b class="tnum">$94,410</b> won of $105K this quarter</p>
             </div>
 
-            <!-- 3 Mini Facts -->
+            <!-- Mini Facts List -->
             <dl class="set-me__facts">
-              <div>
-                <dt id="lbl-facts-tx">Transactions</dt>
-                <dd class="tnum" id="stat-count-tx">5</dd>
-              </div>
-              <div>
-                <dt id="lbl-facts-cats">Categories</dt>
-                <dd class="tnum" id="stat-count-cats">8</dd>
-              </div>
-              <div>
-                <dt id="lbl-facts-pending">Pending</dt>
-                <dd class="tnum" id="stat-count-pending">1</dd>
-              </div>
+              <div><dt>Open deals</dt><dd class="tnum">14</dd></div>
+              <div><dt>Customers</dt><dd class="tnum">5</dd></div>
+              <div><dt>Due this week</dt><dd class="tnum">4</dd></div>
             </dl>
 
-            <!-- Next Item -->
-            <div class="set-me__next" style="margin-top:16px;">
-              <span class="set-me__tone tone--pine" aria-hidden="true"></span>
+            <!-- Next Close Interactive Link -->
+            <a class="set-me__next" href="#/pipeline">
+              <span class="set-me__tone tone--proposal" aria-hidden="true" style="background: var(--pine);"></span>
               <span>
-                <small id="lbl-next-tx-title">Latest Transaction</small>
-                <b id="lbl-next-tx-desc">Simba Supermarket</b>
-                <small id="lbl-next-tx-amt">4,250 RWF · MoMo</small>
+                <small>Next close</small>
+                <b>Analytics add-on</b>
+                <small>Tidewater Freight · $4,200</small>
               </span>
-              <svg class="ico" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-            </div>
-          </div>
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </a>
+          </aside>
 
-          <!-- Right Column Main Settings Panel (.set-main) -->
-          <div class="card set-main">
-            
-            <!-- Sub-tabs navwrap -->
+          <!-- Right Column: Settings Main Panel Card -->
+          <section class="card set-main" aria-label="Settings">
+            <!-- Pill Navigation Tabs -->
             <div class="set-navwrap">
-              <div class="set-nav" role="tablist">
-                <button type="button" class="set-tab active" data-subtab="data" role="tab" aria-selected="true" id="subtab-btn-data">
-                  <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  <span>Data & Storage</span>
-                </button>
-                <button type="button" class="set-tab" data-subtab="lang" role="tab" aria-selected="false" id="subtab-btn-lang">
-                  <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                  <span>Language & Country</span>
-                </button>
-                <button type="button" class="set-tab" data-subtab="fraud" role="tab" aria-selected="false" id="subtab-btn-fraud">
-                  <svg class="ico" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
-                  <span>MoMo Scam Defense</span>
-                </button>
-                <button type="button" class="set-tab" data-subtab="security" role="tab" aria-selected="false" id="subtab-btn-security">
-                  <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  <span>Security & PIN</span>
-                </button>
-                <button type="button" class="set-tab" data-subtab="profile" role="tab" aria-selected="false" id="subtab-btn-profile">
-                  <svg class="ico" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <div class="set-nav" role="tablist" aria-label="Settings sections">
+                <span class="set-nav__pill" id="tab-pill" aria-hidden="true"></span>
+                <button type="button" role="tab" class="set-tab" id="set-tab-profile" data-sec="profile" aria-controls="set-panel" aria-selected="true" tabindex="0">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8.5" r="3.8"/>
+                    <path d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6"/>
+                  </svg>
                   <span>Profile</span>
                 </button>
+                <button type="button" role="tab" class="set-tab" id="set-tab-team" data-sec="team" aria-controls="set-panel" aria-selected="false" tabindex="-1">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="9" cy="8.5" r="3.5"/>
+                    <path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5"/>
+                    <path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.8c1.8.6 3 2.2 3.5 4.7"/>
+                  </svg>
+                  <span>Team</span>
+                </button>
+                <button type="button" role="tab" class="set-tab" id="set-tab-notifications" data-sec="notifications" aria-controls="set-panel" aria-selected="false" tabindex="-1">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/>
+                    <path d="M10 20.5a2 2 0 0 0 4 0"/>
+                  </svg>
+                  <span>Notifications</span>
+                </button>
+                <button type="button" role="tab" class="set-tab" id="set-tab-appearance" data-sec="appearance" aria-controls="set-panel" aria-selected="false" tabindex="-1">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>
+                  </svg>
+                  <span>Appearance</span>
+                </button>
+                <button type="button" role="tab" class="set-tab" id="set-tab-data" data-sec="data" aria-controls="set-panel" aria-selected="false" tabindex="-1">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <ellipse cx="12" cy="6" rx="7.5" ry="2.8"/>
+                    <path d="M4.5 6v12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V6M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/>
+                  </svg>
+                  <span>Data</span>
+                </button>
               </div>
             </div>
 
-            <!-- Stage Panels -->
+            <!-- Dynamic Panel Stage -->
             <div class="set-stage">
-
-              <!-- PANEL 1: DATA & STORAGE (Exact Rapport visual match from screenshot) -->
-              <div class="set-panel active" id="set-panel-data">
-                <header class="set-sec">
-                  <h2 id="lbl-data-title">Data</h2>
-                  <p class="card__sub" id="lbl-data-sub">Everything lives in this browser — export it any time.</p>
-                </header>
-
-                <ul class="set-list">
-                  <li class="set-item">
-                    <div>
-                      <b id="lbl-data-tx-title">Transactions</b>
-                      <small id="lbl-data-tx-sub"><span id="txt-tx-count">5</span> transactions with side fees and fixed source tags.</small>
-                    </div>
-                    <button type="button" class="btn btn--ghost" id="btn-export-tx-csv">
-                      <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                      <span>Export CSV</span>
-                    </button>
-                  </li>
-
-                  <li class="set-item">
-                    <div>
-                      <b id="lbl-data-cats-title">Categories</b>
-                      <small id="lbl-data-cats-sub"><span id="txt-cats-count">8</span> expense categories with SMS regex keywords.</small>
-                    </div>
-                    <button type="button" class="btn btn--ghost" id="btn-export-cats-csv">
-                      <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                      <span>Export CSV</span>
-                    </button>
-                  </li>
-
-                  <li class="set-item">
-                    <div>
-                      <b id="lbl-data-backup-title">Full backup</b>
-                      <small id="lbl-data-backup-sub">Every record as JSON · <span id="txt-backup-kb">57</span> KB.</small>
-                    </div>
-                    <div style="display:flex;gap:8px;">
-                      <button type="button" class="btn btn--ghost" id="btn-download-json-backup">
-                        <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        <span>Download JSON</span>
-                      </button>
-                      <label class="btn btn--ghost" style="cursor:pointer;">
-                        <span>Import JSON</span>
-                        <input type="file" id="file-import-backup" accept=".json" style="display:none;" />
+              <div class="set-panel" id="set-panel" role="tabpanel" aria-labelledby="set-tab-profile" tabindex="0">
+                <!-- Section 1: Profile (Default in Screenshot) -->
+                <div class="tab-content" id="panel-profile">
+                  <form class="set-form" id="form-profile" novalidate>
+                    <header class="set-sec">
+                      <h2>Profile</h2>
+                      <p class="card__sub">How you appear to the team and on everything you send.</p>
+                    </header>
+                    <div class="set-fields">
+                      <label class="field" for="set-name">
+                        <span class="field__label">Full name</span>
+                        <input id="set-name" name="name" type="text" value="Sofia Reyes" autocomplete="name" required />
+                      </label>
+                      <label class="field" for="set-email">
+                        <span class="field__label">Email</span>
+                        <input id="set-email" name="email" type="email" value="sofia@rapport.app" autocomplete="email" required />
+                      </label>
+                      <label class="field" for="set-role">
+                        <span class="field__label">Role</span>
+                        <select id="set-role" name="role">
+                          <option selected>Account Executive</option>
+                          <option>Sales Engineer</option>
+                          <option>Customer Success</option>
+                          <option>Sales Development Rep</option>
+                          <option>Head of Sales</option>
+                        </select>
+                      </label>
+                      <label class="field" for="set-quota">
+                        <span class="field__label">Annual quota (USD)</span>
+                        <input id="set-quota" name="quota" type="number" min="0" step="1000" value="420000" inputmode="numeric" required />
+                        <span class="field__hint">A quarter of it is your quota ring on the overview.</span>
                       </label>
                     </div>
-                  </li>
-                </ul>
-
-                <!-- Red Danger Box from Screenshot -->
-                <div class="set-danger">
-                  <div>
-                    <b id="lbl-reset-title">Reset demo data</b>
-                    <small id="lbl-reset-sub">Puts every customer, deal, task and invoice back to the starting data. This can’t be undone.</small>
-                  </div>
-                  <button type="button" class="btn btn--danger" id="btn-reset-demo-data">
-                    <svg class="ico" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l6.73-6.19"/></svg>
-                    <span id="btn-reset-text">Reset data</span>
-                  </button>
+                    <p class="mform__err" role="alert" id="profile-err"></p>
+                    <footer class="set-foot">
+                      <span class="set-dirty" id="profile-dirty" aria-live="polite"></span>
+                      <button type="button" class="btn btn--ghost" id="btn-discard" disabled>Discard</button>
+                      <button type="submit" class="btn btn--ink" id="btn-save" disabled>Save changes</button>
+                    </footer>
+                  </form>
                 </div>
-              </div>
 
-              <!-- PANEL 2: LANGUAGE & REGION -->
-              <div class="set-panel" id="set-panel-lang" style="display:none;">
-                <header class="set-sec">
-                  <h2 id="lbl-setting-language">Language & Country</h2>
-                  <p class="card__sub" id="lbl-setting-lang-desc">Choose your preferred display language and regional currency for PromptPay.</p>
-                </header>
-
-                <ul class="set-list">
-                  <li class="set-item">
+                <!-- Section 2: Team Panel -->
+                <div class="tab-content" id="panel-team" style="display: none;">
+                  <header class="set-sec set-sec--row">
                     <div>
-                      <b>Display Language</b>
-                      <small>Toggle between English and French with real-time reactive UI update.</small>
+                      <h2>Team</h2>
+                      <p class="card__sub">5 people · quota attainment for Q4</p>
                     </div>
-                    <select id="setting-language" class="field" style="width:200px;">
-                      <option value="en">English (🇺🇸 English)</option>
-                      <option value="fr">Français (🇫🇷 French)</option>
-                    </select>
-                  </li>
-
-                  <li class="set-item">
-                    <div>
-                      <b>Country & Default Currency</b>
-                      <small>Sets currency symbol, number format, and telecom provider presets.</small>
-                    </div>
-                    <select id="setting-country" class="field" style="width:200px;">
-                      <option value="RWANDA">Rwanda (RWF)</option>
-                      <option value="KENYA">Kenya (KES)</option>
-                      <option value="UGANDA">Uganda (UGX)</option>
-                      <option value="TANZANIA">Tanzania (TZS)</option>
-                      <option value="BURUNDI">Burundi (BIF)</option>
-                      <option value="SOUTH_SUDAN">South Sudan (SSP)</option>
-                    </select>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- PANEL 3: MOMO FRAUD SHIELD -->
-              <div class="set-panel" id="set-panel-fraud" style="display:none;">
-                <header class="set-sec">
-                  <h2 id="lbl-scam-filter-title">MoMo Scam & Phishing Defense</h2>
-                  <p class="card__sub" id="lbl-scam-filter-desc">On-device heuristic pattern engine guarding against spoofed SMS and fraudulent balance alerts.</p>
-                </header>
-
-                <ul class="set-list">
-                  <li class="set-item">
-                    <div>
-                      <b>Enable Real-time MoMo Scam Filtering</b>
-                      <small>Automatically intercepts phishing links, fake balance alerts, and suspicious CTAs.</small>
-                    </div>
-                    <button type="button" class="switch" role="switch" aria-checked="true" id="switch-scam-toggle"></button>
-                  </li>
-                  <li class="set-item">
-                    <div>
-                      <b>High-Risk Keyword Heuristics</b>
-                      <small>Detects phrases like 'click link', 'verify PIN', 'claim prize', and unverified senders.</small>
-                    </div>
-                    <span class="badge badge--pine">Active</span>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- PANEL 4: SECURITY & MASKED PIN -->
-              <div class="set-panel" id="set-panel-security" style="display:none;">
-                <header class="set-sec">
-                  <h2 id="lbl-security-title">App Security & Masked PIN Lock</h2>
-                  <p class="card__sub" id="lbl-security-desc">Protect your financial data with an encrypted, masked PIN (hidden while typing).</p>
-                </header>
-
-                <ul class="set-list">
-                  <li class="set-item">
-                    <div>
-                      <b>Enable Masked PIN Lock</b>
-                      <small>Requires entering a masked security PIN before accessing transaction amounts.</small>
-                    </div>
-                    <button type="button" class="switch" role="switch" aria-checked="false" id="switch-pin-toggle"></button>
-                  </li>
-                </ul>
-
-                <div id="pin-setup-box" style="display:none;margin-top:16px;">
-                  <div class="card" style="padding:16px;">
-                    <label class="field" style="max-width:320px;">
-                      <span class="field__label" id="lbl-enter-pin">Enter 4-Digit Security PIN</span>
-                      <div class="password-input-wrapper">
-                        <input type="password" id="input-security-pin" maxlength="6" placeholder="••••" autocomplete="new-password" />
-                        <button type="button" class="password-toggle-btn" id="btn-toggle-pin-visibility" title="Toggle PIN visibility">
-                          <svg id="eye-icon" class="ico" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
+                    <button type="button" class="btn btn--ink magnetic" id="btn-invite-team">
+                      <svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                      Invite teammate
+                    </button>
+                  </header>
+                  <ul class="set-team">
+                    <li class="set-member">
+                      <img class="av av--md" src="/rapport/photos/168-rapport/sofia-reyes-sm.jpg" width="36" height="36" alt="Sofia Reyes" />
+                      <div class="set-member__who">
+                        <b>Sofia Reyes <span class="badge badge--plain">You</span></b>
+                        <small>Account Executive</small>
                       </div>
-                    </label>
-                    <button type="button" class="btn btn--ink btn--sm" id="btn-save-pin" style="margin-top:10px;">Save PIN</button>
+                      <div class="set-member__quota">
+                        <span class="meter" role="meter" aria-label="Quarter quota attainment">
+                          <span class="meter__fill meter__fill--pine" style="transform: scaleX(0.9); transform-origin: left center;"></span>
+                        </span>
+                        <small class="tnum"><b>90%</b> · $94.4K of $105K</small>
+                      </div>
+                      <button type="button" class="ibtn ibtn--sm" aria-label="Options for Sofia Reyes"><svg class="ico" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg></button>
+                    </li>
+                    <li class="set-member">
+                      <img class="av av--md" src="/rapport/photos/168-rapport/theo-adeyemi-sm.jpg" width="36" height="36" alt="Theo Adeyemi" />
+                      <div class="set-member__who">
+                        <b>Theo Adeyemi</b>
+                        <small>Account Executive</small>
+                      </div>
+                      <div class="set-member__quota">
+                        <span class="meter" role="meter" aria-label="Quarter quota attainment">
+                          <span class="meter__fill" style="transform: scaleX(0.82); transform-origin: left center;"></span>
+                        </span>
+                        <small class="tnum"><b>82%</b> · $78K of $95K</small>
+                      </div>
+                      <button type="button" class="ibtn ibtn--sm" aria-label="Options for Theo Adeyemi"><svg class="ico" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg></button>
+                    </li>
+                    <li class="set-member">
+                      <img class="av av--md" src="/rapport/photos/168-rapport/amara-okafor-sm.jpg" width="36" height="36" alt="Amara Okafor" />
+                      <div class="set-member__who">
+                        <b>Amara Okafor</b>
+                        <small>Sales Engineer</small>
+                      </div>
+                      <div class="set-member__quota">
+                        <span class="meter" role="meter" aria-label="Quarter quota attainment">
+                          <span class="meter__fill meter__fill--pine" style="transform: scaleX(1); transform-origin: left center;"></span>
+                        </span>
+                        <small class="tnum"><b>100%</b> · $75K of $75K</small>
+                      </div>
+                      <button type="button" class="ibtn ibtn--sm" aria-label="Options for Amara Okafor"><svg class="ico" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg></button>
+                    </li>
+                    <li class="set-member">
+                      <img class="av av--md" src="/rapport/photos/168-rapport/rohan-mehta-sm.jpg" width="36" height="36" alt="Rohan Mehta" />
+                      <div class="set-member__who">
+                        <b>Rohan Mehta</b>
+                        <small>Head of Sales</small>
+                      </div>
+                      <div class="set-member__quota">
+                        <span class="meter" role="meter" aria-label="Quarter quota attainment">
+                          <span class="meter__fill" style="transform: scaleX(0.88); transform-origin: left center;"></span>
+                        </span>
+                        <small class="tnum"><b>88%</b> · $114K of $130K</small>
+                      </div>
+                      <button type="button" class="ibtn ibtn--sm" aria-label="Options for Rohan Mehta"><svg class="ico" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg></button>
+                    </li>
+                    <li class="set-member">
+                      <img class="av av--md" src="/rapport/photos/168-rapport/hanna-lindqvist-sm.jpg" width="36" height="36" alt="Hanna Lindqvist" />
+                      <div class="set-member__who">
+                        <b>Hanna Lindqvist</b>
+                        <small>Customer Success</small>
+                      </div>
+                      <div class="set-member__quota">
+                        <span class="meter" role="meter" aria-label="Quarter quota attainment">
+                          <span class="meter__fill meter__fill--pine" style="transform: scaleX(0.95); transform-origin: left center;"></span>
+                        </span>
+                        <small class="tnum"><b>95%</b> · $62K of $65K</small>
+                      </div>
+                      <button type="button" class="ibtn ibtn--sm" aria-label="Options for Hanna Lindqvist"><svg class="ico" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg></button>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Section 3: Notifications Panel -->
+                <div class="tab-content" id="panel-notifications" style="display: none;">
+                  <header class="set-sec">
+                    <h2>Notifications</h2>
+                    <p class="card__sub">Saved as soon as you flip them.</p>
+                  </header>
+                  <ul class="set-list">
+                    <li class="set-item">
+                      <div>
+                        <b>Deal updates</b>
+                        <small>When a deal you own changes stage, is won or is lost.</small>
+                      </div>
+                      <button type="button" class="switch" role="switch" aria-checked="true" data-notify="deals"></button>
+                    </li>
+                    <li class="set-item">
+                      <div>
+                        <b>Task reminders</b>
+                        <small>15 minutes before your calls and meetings.</small>
+                      </div>
+                      <button type="button" class="switch" role="switch" aria-checked="true" data-notify="tasks"></button>
+                    </li>
+                    <li class="set-item">
+                      <div>
+                        <b>Invoice activity</b>
+                        <small>When an invoice is paid, sent or goes overdue.</small>
+                      </div>
+                      <button type="button" class="switch" role="switch" aria-checked="true" data-notify="invoices"></button>
+                    </li>
+                    <li class="set-item">
+                      <div>
+                        <b>Weekly digest</b>
+                        <small>A Monday email with last week’s numbers.</small>
+                      </div>
+                      <button type="button" class="switch" role="switch" aria-checked="false" data-notify="digest"></button>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Section 4: Appearance Panel -->
+                <div class="tab-content" id="panel-appearance" style="display: none;">
+                  <header class="set-sec">
+                    <h2>Appearance</h2>
+                    <p class="card__sub">Theme is remembered on this device.</p>
+                  </header>
+                  <ul class="set-list">
+                    <li class="set-item">
+                      <div>
+                        <b>Theme</b>
+                        <small>System follows your device’s light or dark setting.</small>
+                      </div>
+                      <div class="seg" role="radiogroup" aria-label="Theme">
+                        <button type="button" class="seg__btn active" data-theme-val="light">Light</button>
+                        <button type="button" class="seg__btn" data-theme-val="dark">Dark</button>
+                        <button type="button" class="seg__btn" data-theme-val="system">System</button>
+                      </div>
+                    </li>
+                    <li class="set-item">
+                      <div>
+                        <b>Week starts on</b>
+                        <small>Used by the schedule’s month and week views.</small>
+                      </div>
+                      <div class="seg" role="radiogroup" aria-label="Week starts on">
+                        <button type="button" class="seg__btn active" data-week="1">Monday</button>
+                        <button type="button" class="seg__btn" data-week="0">Sunday</button>
+                      </div>
+                    </li>
+                  </ul>
+                  <div class="set-swatches" aria-hidden="true">
+                    <span class="set-swatch set-swatch--butter"><i></i><small>Qualification</small></span>
+                    <span class="set-swatch set-swatch--pine"><i></i><small>Proposal</small></span>
+                    <span class="set-swatch set-swatch--tomato"><i></i><small>Negotiation</small></span>
+                    <span class="set-swatch set-swatch--ink"><i></i><small>Closing</small></span>
+                  </div>
+                  <p class="card__sub set-note">Stage colours are the legend everywhere — tiles, the funnel and the board share them in both themes.</p>
+                </div>
+
+                <!-- Section 5: Data Panel -->
+                <div class="tab-content" id="panel-data" style="display: none;">
+                  <header class="set-sec">
+                    <h2>Data</h2>
+                    <p class="card__sub">Everything lives in this browser — export it any time.</p>
+                  </header>
+                  <ul class="set-list">
+                    <li class="set-item">
+                      <div>
+                        <b>Customers</b>
+                        <small>5 customers with owner and open pipeline.</small>
+                      </div>
+                      <button type="button" class="btn btn--ghost" data-export="customers">
+                        <svg class="ico" viewBox="0 0 24 24"><path d="M12 15.5V4M7 8.5l5-5 5 5M5 14.5v3.5A2 2 0 0 0 7 20h10a2 2 0 0 0 2-2v-3.5"/></svg>
+                        Export CSV
+                      </button>
+                    </li>
+                    <li class="set-item">
+                      <div>
+                        <b>Deals</b>
+                        <small>14 deals, 11 open, with stage and close date.</small>
+                      </div>
+                      <button type="button" class="btn btn--ghost" data-export="deals">
+                        <svg class="ico" viewBox="0 0 24 24"><path d="M12 15.5V4M7 8.5l5-5 5 5M5 14.5v3.5A2 2 0 0 0 7 20h10a2 2 0 0 0 2-2v-3.5"/></svg>
+                        Export CSV
+                      </button>
+                    </li>
+                    <li class="set-item">
+                      <div>
+                        <b>Full backup</b>
+                        <small>Every record as JSON · 57 KB.</small>
+                      </div>
+                      <button type="button" class="btn btn--ghost" data-export="json">
+                        <svg class="ico" viewBox="0 0 24 24"><path d="M12 15.5V4M7 8.5l5-5 5 5M5 14.5v3.5A2 2 0 0 0 7 20h10a2 2 0 0 0 2-2v-3.5"/></svg>
+                        Download JSON
+                      </button>
+                    </li>
+                  </ul>
+                  <div class="set-danger">
+                    <div>
+                      <b>Reset demo data</b>
+                      <small>Puts every customer, deal, task and invoice back to the starting data. This can’t be undone.</small>
+                    </div>
+                    <button type="button" class="btn btn--danger" id="btn-reset-data">
+                      <svg class="ico" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                      Reset data
+                    </button>
                   </div>
                 </div>
               </div>
-
-              <!-- PANEL 5: PROFILE -->
-              <div class="set-panel" id="set-panel-profile" style="display:none;">
-                <header class="set-sec">
-                  <h2>Profile</h2>
-                  <p class="card__sub">How you appear on financial reports and backups.</p>
-                </header>
-                <form id="form-user-profile" class="set-fields">
-                  <label class="field">
-                    <span class="field__label">Full Name</span>
-                    <input type="text" id="input-prof-name" value="Jane Doe" required />
-                  </label>
-                  <label class="field">
-                    <span class="field__label">Email</span>
-                    <input type="email" id="input-prof-email" value="jane.doe@promptpay.app" required />
-                  </label>
-                  <label class="field">
-                    <span class="field__label">Monthly Budget (RWF)</span>
-                    <input type="number" id="input-prof-budget" value="50000" min="0" step="1000" />
-                  </label>
-                  <label class="field">
-                    <span class="field__label">Account Role</span>
-                    <input type="text" id="input-prof-role" value="Mobile Money User" />
-                  </label>
-                </form>
-                <footer class="set-foot" style="margin-top:16px;">
-                  <button type="button" class="btn btn--ink" id="btn-save-profile">Save Changes</button>
-                </footer>
-              </div>
-
             </div>
-          </div>
+          </section>
         </div>
       </section>
-
     </main>
   </div>
 
-  <!-- MODAL: SIMULATE INCOMING SMS -->
-  <div class="modal-overlay" id="modal-simulate-sms">
-    <div class="modal-box mform">
-      <div class="mform__head">
-        <div>
-          <h3 class="mform__title" id="modal-sim-title">Simulate Incoming Mobile Money SMS</h3>
-          <p class="mform__sub" id="modal-sim-desc">Test on-device pattern recognition, amount & fee extraction, and fraud detection:</p>
-        </div>
-        <button class="ibtn ibtn--sm modal-close" aria-label="Close">&times;</button>
-      </div>
-
-      <form id="form-simulate-sms">
-        <div style="margin-bottom:14px;">
-          <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;" id="modal-sim-samples">QUICK SAMPLE PRESETS:</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button type="button" class="btn btn--ghost btn--sm sms-preset-btn"
-              data-sender="MTN MoMo"
-              data-text="TxId: 981273. You have paid 4,250 RWF to Simba Supermarket on 25/07/2026. Fee was 20 RWF. Bal: 18,200 RWF.">
-              MTN MoMo (with Fee)
-            </button>
-            <button type="button" class="btn btn--ghost btn--sm sms-preset-btn"
-              data-sender="MPESA"
-              data-text="QH714652 Confirmed. Ksh2,500 paid to Naivas Supermarket. Fee: 30 KES. 15/09/26 12:30 PM. New M-PESA balance is Ksh14,200.">
-              M-Pesa (with Fee)
-            </button>
-            <button type="button" class="btn btn--ghost btn--sm sms-preset-btn"
-              data-sender="+250788112233"
-              data-text="Dear Customer, you received 45,000 RWF! Click http://bit.ly/claim-pin to verify your PIN immediately.">
-              Phishing Scam Alert
-            </button>
-          </div>
-        </div>
-
-        <div style="display:grid;gap:12px;">
-          <label class="field">
-            <span class="field__label" id="lbl-sim-sender">SMS Sender Header</span>
-            <input type="text" id="sim-sender" value="MTN MoMo" required />
-          </label>
-          <label class="field">
-            <span class="field__label" id="lbl-sim-body">SMS Message Body</span>
-            <textarea id="sim-body" rows="3" required>TxId: 981273. You have paid 4,250 RWF to Simba Supermarket on 25/07/2026. Fee was 20 RWF. Bal: 18,200 RWF.</textarea>
-          </label>
-        </div>
-
-        <div style="background:var(--well);padding:10px 14px;border-radius:14px;margin-top:12px;font-size:12px;color:var(--muted);" id="lbl-sim-fixed-note">
-          📱 <strong>Fixed Type:</strong> Transactions detected from SMS are permanently fixed as <strong>Phone SMS</strong> and cannot be altered to Manual.
-        </div>
-
-        <footer class="mform__foot" style="margin-top:18px;">
-          <button type="button" class="btn btn--ghost modal-cancel" id="btn-sim-cancel">Cancel</button>
-          <button type="submit" class="btn btn--ink" id="btn-sim-process">Process & Ingest SMS</button>
-        </footer>
-      </form>
-    </div>
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="toast__msg" id="toast-msg">Profile saved</span>
   </div>
 
-  <!-- MODAL: ADD MANUAL TRANSACTION -->
-  <div class="modal-overlay" id="modal-add-transaction">
-    <div class="modal-box mform">
-      <div class="mform__head">
-        <div>
-          <h3 class="mform__title" id="modal-add-title">Record Manual Transaction</h3>
-          <p class="mform__sub">Add an off-chain or cash transaction with side fee tracking</p>
-        </div>
-        <button class="ibtn ibtn--sm modal-close" aria-label="Close">&times;</button>
-      </div>
+  <!-- Buy Template Floating Pill -->
+  <a class="cc-preview-pill" href="https://codeandchill.store/checkout?item=rapport&ref=preview" target="_top" rel="noopener" aria-label="Buy the Rapport template on Code and Chill">
+    <span class="cc-preview-pill__long">Buy this template →</span>
+  </a>
 
-      <form id="form-add-transaction">
-        <div class="mform__grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <label class="field">
-            <span class="field__label" id="lbl-add-type">Transaction Type</span>
-            <select id="add-type">
-              <option value="expense">Expense (-)</option>
-              <option value="income">Income (+)</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span class="field__label" id="lbl-add-amount">Amount</span>
-            <input type="number" id="add-amount" placeholder="e.g. 5000" step="any" required />
-          </label>
-
-          <label class="field">
-            <span class="field__label" id="lbl-add-fee">Fee Amount (Side Display)</span>
-            <input type="number" id="add-fee" placeholder="e.g. 50 (optional)" step="any" min="0" />
-          </label>
-
-          <label class="field">
-            <span class="field__label" id="lbl-add-feecat">Fee Category</span>
-            <select id="add-fee-category">
-              <option value="Transaction Fee">Transaction Fee</option>
-              <option value="Bank Charges">Bank Charges</option>
-              <option value="Service Fee">Service Fee</option>
-              <option value="Transfer Fee">Transfer Fee</option>
-              <option value="Other Fee">Other Fee</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span class="field__label" id="lbl-add-cat">Category</span>
-            <select id="add-category"></select>
-          </label>
-
-          <label class="field">
-            <span class="field__label" id="lbl-add-method">Payment Method</span>
-            <select id="add-method">
-              <option value="Cash">Cash</option>
-              <option value="Mobile Money">Mobile Money</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Credit / Debit Card">Credit / Debit Card</option>
-            </select>
-          </label>
-
-          <label class="field field--wide" style="grid-column:span 2;">
-            <span class="field__label" id="lbl-add-desc">Description / Merchant</span>
-            <input type="text" id="add-description" placeholder="e.g. Local Market Coffee" />
-          </label>
-        </div>
-
-        <p style="font-size:12px;color:var(--muted);margin-top:6px;" id="lbl-fee-note">
-          Fees are displayed beside the transaction and are never added to the principal amount.
-        </p>
-
-        <div style="background:var(--well);padding:10px 14px;border-radius:14px;margin-top:10px;font-size:12px;color:var(--muted);" id="lbl-manual-fixed-note">
-          🔒 <strong>Fixed Type:</strong> This transaction will be permanently recorded as <strong>Manual Entry</strong> and cannot be switched to SMS.
-        </div>
-
-        <footer class="mform__foot" style="margin-top:18px;">
-          <button type="button" class="btn btn--ghost modal-cancel" id="btn-add-cancel">Cancel</button>
-          <button type="submit" class="btn btn--ink" id="btn-add-save">Save Transaction</button>
-        </footer>
-      </form>
-    </div>
-  </div>
-
-  <!-- Toast Notification Container -->
-  <div class="toast" role="status" aria-live="polite" id="toast-container" style="display:none;">
-    <span class="toast__ico" id="toast-ico"></span>
-    <span class="toast__msg" id="toast-msg"></span>
-  </div>
-
-  <!-- Script Modules -->
-  <script type="module" src="js/app.js"></script>
+  <!-- Application Logic -->
+  <script src="js/app.js"></script>
 </body>
 </html>
