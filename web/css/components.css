@@ -277,3 +277,110 @@ textarea.form-control {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
+
+/* Source Badges (SMS vs Manual) */
+.badge-source-sms {
+  background: rgba(46, 111, 242, 0.12);
+  color: var(--primary);
+  border: 1px solid rgba(46, 111, 242, 0.25);
+  font-weight: 600;
+}
+.badge-source-manual {
+  background: rgba(100, 116, 139, 0.12);
+  color: #475569;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+  font-weight: 600;
+}
+
+/* Side Fee Indicator */
+.fee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  background: var(--bg-subtle);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.fee-badge.has-fee {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #B45309;
+  font-weight: 600;
+}
+
+/* Transaction Filter Pills */
+.filter-pills-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.filter-pill {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+.filter-pill:hover {
+  background: var(--bg-subtle);
+  color: var(--text-main);
+}
+.filter-pill.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* Masked Password / PIN Input Wrapper */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.password-input-wrapper .form-control {
+  width: 100%;
+  padding-right: 44px;
+  letter-spacing: 2px;
+}
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.password-toggle-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-subtle);
+}
+
+/* Scrollable Scam Alerts & Messages Box */
+.scam-scroll-box {
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.scam-scroll-box::-webkit-scrollbar {
+  width: 6px;
+}
+.scam-scroll-box::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}

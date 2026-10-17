@@ -64,7 +64,10 @@ class StorageService {
         name: 'Jane Doe',
         countryCode: 'RWANDA',
         currencyCode: 'RWF',
-        scamFilteringEnabled: true
+        scamFilteringEnabled: true,
+        languageCode: 'en',
+        lockMode: 'NONE',
+        pinHash: ''
       }));
     }
   }
@@ -98,7 +101,10 @@ class StorageService {
         name: 'Jane Doe',
         countryCode: 'RWANDA',
         currencyCode: 'RWF',
-        scamFilteringEnabled: true
+        scamFilteringEnabled: true,
+        languageCode: 'en',
+        lockMode: 'NONE',
+        pinHash: ''
       });
     }
   }
@@ -211,11 +217,22 @@ class StorageService {
 
   async getUserProfile() {
     const profile = await this.get('settings', 'user_profile');
-    return profile || {
-      name: 'Jane Doe',
-      countryCode: 'RWANDA',
-      currencyCode: 'RWF',
-      scamFilteringEnabled: true
+    if (!profile) {
+      return {
+        name: 'Jane Doe',
+        countryCode: 'RWANDA',
+        currencyCode: 'RWF',
+        scamFilteringEnabled: true,
+        languageCode: 'en',
+        lockMode: 'NONE',
+        pinHash: ''
+      };
+    }
+    return {
+      ...profile,
+      languageCode: profile.languageCode || 'en',
+      lockMode: profile.lockMode || 'NONE',
+      pinHash: profile.pinHash || ''
     };
   }
 

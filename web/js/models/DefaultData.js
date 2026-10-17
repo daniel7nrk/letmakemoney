@@ -1,4 +1,4 @@
-// Default categories and demo seed data (No Emojis)
+// Default categories and demo seed data (Matching Android & iOS)
 export const DEFAULT_CATEGORIES = [
   { id: 1, name: "Food & Dining", iconName: "dining", tag: "Essential", colorHex: "#FF6B6B", keywords: "starbucks,coffee,food,dining,restaurant,supermarket,simba,grocery,kfc,pizza" },
   { id: 2, name: "Rent & Utilities", iconName: "home", tag: "Fixed", colorHex: "#4D96FF", keywords: "apartment,rent,utilities,housing,electricity,water,skyline,wasac,reg" },
@@ -20,6 +20,9 @@ export const INITIAL_TRANSACTIONS = [
     merchant: "Simba Supermarket",
     category: "Food & Dining",
     source: "SMS",
+    isSourceFixed: true,
+    fee: 20,
+    feeCategory: "Transaction Fee",
     status: "CONFIRMED",
     paymentMethod: "MTN MoMo"
   },
@@ -32,6 +35,9 @@ export const INITIAL_TRANSACTIONS = [
     merchant: "Shell Fuel Station",
     category: "Transport",
     source: "SMS",
+    isSourceFixed: true,
+    fee: 50,
+    feeCategory: "Transaction Fee",
     status: "CONFIRMED",
     paymentMethod: "MTN MoMo"
   },
@@ -44,6 +50,9 @@ export const INITIAL_TRANSACTIONS = [
     merchant: "Employer Ltd",
     category: "Salary",
     source: "SMS",
+    isSourceFixed: true,
+    fee: 0,
+    feeCategory: "Transaction Fee",
     status: "CONFIRMED",
     paymentMethod: "Bank of Kigali"
   },
@@ -56,8 +65,26 @@ export const INITIAL_TRANSACTIONS = [
     merchant: "Unknown Merchant",
     category: "Uncategorized",
     source: "SMS",
+    isSourceFixed: true,
+    fee: 100,
+    feeCategory: "Transaction Fee",
     status: "PENDING",
     paymentMethod: "MTN MoMo"
+  },
+  {
+    id: 1727720000005,
+    amount: -3500,
+    currency: "RWF",
+    dateEpochMillis: Date.now() - 3600000 * 26,
+    description: "Fresh Farm Groceries",
+    merchant: "Fresh Farm Groceries",
+    category: "Food & Dining",
+    source: "MANUAL",
+    isSourceFixed: true,
+    fee: 0,
+    feeCategory: "Bank Charges",
+    status: "CONFIRMED",
+    paymentMethod: "Cash"
   }
 ];
 
