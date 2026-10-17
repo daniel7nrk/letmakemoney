@@ -145,61 +145,58 @@
 
     <!-- Floating Left Dock -->
     <nav class="dock" aria-label="Quick actions">
-      <button type="button" class="dock__btn" data-act="search" aria-label="Search (⌘K)">
+      <a class="dock__btn" href="#/dashboard" data-target="dashboard" aria-label="Dashboard">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="6.5"/>
-          <path d="m16 16 4 4"/>
+          <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/>
+          <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/>
+          <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/>
+          <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>
         </svg>
-        <span class="dock__tip">Search <kbd>⌘K</kbd></span>
-      </button>
-      <button type="button" class="dock__btn" data-act="new" aria-label="Create new">
+        <span class="dock__tip">Dashboard</span>
+      </a>
+      <a class="dock__btn" href="#/transactions" data-target="transactions" aria-label="Transactions">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 5v14M5 12h14"/>
+          <rect x="3" y="5" width="18" height="14" rx="2.5"/>
+          <path d="M3 10h18M7 15h4"/>
         </svg>
-        <span class="dock__tip">Create</span>
-      </button>
-      <button type="button" class="dock__btn" data-act="favs" aria-label="Favourite customers">
+        <span class="dock__tip">Transactions</span>
+      </a>
+      <a class="dock__btn" href="#/request" data-target="request" aria-label="Request">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>
+          <path d="M12 4v12m0 0-4-4m4 4 4-4M4 19h16"/>
         </svg>
-        <span class="dock__tip">Favourites</span>
-      </button>
-      <button type="button" class="dock__btn" data-act="today" aria-label="Today's agenda">
+        <span class="dock__tip">Request</span>
+      </a>
+      <a class="dock__btn" href="#/loans" data-target="loans" aria-label="Loans">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="3.5" y="5" width="17" height="15.5" rx="3"/>
-          <path d="M3.5 10h17M8 3v4M16 3v4"/>
+          <path d="M3 10h18M5 10v9M9 10v9M15 10v9M19 10v9M2 19h20M12 3 2 8h20z"/>
         </svg>
-        <span class="dock__tip">Today</span>
-      </button>
-      <button type="button" class="dock__btn" data-act="call" aria-label="Log a call">
+        <span class="dock__tip">Loans</span>
+      </a>
+      <a class="dock__btn" href="#/report" data-target="report" aria-label="Report">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/>
-          <path d="M11 18.5h2"/>
+          <path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6M9 17h4"/>
         </svg>
-        <span class="dock__tip">Log a call</span>
-      </button>
-      <button type="button" class="dock__btn" data-act="compose" aria-label="Compose email">
+        <span class="dock__tip">Report</span>
+      </a>
+      <a class="dock__btn" href="#/analytics" data-target="analytics" aria-label="Analytics">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20.5 3.5 3.5 10.6l6.6 2.8 2.8 6.6z"/>
-          <path d="m10.1 13.4 4.2-4.2"/>
+          <path d="M3 20h18M4 14l5-5 4 4 7-7m0 0h-5m5 0v5"/>
         </svg>
-        <span class="dock__tip">Compose</span>
-      </button>
-      <button type="button" class="dock__btn" data-act="share" aria-label="Copy link">
+        <span class="dock__tip">Analytics</span>
+      </a>
+      <a class="dock__btn" href="#/category" data-target="category" aria-label="Category">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="6" cy="12" r="2.5"/>
-          <circle cx="17.5" cy="6" r="2.5"/>
-          <circle cx="17.5" cy="18" r="2.5"/>
-          <path d="m8.2 10.8 7.1-3.6M8.2 13.2l7.1 3.6"/>
+          <path d="m20.59 13.41-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.5"/>
         </svg>
-        <span class="dock__tip">Copy link</span>
-      </button>
-      <button type="button" class="dock__btn" data-act="export" aria-label="Export CSV">
+        <span class="dock__tip">Category</span>
+      </a>
+      <a class="dock__btn" href="#/family" data-target="family" aria-label="Family">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 15.5V4M7 8.5l5-5 5 5M5 14.5v3.5A2 2 0 0 0 7 20h10a2 2 0 0 0 2-2v-3.5"/>
+          <circle cx="9" cy="8" r="3.5"/><path d="M3 19c.5-3 3-4.5 6-4.5s5.5 1.5 6 4.5"/><circle cx="16.5" cy="9.5" r="2.5"/><path d="M16 14.5c2 0 4.5 1 5 3.5"/>
         </svg>
-        <span class="dock__tip">Export CSV</span>
-      </button>
+        <span class="dock__tip">Family</span>
+      </a>
       <span class="dock__sep" aria-hidden="true"></span>
       <a class="dock__btn is-active" href="#/settings" data-target="settings" aria-label="Settings" aria-current="page">
         <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
@@ -541,6 +538,118 @@
           <header class="head">
             <div class="head__lead">
               <h1 class="head__title">Projects</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. Empty Page: Dashboard -->
+      <section class="view" data-view="dashboard" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Dashboard</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. Empty Page: Transactions -->
+      <section class="view" data-view="transactions" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Transactions</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11. Empty Page: Request -->
+      <section class="view" data-view="request" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Request</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. Empty Page: Loans -->
+      <section class="view" data-view="loans" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Loans</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 13. Empty Page: Report -->
+      <section class="view" data-view="report" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Report</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 14. Empty Page: Analytics -->
+      <section class="view" data-view="analytics" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Analytics</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 15. Empty Page: Category -->
+      <section class="view" data-view="category" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Category</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 16. Empty Page: Family -->
+      <section class="view" data-view="family" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Family</h1>
             </div>
           </header>
           <div class="empty-state">

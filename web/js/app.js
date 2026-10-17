@@ -193,12 +193,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // --- Top Navigation Tabs Routing ---
+  // --- Navigation & Routing for Top Tabs and Left Dock ---
   const topTabs = document.querySelectorAll('.tabs .tab');
   const mainTabsPill = document.getElementById('main-tabs-pill');
   const tabsTrack = document.querySelector('.tabs__track');
   const allViews = document.querySelectorAll('.view');
-  const dockSettingsBtn = document.querySelector('.dock__btn[data-target="settings"]');
+  const allDockBtns = document.querySelectorAll('.dock__btn[data-target]');
 
   function updateMainTabsPill(activeEl) {
     if (!mainTabsPill || !tabsTrack || !activeEl) {
@@ -226,6 +226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
+    // Update Top Tabs
     let foundTab = null;
     topTabs.forEach(t => {
       if (t.dataset.target === targetName) {
@@ -235,16 +236,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         t.classList.remove('is-active');
       }
     });
+    updateMainTabsPill(foundTab);
 
-    if (foundTab) {
-      updateMainTabsPill(foundTab);
-      if (dockSettingsBtn) dockSettingsBtn.removeAttribute('aria-current');
-    } else {
-      updateMainTabsPill(null);
-      if (targetName === 'settings' && dockSettingsBtn) {
-        dockSettingsBtn.setAttribute('aria-current', 'page');
+    // Update Dock Buttons
+    allDockBtns.forEach(btn => {
+      if (btn.dataset.target === targetName) {
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-current', 'page');
+      } else {
+        btn.classList.remove('is-active');
+        btn.removeAttribute('aria-current');
       }
-    }
+    });
   }
 
   topTabs.forEach(tab => {
@@ -256,13 +259,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  if (dockSettingsBtn) {
-    dockSettingsBtn.addEventListener('click', (e) => {
+  allDockBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
       e.preventDefault();
-      location.hash = '#/settings';
-      showView('settings');
+      const target = btn.dataset.target;
+      location.hash = `#/${target}`;
+      showView(target);
     });
-  }
+  });
 
   // Handle URL hash on load
   const currentHash = location.hash.replace('#/', '') || 'settings';
