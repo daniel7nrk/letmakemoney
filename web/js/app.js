@@ -1,4 +1,4 @@
-// PromptPay Web Application Controller & Router (Synchronized with Android & iOS)
+// PromptPay Web Application Controller & Router (Rapport Design System Edition)
 import { storage } from './services/StorageService.js';
 import { SmsParser } from './services/SmsParser.js';
 import { ScamDetector } from './services/ScamDetector.js';
@@ -6,10 +6,12 @@ import { Charts } from './components/Charts.js';
 import { ICONS, getCategoryIconSvg } from './components/Icons.js';
 import { COUNTRIES, formatCurrency, getCountryByCurrency } from './models/Country.js';
 import { getStrings } from './util/AppStrings.js';
+import { DEFAULT_CATEGORIES, INITIAL_TRANSACTIONS, INITIAL_SCAM_ALERTS } from './models/DefaultData.js';
 
 class App {
   constructor() {
     this.currentTab = 'dashboard';
+    this.currentSubtab = 'data';
     this.transactions = [];
     this.categories = [];
     this.scamAlerts = [];
@@ -24,12 +26,26 @@ class App {
   }
 
   async init() {
+    this.initTheme();
     await storage.ready;
     await this.loadData();
     this.setupEventListeners();
     this.applyTranslations();
     this.render();
     this.registerServiceWorker();
+  }
+
+  initTheme() {
+    const savedTheme = localStorage.getItem('promptpay_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+
+  toggleTheme() {
+    const curr = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = curr === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('promptpay_theme', next);
+    this.showToast(this.lang === 'fr' ? `Thème ${next === 'dark' ? 'sombre' : 'clair'} activé` : `Switched to ${next} mode`);
   }
 
   async loadData() {
@@ -58,24 +74,21 @@ class App {
   // MARK: - Reactive UI Localization
   applyTranslations() {
     const s = this.s;
-
-    // Navigation Labels
     const setTxt = (id, txt) => {
       const el = document.getElementById(id);
       if (el) el.innerText = txt;
     };
 
-    setTxt('nav-lbl-dashboard', s.navDashboard);
-    setTxt('nav-lbl-transactions', s.navTransactions);
-    setTxt('nav-lbl-pending', s.navPendingReview);
-    setTxt('nav-lbl-reports', s.navReports);
-    setTxt('nav-lbl-scams', s.navScamAlerts);
-    setTxt('nav-lbl-categories', s.navCategories);
-    setTxt('nav-lbl-settings', s.navSettings);
+    // Navigation Labels
+    setTxt('tab-nav-dashboard', s.navDashboard);
+    setTxt('tab-nav-transactions', s.navTransactions);
+    setTxt('tab-nav-pending', s.navPendingReview);
+    setTxt('tab-nav-reports', s.navReports);
+    setTxt('tab-nav-scams', s.navScamAlerts);
+    setTxt('tab-nav-categories', s.navCategories);
+    setTxt('tab-nav-settings', s.navSettings);
 
-    // Header
-    setTxt('page-header-title', s.headerTitle);
-    setTxt('page-header-subtitle', s.headerSubtitle);
+    // Header buttons
     setTxt('btn-simulate-text', s.btnSimulateSms);
     setTxt('btn-add-text', s.btnAddTransaction);
 
@@ -145,19 +158,14 @@ class App {
     setTxt('lbl-active-categories', s.activeCategories);
 
     // Settings Tab
-    setTxt('lbl-settings-main', s.settingsHeading);
     setTxt('lbl-setting-language', s.languageSetting);
     setTxt('lbl-setting-lang-desc', s.languageDesc);
-    setTxt('lbl-setting-country', s.countrySetting);
     setTxt('lbl-scam-filter-title', s.scamFilterHeading);
     setTxt('lbl-scam-filter-desc', s.scamFilterDesc);
     setTxt('lbl-security-title', s.securityHeading);
     setTxt('lbl-security-desc', s.securityDesc);
     setTxt('lbl-enter-pin', s.enterPinLabel);
     setTxt('btn-save-pin', s.btnSavePin);
-    setTxt('lbl-backup-title', s.offlineBackupHeading);
-    setTxt('lbl-backup-desc', s.offlineBackupDesc);
-    setTxt('lbl-import-backup-btn', s.importBackupBtn);
 
     // Modals
     setTxt('modal-sim-title', s.modalSimulateTitle);
@@ -187,21 +195,48 @@ class App {
   }
 
   setupEventListeners() {
-    // Tab switching
-    document.querySelectorAll('.nav-item').forEach(item => {
+    // Top Tabs navigation
+    document.querySelectorAll('.tabs .tab').forEach(item => {
       item.addEventListener('click', (e) => {
         e.preventDefault();
-        const tab = item.dataset.tab;
-        if (tab) this.switchTab(tab);
+        const route = item.dataset.route;
+        if (route) this.switchTab(route);
       });
     });
 
-    // Header buttons
+    // Left Floating Dock navigation
+    document.querySelectorAll('.dock .dock__btn[data-route]').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const route = item.dataset.route;
+        if (route) this.switchTab(route);
+      });
+    });
+
+    // Dock Add Transaction Button
+    document.querySelectorAll('[data-act="add-tx"]').forEach(btn => {
+      btn.addEventListener('click', () => this.openModal('modal-add-transaction'));
+    });
+
+    // Theme Switcher Button
+    const btnTheme = document.getElementById('btn-theme-toggle');
+    if (btnTheme) btnTheme.addEventListener('click', () => this.toggleTheme());
+
+    // Top Header Buttons
     const btnSimulate = document.getElementById('btn-simulate-sms');
     if (btnSimulate) btnSimulate.addEventListener('click', () => this.openModal('modal-simulate-sms'));
 
+    const btnQuickSim = document.getElementById('btn-quick-sim');
+    if (btnQuickSim) btnQuickSim.addEventListener('click', () => this.openModal('modal-simulate-sms'));
+
     const btnAddTx = document.getElementById('btn-add-transaction');
     if (btnAddTx) btnAddTx.addEventListener('click', () => this.openModal('modal-add-transaction'));
+
+    const btnQuickScam = document.getElementById('btn-quick-scam');
+    if (btnQuickScam) btnQuickScam.addEventListener('click', () => this.switchTab('scam-alerts'));
+
+    const btnAvatar = document.getElementById('btn-user-avatar');
+    if (btnAvatar) btnAvatar.addEventListener('click', () => this.switchTab('settings'));
 
     // Modal Close buttons
     document.querySelectorAll('.modal-close, .modal-cancel').forEach(btn => {
@@ -245,6 +280,24 @@ class App {
       });
     });
 
+    // Settings Sub-Tabs Navigation (.set-tab)
+    document.querySelectorAll('.set-tab').forEach(tabBtn => {
+      tabBtn.addEventListener('click', () => {
+        document.querySelectorAll('.set-tab').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        tabBtn.classList.add('active');
+        tabBtn.setAttribute('aria-selected', 'true');
+
+        const subtab = tabBtn.dataset.subtab;
+        this.currentSubtab = subtab;
+        document.querySelectorAll('.set-panel').forEach(p => p.style.display = 'none');
+        const activePanel = document.getElementById(`set-panel-${subtab}`);
+        if (activePanel) activePanel.style.display = 'block';
+      });
+    });
+
     // Settings Language Select
     const langSelect = document.getElementById('setting-language');
     if (langSelect) {
@@ -273,27 +326,34 @@ class App {
       });
     }
 
-    // Scam filtering toggle
-    const toggleScam = document.getElementById('setting-scam-toggle');
-    if (toggleScam) {
-      toggleScam.addEventListener('change', async (e) => {
-        this.profile.scamFilteringEnabled = e.target.checked;
+    // MoMo Scam Filtering Switch (.switch)
+    const switchScam = document.getElementById('switch-scam-toggle');
+    if (switchScam) {
+      switchScam.setAttribute('aria-checked', String(this.profile.scamFilteringEnabled !== false));
+      switchScam.addEventListener('click', async () => {
+        const current = switchScam.getAttribute('aria-checked') === 'true';
+        const next = !current;
+        switchScam.setAttribute('aria-checked', String(next));
+        this.profile.scamFilteringEnabled = next;
         await storage.saveUserProfile(this.profile);
-        this.showToast(`Scam Filtering ${e.target.checked ? 'Enabled' : 'Disabled'}`);
+        this.showToast(`MoMo Scam Defense ${next ? 'Enabled' : 'Disabled'}`);
       });
     }
 
-    // PIN Lock toggle & box
-    const togglePin = document.getElementById('setting-pin-toggle');
+    // Security PIN Lock Switch (.switch)
+    const switchPin = document.getElementById('switch-pin-toggle');
     const pinBox = document.getElementById('pin-setup-box');
-    if (togglePin) {
-      togglePin.checked = (this.profile && this.profile.lockMode === 'PIN');
-      if (pinBox) pinBox.style.display = togglePin.checked ? 'block' : 'none';
+    if (switchPin) {
+      const isPinLocked = (this.profile && this.profile.lockMode === 'PIN');
+      switchPin.setAttribute('aria-checked', String(isPinLocked));
+      if (pinBox) pinBox.style.display = isPinLocked ? 'block' : 'none';
 
-      togglePin.addEventListener('change', async (e) => {
-        const isChecked = e.target.checked;
-        if (pinBox) pinBox.style.display = isChecked ? 'block' : 'none';
-        if (!isChecked) {
+      switchPin.addEventListener('click', async () => {
+        const current = switchPin.getAttribute('aria-checked') === 'true';
+        const next = !current;
+        switchPin.setAttribute('aria-checked', String(next));
+        if (pinBox) pinBox.style.display = next ? 'block' : 'none';
+        if (!next) {
           this.profile.lockMode = 'NONE';
           await storage.saveUserProfile(this.profile);
           this.showToast('PIN Lock Disabled');
@@ -301,7 +361,7 @@ class App {
       });
     }
 
-    // Save PIN button
+    // Save PIN Button
     const btnSavePin = document.getElementById('btn-save-pin');
     if (btnSavePin) {
       btnSavePin.addEventListener('click', async () => {
@@ -312,7 +372,7 @@ class App {
           return;
         }
         this.profile.lockMode = 'PIN';
-        this.profile.pinHash = btoa(val); // Masked / Encrypted PIN stored locally
+        this.profile.pinHash = btoa(val);
         await storage.saveUserProfile(this.profile);
         pinInput.value = '';
         this.showToast(this.lang === 'fr' ? 'Code PIN enregistré avec succès !' : 'PIN saved securely!');
@@ -330,10 +390,39 @@ class App {
       });
     }
 
-    // Export & Import backup buttons
-    const btnExport = document.getElementById('btn-export-backup');
-    if (btnExport) btnExport.addEventListener('click', () => storage.exportBackup());
+    // Save Profile Form in Settings
+    const btnSaveProf = document.getElementById('btn-save-profile');
+    if (btnSaveProf) {
+      btnSaveProf.addEventListener('click', async () => {
+        const nameVal = document.getElementById('input-prof-name').value.trim();
+        const emailVal = document.getElementById('input-prof-email').value.trim();
+        const budgetVal = parseFloat(document.getElementById('input-prof-budget').value) || 50000;
+        const roleVal = document.getElementById('input-prof-role').value.trim() || 'Mobile Money User';
 
+        if (nameVal) this.profile.name = nameVal;
+        this.profile.email = emailVal;
+        this.profile.monthlyBudget = budgetVal;
+        this.profile.role = roleVal;
+        await storage.saveUserProfile(this.profile);
+        this.render();
+        this.showToast(this.lang === 'fr' ? 'Profil mis à jour !' : 'Profile updated!');
+      });
+    }
+
+    // Export CSV and JSON buttons
+    const btnExportTxCsv = document.getElementById('btn-export-tx-csv');
+    if (btnExportTxCsv) btnExportTxCsv.addEventListener('click', () => this.exportCsv('transactions'));
+
+    const btnExportCatsCsv = document.getElementById('btn-export-cats-csv');
+    if (btnExportCatsCsv) btnExportCatsCsv.addEventListener('click', () => this.exportCsv('categories'));
+
+    const btnDownloadJson = document.getElementById('btn-download-json-backup');
+    if (btnDownloadJson) btnDownloadJson.addEventListener('click', () => storage.exportBackup());
+
+    const btnExportBackup = document.getElementById('btn-export-backup');
+    if (btnExportBackup) btnExportBackup.addEventListener('click', () => storage.exportBackup());
+
+    // Import JSON backup
     const fileImport = document.getElementById('file-import-backup');
     if (fileImport) {
       fileImport.addEventListener('change', async (e) => {
@@ -355,7 +444,38 @@ class App {
       });
     }
 
-    // Add custom category form
+    // Reset Demo Data (The red Danger Zone action from the screenshot)
+    const btnResetData = document.getElementById('btn-reset-demo-data');
+    if (btnResetData) {
+      btnResetData.addEventListener('click', async () => {
+        const confirmMsg = this.lang === 'fr'
+          ? 'Réinitialiser toutes les données ? Toutes vos transactions et réglages reviendront à l\'état initial.'
+          : 'Reset all demo data? Every transaction, category, and setting will return to the starting demo data.';
+        if (!confirm(confirmMsg)) return;
+
+        localStorage.clear();
+        await storage.put('settings', {
+          key: 'user_profile',
+          name: 'Jane Doe',
+          countryCode: 'RWANDA',
+          currencyCode: 'RWF',
+          scamFilteringEnabled: true,
+          languageCode: this.lang,
+          monthlyBudget: 50000,
+          role: 'Mobile Money User'
+        });
+
+        for (const cat of DEFAULT_CATEGORIES) await storage.put('categories', cat);
+        for (const tx of INITIAL_TRANSACTIONS) await storage.put('transactions', tx);
+        for (const s of INITIAL_SCAM_ALERTS) await storage.put('scam_alerts', s);
+
+        await this.loadData();
+        this.render();
+        this.showToast(this.lang === 'fr' ? 'Données réinitialisées !' : 'Demo data reset successfully!');
+      });
+    }
+
+    // Add Custom Category Form
     const formAddCategory = document.getElementById('form-add-category');
     if (formAddCategory) {
       formAddCategory.addEventListener('submit', async (e) => {
@@ -386,14 +506,46 @@ class App {
     }
   }
 
+  // MARK: - Tab Switching
   switchTab(tabId) {
     this.currentTab = tabId;
-    document.querySelectorAll('.nav-item').forEach(item => {
-      item.classList.toggle('active', item.dataset.tab === tabId);
+
+    // Update Top Nav Tabs
+    document.querySelectorAll('.tabs .tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.route === tabId);
     });
-    document.querySelectorAll('.tab-view').forEach(view => {
-      view.classList.toggle('active', view.id === `tab-${tabId}`);
+
+    // Update Dock Buttons
+    document.querySelectorAll('.dock .dock__btn[data-route]').forEach(b => {
+      b.classList.toggle('active', b.dataset.route === tabId);
+      if (b.dataset.route === tabId) {
+        b.setAttribute('aria-current', 'page');
+      } else {
+        b.removeAttribute('aria-current');
+      }
     });
+
+    // Update Active View
+    document.querySelectorAll('.view').forEach(v => {
+      v.classList.toggle('active', v.dataset.view === tabId);
+    });
+
+    // Update Head Lead Title
+    const headTitle = document.getElementById('page-head-title');
+    const s = this.s;
+    if (headTitle) {
+      const titles = {
+        'dashboard': `Workspace<br><span style="font-weight:400;color:var(--muted);">${s.navDashboard}</span>`,
+        'transactions': `All Transactions<br><span style="font-weight:400;color:var(--muted);">Log & Side Fees</span>`,
+        'pending-review': `Pending Review<br><span style="font-weight:400;color:var(--muted);">${s.navPendingReview}</span>`,
+        'reports': `Financial Reports<br><span style="font-weight:400;color:var(--muted);">${s.navReports}</span>`,
+        'scam-alerts': `MoMo Fraud Defense<br><span style="font-weight:400;color:var(--muted);">Heuristic Shield</span>`,
+        'categories': `Budget Categories<br><span style="font-weight:400;color:var(--muted);">${s.navCategories}</span>`,
+        'settings': `Workspace<br><span style="font-weight:400;color:var(--muted);">${s.navSettings}</span>`
+      };
+      headTitle.innerHTML = titles[tabId] || titles.dashboard;
+    }
+
     this.render();
   }
 
@@ -407,16 +559,19 @@ class App {
   }
 
   showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `<span>${message}</span>`;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 3500);
+    const toast = document.getElementById('toast-container');
+    const msg = document.getElementById('toast-msg');
+    if (!toast || !msg) return;
+    msg.innerText = message;
+    toast.style.display = 'flex';
+    toast.style.visibility = 'visible';
+    setTimeout(() => {
+      toast.style.display = 'none';
+      toast.style.visibility = 'hidden';
+    }, 3500);
   }
 
-  // MARK: - Simulate SMS (Phone SMS - Type Locked to SMS)
+  // MARK: - Simulate SMS
   async handleSimulateSms() {
     const sender = document.getElementById('sim-sender').value.trim();
     const body = document.getElementById('sim-body').value.trim();
@@ -435,7 +590,6 @@ class App {
       filteringEnabled
     );
 
-    // If Likely Scam
     if (detection.classification === 'LIKELY_SCAM') {
       const alertItem = {
         id: Date.now(),
@@ -454,7 +608,6 @@ class App {
       return;
     }
 
-    // Parse Transaction & Fee
     const parsed = SmsParser.parseSms(
       sender,
       body,
@@ -493,10 +646,10 @@ class App {
 
     const formatted = formatCurrency(newTx.amount, newTx.currency);
     const feeNotice = newTx.fee > 0 ? ` (Fee: ${formatCurrency(newTx.fee, newTx.currency)})` : '';
-    this.showToast(`${this.lang === 'fr' ? 'Transaction enregistrée' : 'Transaction recorded'}: ${formatted} ${feeNotice}`);
+    this.showToast(`${this.lang === 'fr' ? 'Transaction enregistrée' : 'Transaction recorded'}: ${formatted}${feeNotice}`);
   }
 
-  // MARK: - Add Manual Transaction (Type Locked to MANUAL)
+  // MARK: - Add Manual Transaction
   async handleAddTransaction() {
     const amountVal = parseFloat(document.getElementById('add-amount').value);
     const type = document.getElementById('add-type').value;
@@ -513,7 +666,7 @@ class App {
 
     const finalAmount = (type === 'income') ? amountVal : -amountVal;
 
-    // Fixed source: MANUAL. Fee is kept beside the amount, NOT added to the principal amount.
+    // Fixed source: MANUAL. Fee is kept beside the amount, NOT added to principal.
     const newTx = {
       id: Date.now(),
       amount: finalAmount,
@@ -537,7 +690,6 @@ class App {
     this.showToast(this.lang === 'fr' ? 'Transaction ajoutée avec succès !' : 'Transaction added successfully!');
   }
 
-  // MARK: - Categorize Pending Transaction
   async confirmCategorization(txId, categoryName) {
     const tx = this.transactions.find(t => t.id === txId);
     if (!tx) return;
@@ -549,7 +701,6 @@ class App {
     this.showToast(`Transaction verified under ${categoryName}!`);
   }
 
-  // MARK: - Override Scam Alert
   async overrideScamAlert(scamId) {
     const scam = this.scamAlerts.find(s => s.id === scamId);
     if (!scam) return;
@@ -607,22 +758,59 @@ class App {
     this.showToast('Category deleted.');
   }
 
+  exportCsv(type) {
+    let csv = '';
+    let filename = '';
+    if (type === 'transactions') {
+      csv = 'Date,Merchant,Category,Source,Status,Amount,Currency,Fee,FeeCategory\n';
+      this.transactions.forEach(t => {
+        const d = new Date(t.dateEpochMillis).toISOString();
+        csv += `"${d}","${t.merchant || ''}","${t.category || ''}","${t.source || ''}","${t.status || ''}",${t.amount},"${t.currency}",${t.fee || 0},"${t.feeCategory || ''}"\n`;
+      });
+      filename = `PromptPay_Transactions_${new Date().toISOString().slice(0, 10)}.csv`;
+    } else {
+      csv = 'ID,Name,Tag,Color,Keywords\n';
+      this.categories.forEach(c => {
+        csv += `${c.id},"${c.name}","${c.tag || ''}","${c.colorHex || ''}","${c.keywords || ''}"\n`;
+      });
+      filename = `PromptPay_Categories_${new Date().toISOString().slice(0, 10)}.csv`;
+    }
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    this.showToast(`Exported ${filename}`);
+  }
+
   // MARK: - Render All Views
   render() {
     const currency = this.selectedCountry.currencyCode;
     const s = this.s;
 
     // Header & User Profile
-    const profileCountryEl = document.getElementById('user-profile-country');
-    if (profileCountryEl) {
-      profileCountryEl.innerHTML = `<img src="${this.selectedCountry.flagUrl}" width="20" height="14" style="vertical-align:middle;border-radius:2px;margin-right:6px;" alt=""> ${this.selectedCountry.name}`;
-    }
+    const avatarInitials = (this.profile.name || 'Jane Doe').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    const avatarEls = [document.getElementById('user-avatar-text'), document.getElementById('profile-card-avatar')];
+    avatarEls.forEach(el => { if (el) el.innerText = avatarInitials; });
 
+    const profNameEl = document.getElementById('profile-card-name');
+    if (profNameEl) profNameEl.innerText = this.profile.name || 'Jane Doe';
+
+    const profEmailEl = document.getElementById('profile-card-email');
+    if (profEmailEl) profEmailEl.innerText = this.profile.email || `${(this.profile.name || 'jane').toLowerCase().replace(/\s+/g, '.')}@promptpay.app`;
+
+    const profRoleEl = document.getElementById('profile-card-role');
+    if (profRoleEl) profRoleEl.innerText = `${this.selectedCountry.name} · ${this.profile.role || 'Mobile Money User'}`;
+
+    // Selects in Settings
     const settingCountryEl = document.getElementById('setting-country');
     if (settingCountryEl && this.profile) settingCountryEl.value = this.profile.countryCode;
 
-    const settingScamEl = document.getElementById('setting-scam-toggle');
-    if (settingScamEl && this.profile) settingScamEl.checked = (this.profile.scamFilteringEnabled !== false);
+    const settingLanguageEl = document.getElementById('setting-language');
+    if (settingLanguageEl && this.profile) settingLanguageEl.value = this.profile.languageCode || 'en';
 
     // Compute Metrics
     const confirmedTxs = this.transactions.filter(t => t.status === 'CONFIRMED');
@@ -632,20 +820,56 @@ class App {
     const pendingTxs = this.transactions.filter(t => t.status === 'PENDING');
     const activeScams = this.scamAlerts.filter(s => !s.isOverridden);
 
-    // Update Badges on Sidebar
-    const pendingBadge = document.getElementById('badge-pending-count');
-    if (pendingBadge) {
-      pendingBadge.style.display = pendingTxs.length > 0 ? 'inline-block' : 'none';
-      pendingBadge.innerText = pendingTxs.length;
+    // Head Stats
+    const factCats = document.getElementById('stat-fact-categories');
+    if (factCats) factCats.innerText = this.categories.length;
+
+    const factAlerts = document.getElementById('stat-fact-alerts');
+    if (factAlerts) factAlerts.innerText = (this.profile.scamFilteringEnabled !== false) ? 'Active' : 'Off';
+
+    // Bell badge
+    const bellBadge = document.getElementById('bell-badge');
+    if (bellBadge) bellBadge.style.display = activeScams.length > 0 ? 'block' : 'none';
+
+    // Settings Profile Card: Quota / Budget Gauge
+    const budgetTotal = this.profile.monthlyBudget || 50000;
+    const budgetPct = Math.min(100, Math.round((expenseTotal / budgetTotal) * 100));
+    const budgetPctEl = document.getElementById('stat-budget-pct');
+    if (budgetPctEl) budgetPctEl.innerText = `${budgetPct}%`;
+
+    const budgetMeterFill = document.querySelector('.set-me__quota .meter__fill');
+    if (budgetMeterFill) budgetMeterFill.style.width = `${budgetPct}%`;
+
+    const spentAmtEl = document.getElementById('stat-spent-amt');
+    if (spentAmtEl) spentAmtEl.innerText = `${formatCurrency(expenseTotal, currency)} spent of ${formatCurrency(budgetTotal, currency)}`;
+
+    // Mini Facts on Profile Card
+    const countTxEl = document.getElementById('stat-count-tx');
+    if (countTxEl) countTxEl.innerText = this.transactions.length;
+
+    const countCatsEl = document.getElementById('stat-count-cats');
+    if (countCatsEl) countCatsEl.innerText = this.categories.length;
+
+    const countPendingEl = document.getElementById('stat-count-pending');
+    if (countPendingEl) countPendingEl.innerText = pendingTxs.length;
+
+    // Latest Transaction Tile
+    const latestTx = this.transactions[0];
+    if (latestTx) {
+      const nextTitle = document.getElementById('lbl-next-tx-desc');
+      if (nextTitle) nextTitle.innerText = latestTx.merchant || latestTx.description;
+      const nextAmt = document.getElementById('lbl-next-tx-amt');
+      if (nextAmt) nextAmt.innerText = `${formatCurrency(latestTx.amount, currency)} · ${latestTx.source}`;
     }
 
-    const scamBadge = document.getElementById('badge-scam-count');
-    if (scamBadge) {
-      scamBadge.style.display = activeScams.length > 0 ? 'inline-block' : 'none';
-      scamBadge.innerText = activeScams.length;
-    }
+    // Data Tab Counts
+    const dataTxCount = document.getElementById('txt-tx-count');
+    if (dataTxCount) dataTxCount.innerText = this.transactions.length;
 
-    // Populate Category Dropdowns
+    const dataCatsCount = document.getElementById('txt-cats-count');
+    if (dataCatsCount) dataCatsCount.innerText = this.categories.length;
+
+    // Populate Category Dropdown in Modals
     const catSelect = document.getElementById('add-category');
     if (catSelect) {
       catSelect.innerHTML = this.categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
@@ -702,12 +926,12 @@ class App {
     Charts.renderTimeline(document.getElementById('chart-timeline'), this.transactions, currency);
     Charts.renderCategoryDonut(document.getElementById('chart-categories'), this.transactions, this.categories, currency);
 
-    // Recent Activity Table (displays amount and side fee)
+    // Recent Activity Table (shows amount and side fee)
     const recentBody = document.getElementById('recent-activity-body');
     if (recentBody) {
       const recent = this.transactions.slice(0, 5);
       if (recent.length === 0) {
-        recentBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">${s.noTransactionsYet}</td></tr>`;
+        recentBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">${s.noTransactionsYet}</td></tr>`;
       } else {
         recentBody.innerHTML = recent.map(t => this.renderTransactionRow(t, currency)).join('');
       }
@@ -723,7 +947,6 @@ class App {
     const formattedAmt = formatCurrency(t.amount, currency);
     const iconSvg = getCategoryIconSvg(t.category);
 
-    // Fee badge
     const hasFee = (t.fee && t.fee > 0);
     const feeHtml = hasFee
       ? `<div style="margin-top:4px;"><span class="fee-badge has-fee">${s.sideFeeLabel} ${formatCurrency(t.fee, currency)}</span></div>`
@@ -732,29 +955,27 @@ class App {
     return `
       <tr>
         <td>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:34px;height:34px;border-radius:8px;background:var(--bg-subtle);display:flex;align-items:center;justify-content:center;color:var(--primary);flex-shrink:0;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;border-radius:12px;background:var(--well);display:grid;place-items:center;color:var(--text);flex-shrink:0;">
               ${iconSvg}
             </div>
             <div>
-              <div style="font-weight:600;color:var(--text-main);">${t.merchant || t.description}</div>
-              <div style="font-size:12px;color:var(--text-muted);">${t.paymentMethod || 'Mobile Money'}</div>
+              <div style="font-weight:600;color:var(--text);">${t.merchant || t.description}</div>
+              <div style="font-size:12px;color:var(--muted);">${t.paymentMethod || 'Mobile Money'}</div>
             </div>
           </div>
         </td>
+        <td><span class="badge badge--plain">${t.category || 'Uncategorized'}</span></td>
         <td>
-          <span class="category-pill">${t.category || 'Uncategorized'}</span>
-        </td>
-        <td>
-          <span class="badge ${isSms ? 'badge-source-sms' : 'badge-source-manual'}" title="${s.sourceFixedNote}">
+          <span class="${isSms ? 'badge--sms' : 'badge--manual'}" title="${s.sourceFixedNote}">
             ${isSms ? s.sourceSms : s.sourceManual}
           </span>
         </td>
         <td>
-          <span class="badge ${isPending ? 'badge-pending' : 'badge-confirmed'}">${t.status}</span>
+          <span class="status ${isPending ? 'status--due' : 'status--paid'}">${t.status}</span>
         </td>
-        <td style="font-size:13px;color:var(--text-secondary);">${dateStr}</td>
-        <td style="font-weight:700;text-align:right;color:${isIncome ? 'var(--success)' : 'var(--text-main)'};">
+        <td style="font-size:13px;color:var(--muted);">${dateStr}</td>
+        <td style="font-weight:700;text-align:right;color:${isIncome ? 'var(--good)' : 'var(--text)'};">
           ${formattedAmt}
           ${feeHtml}
         </td>
@@ -767,7 +988,6 @@ class App {
     const tableBody = document.getElementById('all-transactions-body');
     if (!tableBody) return;
 
-    // Apply Filter (ALL, SMS, MANUAL)
     let filtered = this.transactions;
     if (this.transactionFilter === 'SMS') {
       filtered = this.transactions.filter(t => t.source === 'SMS');
@@ -776,7 +996,7 @@ class App {
     }
 
     if (filtered.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:32px;">${s.noTransactionsFound}</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px;">${s.noTransactionsFound}</td></tr>`;
       return;
     }
 
@@ -788,37 +1008,36 @@ class App {
       const formattedAmt = formatCurrency(t.amount, currency);
       const iconSvg = getCategoryIconSvg(t.category);
 
-      // Fee display beside amount
       const hasFee = (t.fee && t.fee > 0);
       const feeCell = hasFee
-        ? `<div><span class="fee-badge has-fee">${formatCurrency(t.fee, currency)}</span><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${t.feeCategory || 'Transaction Fee'}</div></div>`
+        ? `<div><span class="fee-badge has-fee">${formatCurrency(t.fee, currency)}</span><div style="font-size:11px;color:var(--muted);margin-top:2px;">${t.feeCategory || 'Transaction Fee'}</div></div>`
         : `<span class="fee-badge">${s.noFeeRecorded}</span>`;
 
       return `
         <tr>
           <td>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:34px;height:34px;border-radius:8px;background:var(--bg-subtle);display:flex;align-items:center;justify-content:center;color:var(--primary);flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:12px;background:var(--well);display:grid;place-items:center;color:var(--text);flex-shrink:0;">
                 ${iconSvg}
               </div>
               <div>
                 <div style="font-weight:600;">${t.merchant || t.description}</div>
-                <div style="font-size:12px;color:var(--text-muted);">${t.paymentMethod}</div>
+                <div style="font-size:12px;color:var(--muted);">${t.paymentMethod}</div>
               </div>
             </div>
           </td>
-          <td><span class="category-pill">${t.category}</span></td>
+          <td><span class="badge badge--plain">${t.category}</span></td>
           <td>
-            <span class="badge ${isSms ? 'badge-source-sms' : 'badge-source-manual'}" title="${s.sourceFixedNote}">
+            <span class="${isSms ? 'badge--sms' : 'badge--manual'}" title="${s.sourceFixedNote}">
               ${isSms ? s.sourceSms : s.sourceManual}
             </span>
           </td>
-          <td><span class="badge ${isPending ? 'badge-pending' : 'badge-confirmed'}">${t.status}</span></td>
-          <td>${dateStr}</td>
-          <td style="font-weight:700;color:${isIncome ? 'var(--success)' : 'var(--text-main)'};">${formattedAmt}</td>
+          <td><span class="status ${isPending ? 'status--due' : 'status--paid'}">${t.status}</span></td>
+          <td style="font-size:13px;color:var(--muted);">${dateStr}</td>
+          <td style="font-weight:700;color:${isIncome ? 'var(--good)' : 'var(--text)'};">${formattedAmt}</td>
           <td>${feeCell}</td>
           <td style="text-align:right;">
-            <button class="btn btn-secondary btn-sm" onclick="window.promptPayApp.deleteTransaction(${t.id})">
+            <button class="btn btn--ghost btn--sm" onclick="window.promptPayApp.deleteTransaction(${t.id})">
               ${ICONS.trash}
               <span>${s.delete}</span>
             </button>
@@ -835,10 +1054,10 @@ class App {
 
     if (pendingTxs.length === 0) {
       container.innerHTML = `
-        <div style="text-align:center;padding:48px 24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);">
-          <div style="display:inline-flex;color:var(--success);margin-bottom:12px;">${ICONS.checkCircle}</div>
+        <div class="card" style="text-align:center;padding:48px 24px;">
+          <div style="display:inline-flex;color:var(--good);margin-bottom:12px;">${ICONS.checkCircle}</div>
           <h3 style="font-size:18px;font-weight:700;">${s.allCaughtUpTitle}</h3>
-          <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">${s.allCaughtUpDesc}</p>
+          <p class="card__sub" style="margin-top:4px;">${s.allCaughtUpDesc}</p>
         </div>
       `;
       return;
@@ -855,21 +1074,21 @@ class App {
         <div class="card" style="margin-bottom:16px;">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
             <div>
-              <div style="font-size:18px;font-weight:700;color:var(--text-main);">${t.merchant}</div>
-              <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">${dateStr} &bull; ${t.paymentMethod} &bull; <span class="badge badge-source-sms">${s.sourceSms}</span></div>
-              <div style="font-size:14px;color:var(--text-secondary);margin-top:8px;">${t.description}</div>
+              <div style="font-size:18px;font-weight:700;color:var(--text);">${t.merchant}</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:2px;">${dateStr} &bull; ${t.paymentMethod} &bull; <span class="badge--sms">${s.sourceSms}</span></div>
+              <div style="font-size:14px;color:var(--text);margin-top:8px;">${t.description}</div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:22px;font-weight:800;color:var(--text-main);">${amtStr}</div>
+              <div style="font-size:22px;font-weight:800;color:var(--text);">${amtStr}</div>
               ${feeHtml}
             </div>
           </div>
 
-          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
-            <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">${s.selectCorrectCategory}</div>
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line);">
+            <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;">${s.selectCorrectCategory}</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               ${this.categories.map(c => `
-                <button class="btn btn-secondary btn-sm" onclick="window.promptPayApp.confirmCategorization(${t.id}, '${c.name}')">
+                <button class="btn btn--ghost btn--sm" onclick="window.promptPayApp.confirmCategorization(${t.id}, '${c.name}')">
                   ${getCategoryIconSvg(c.name)}
                   <span>${c.name}</span>
                 </button>
@@ -901,10 +1120,10 @@ class App {
 
     if (activeScams.length === 0) {
       container.innerHTML = `
-        <div style="text-align:center;padding:48px 24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);">
-          <div style="display:inline-flex;color:var(--primary);margin-bottom:12px;">${ICONS.shield}</div>
+        <div class="card" style="text-align:center;padding:48px 24px;">
+          <div style="display:inline-flex;color:var(--pine);margin-bottom:12px;">${ICONS.shield}</div>
           <h3 style="font-size:18px;font-weight:700;">${s.noScamTitle}</h3>
-          <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">${s.noScamDesc}</p>
+          <p class="card__sub" style="margin-top:4px;">${s.noScamDesc}</p>
         </div>
       `;
       return;
@@ -913,28 +1132,28 @@ class App {
     container.innerHTML = activeScams.map(item => {
       const dateStr = new Date(item.dateEpochMillis).toLocaleString();
       return `
-        <div class="card" style="border-left: 4px solid var(--danger); margin-bottom: 16px;">
+        <div class="card" style="border-left: 4px solid var(--tomato); margin-bottom: 16px;">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
             <div>
               <div style="display:flex;align-items:center;gap:8px;">
-                <span class="badge badge-scam">${ICONS.shieldAlert} ${s.suspiciousBlocked}</span>
+                <span class="badge badge--tomato">${ICONS.shieldAlert} ${s.suspiciousBlocked}</span>
                 <span style="font-weight:700;font-size:15px;">${s.senderLabel}: ${item.sender}</span>
               </div>
-              <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">${s.detectedLabel}: ${dateStr}</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px;">${s.detectedLabel}: ${dateStr}</div>
             </div>
             <div style="display:flex;gap:8px;">
-              <button class="btn btn-secondary btn-sm" onclick="window.promptPayApp.overrideScamAlert(${item.id})">${s.markSafe}</button>
-              <button class="btn btn-danger btn-sm" onclick="window.promptPayApp.deleteScamAlert(${item.id})">${s.deleteAlert}</button>
+              <button class="btn btn--ghost btn--sm" onclick="window.promptPayApp.overrideScamAlert(${item.id})">${s.markSafe}</button>
+              <button class="btn btn--danger btn--sm" onclick="window.promptPayApp.deleteScamAlert(${item.id})">${s.deleteAlert}</button>
             </div>
           </div>
 
-          <div style="margin-top:12px;background:var(--bg-subtle);padding:12px;border-radius:var(--radius-md);font-family:monospace;font-size:13px;color:var(--text-main);max-height:120px;overflow-y:auto;">
+          <div style="margin-top:12px;background:var(--well);padding:12px;border-radius:12px;font-family:monospace;font-size:13px;color:var(--text);max-height:120px;overflow-y:auto;">
             ${item.body}
           </div>
 
           <div style="margin-top:12px;display:flex;align-items:center;gap:16px;font-size:13px;flex-wrap:wrap;">
-            <div><strong>${s.reasonLabel}:</strong> <span style="color:var(--danger);">${item.primaryReason}</span></div>
-            <div><strong>${s.signalsLabel}:</strong> <span style="color:var(--text-secondary);">${item.detectedSignals || 'None'}</span></div>
+            <div><strong>${s.reasonLabel}:</strong> <span style="color:var(--tomato);">${item.primaryReason}</span></div>
+            <div><strong>${s.signalsLabel}:</strong> <span style="color:var(--muted);">${item.detectedSignals || 'None'}</span></div>
           </div>
         </div>
       `;
@@ -951,18 +1170,18 @@ class App {
       return `
         <div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:16px;">
           <div style="display:flex;align-items:center;gap:12px;">
-            <div style="width:40px;height:40px;border-radius:var(--radius-md);background:${c.colorHex}20;color:${c.colorHex};display:flex;align-items:center;justify-content:center;">
+            <div style="width:40px;height:40px;border-radius:14px;background:${c.colorHex}22;color:${c.colorHex};display:grid;place-items:center;">
               ${iconSvg}
             </div>
             <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text-main);">${c.name}</div>
-              <div style="font-size:12px;color:var(--text-muted);">${c.tag || 'Category'} &bull; ${c.keywords ? c.keywords.split(',').length + ' keywords' : 'No keywords'}</div>
+              <div style="font-weight:700;font-size:15px;color:var(--text);">${c.name}</div>
+              <div style="font-size:12px;color:var(--muted);">${c.tag || 'Category'} &bull; ${c.keywords ? c.keywords.split(',').length + ' keywords' : 'No keywords'}</div>
             </div>
           </div>
           ${c.isCustom ? `
-            <button class="btn btn-danger btn-sm" onclick="window.promptPayApp.deleteCategory(${c.id})">${ICONS.trash}</button>
+            <button class="btn btn--danger btn--sm" onclick="window.promptPayApp.deleteCategory(${c.id})">${ICONS.trash}</button>
           ` : `
-            <span class="badge badge-neutral">${s.builtIn}</span>
+            <span class="badge badge--plain">${s.builtIn}</span>
           `}
         </div>
       `;
@@ -970,5 +1189,5 @@ class App {
   }
 }
 
-// Instantiate and expose globally for inline HTML callbacks
+// Instantiate and expose globally
 window.promptPayApp = new App();

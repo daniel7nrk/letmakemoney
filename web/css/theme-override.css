@@ -1,0 +1,264 @@
+/* PromptPay Extensions built on top of Rapport Design System */
+
+/* Mesh Gradient Background */
+.mesh {
+  z-index: -1;
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+.mesh i {
+  filter: blur(60px);
+  opacity: 0.95;
+  will-change: transform;
+  border-radius: 50%;
+  position: absolute;
+}
+.mesh__a {
+  background: radial-gradient(closest-side, var(--mesh-a), transparent);
+  width: 62vmax;
+  height: 62vmax;
+  top: -24vmax;
+  left: -18vmax;
+}
+.mesh__b {
+  background: radial-gradient(closest-side, var(--mesh-b), transparent);
+  width: 70vmax;
+  height: 70vmax;
+  bottom: -30vmax;
+  right: -24vmax;
+}
+.mesh__c {
+  background: radial-gradient(closest-side, var(--mesh-c), transparent);
+  width: 46vmax;
+  height: 46vmax;
+  top: -16vmax;
+  right: 8vmax;
+}
+
+/* Side Fee Indicator */
+.fee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: var(--well);
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r-ctl);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.fee-badge.has-fee {
+  background: color-mix(in srgb, var(--butter) 20%, transparent);
+  border-color: color-mix(in srgb, var(--butter) 60%, transparent);
+  color: var(--text);
+}
+
+/* Source Badges */
+.badge--sms {
+  background: color-mix(in srgb, var(--pine) 18%, transparent);
+  color: var(--pine);
+  border: 1px solid color-mix(in srgb, var(--pine) 30%, transparent);
+  border-radius: var(--r-ctl);
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+:root[data-theme=dark] .badge--sms {
+  color: #6cc59a;
+  border-color: rgba(108, 197, 154, 0.3);
+}
+
+.badge--manual {
+  background: var(--well);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Filter Pills */
+.filter-pills-group {
+  display: inline-flex;
+  background: var(--well);
+  border-radius: var(--r-ctl);
+  padding: 3px;
+  gap: 2px;
+}
+.filter-pill {
+  border-radius: var(--r-ctl);
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.filter-pill:hover {
+  color: var(--text);
+}
+.filter-pill.active {
+  background: var(--glass-3);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+:root[data-theme=dark] .filter-pill.active {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* Masked Password Wrapper */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.password-input-wrapper input {
+  padding-right: 44px !important;
+  letter-spacing: 2px;
+}
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+.password-toggle-btn:hover {
+  color: var(--text);
+}
+
+/* Responsive and App Layout Adjustments */
+.view {
+  display: none;
+}
+.view.active {
+  display: block;
+}
+
+/* Interactive Charts inside Rapport glass cards */
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+}
+.chart-canvas {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 220px;
+}
+.svg-chart {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.chart-grid-line {
+  stroke: var(--line);
+  stroke-dasharray: 4 4;
+}
+.chart-line {
+  fill: none;
+  stroke: var(--pine);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+:root[data-theme=dark] .chart-line {
+  stroke: #6cc59a;
+}
+.chart-dot {
+  fill: var(--bg);
+  stroke: var(--pine);
+  stroke-width: 2.5;
+  transition: r 0.15s ease;
+  cursor: pointer;
+}
+:root[data-theme=dark] .chart-dot {
+  stroke: #6cc59a;
+}
+.chart-dot:hover {
+  r: 7;
+}
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  width: 100%;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: var(--r-ctl);
+  background: var(--well);
+  border: 1px solid var(--line);
+}
+.legend-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 18, 16, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-overlay .modal-box {
+  background: var(--glass-3);
+  border: 1px solid var(--rim);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-pop);
+  max-width: 540px;
+  width: 100%;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+:root:not([data-theme=dark]) .modal-overlay .modal-box {
+  background: #f7f5f0;
+}

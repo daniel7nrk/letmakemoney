@@ -58,8 +58,8 @@ export class Charts {
       <svg class="svg-chart" viewBox="0 0 ${width} ${height}">
         <defs>
           <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#2E6FF2" stop-opacity="0.35"/>
-            <stop offset="100%" stop-color="#2E6FF2" stop-opacity="0.0"/>
+            <stop offset="0%" stop-color="#2f5c50" stop-opacity="0.32"/>
+            <stop offset="100%" stop-color="#2f5c50" stop-opacity="0.0"/>
           </linearGradient>
         </defs>
 
