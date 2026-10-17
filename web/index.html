@@ -1,10 +1,580 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" class="js is-ready" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PromptPay</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Rapport — Workspace Settings</title>
+  <meta name="theme-color" content="#ebe8e1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/rapport.css" />
+  <link rel="stylesheet" href="css/rapport-settings.css" />
+  <style>
+    /* Buy Preview Pill */
+    .cc-preview-pill {
+      position: fixed;
+      right: max(16px, env(safe-area-inset-right));
+      bottom: max(16px, env(safe-area-inset-bottom));
+      z-index: 2147483647;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 14px;
+      box-sizing: border-box;
+      background: #ff5c3d;
+      color: #161616;
+      font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 2px solid #fff;
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, .35);
+      border-radius: 4px;
+      transition: background 0.15s ease;
+    }
+    .cc-preview-pill:hover {
+      background: #ff7a5f;
+    }
+
+    /* Active dock dot indicator */
+    .dock__btn[aria-current="page"] {
+      position: relative;
+    }
+    .dock__btn[aria-current="page"]:after {
+      content: "";
+      background: #fff;
+      border-radius: 50%;
+      width: 5px;
+      height: 5px;
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* Sliding pill indicators */
+    .tabs__pill {
+      position: absolute;
+      background: var(--ink);
+      border-radius: 999px;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 0;
+      opacity: 0;
+    }
+    .tab {
+      position: relative;
+      z-index: 1;
+    }
+    .tab.is-active {
+      color: var(--on-ink);
+    }
+    .set-nav__pill {
+      position: absolute;
+      background: var(--glass-3);
+      border-radius: 999px;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      z-index: 0;
+    }
+    :root[data-theme="dark"] .set-nav__pill {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    /* Views */
+    .view {
+      display: none;
+    }
+    .view.is-active {
+      display: block;
+    }
+
+    /* Empty page placeholders */
+    .empty-card {
+      padding: 32px;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+    }
+    .empty-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 500;
+    }
+  </style>
 </head>
 <body>
+  <!-- Ambient Gradient Mesh Background -->
+  <div class="mesh" aria-hidden="true">
+    <i class="mesh__a"></i>
+    <i class="mesh__b"></i>
+    <i class="mesh__c"></i>
+  </div>
+
+  <div class="app">
+    <!-- Top Header -->
+    <header class="top">
+      <a class="brand magnetic" href="#/settings" aria-label="Rapport">
+        <span class="brand__mark" aria-hidden="true">R</span>
+        <span class="brand__name">rapport</span>
+      </a>
+
+      <!-- Center Navigation Tabs (Direct to empty pages for later work) -->
+      <nav class="tabs" aria-label="Main">
+        <div class="tabs__track">
+          <a class="tab" href="#/overview" data-target="overview">Overview</a>
+          <a class="tab" href="#/pipeline" data-target="pipeline">Pipeline</a>
+          <a class="tab" href="#/customers" data-target="customers">Customers</a>
+          <a class="tab" href="#/schedule" data-target="schedule">Schedule</a>
+          <a class="tab" href="#/finance" data-target="finance">Finance</a>
+          <a class="tab" href="#/growth" data-target="growth">Growth</a>
+          <a class="tab" href="#/projects" data-target="projects">Projects</a>
+          <span class="tabs__pill" id="main-tabs-pill" aria-hidden="true"></span>
+        </div>
+      </nav>
+
+      <!-- Right Header Tools -->
+      <div class="top__tools">
+        <button type="button" class="ibtn ibtn--glass magnetic" id="btn-activity" aria-label="Activity" title="Activity">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 13.5 6.3 6a2 2 0 0 1 1.9-1.5h7.6A2 2 0 0 1 17.7 6l2.3 7.5V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>
+            <path d="M4 13.5h4.5l1.5 2.5h4l1.5-2.5H20"/>
+          </svg>
+        </button>
+        <button type="button" class="ibtn ibtn--glass magnetic" id="btn-bell" aria-label="Notifications" title="Notifications">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/>
+            <path d="M10 20.5a2 2 0 0 0 4 0"/>
+          </svg>
+          <span class="dot-badge" id="bell-badge"></span>
+        </button>
+        <button type="button" class="me magnetic" id="btn-me" aria-label="Account menu">
+          <img src="photos/168-rapport/sofia-reyes-sm.jpg" width="40" height="40" alt="Sofia Reyes" />
+        </button>
+      </div>
+    </header>
+
+    <!-- Floating Left Dock -->
+    <nav class="dock" aria-label="Quick actions">
+      <button type="button" class="dock__btn" data-act="search" aria-label="Search (⌘K)">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5"/>
+          <path d="m16 16 4 4"/>
+        </svg>
+        <span class="dock__tip">Search <kbd>⌘K</kbd></span>
+      </button>
+      <button type="button" class="dock__btn" data-act="new" aria-label="Create new">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <span class="dock__tip">Create</span>
+      </button>
+      <button type="button" class="dock__btn" data-act="favs" aria-label="Favourite customers">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>
+        </svg>
+        <span class="dock__tip">Favourites</span>
+      </button>
+      <button type="button" class="dock__btn" data-act="today" aria-label="Today's agenda">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3.5" y="5" width="17" height="15.5" rx="3"/>
+          <path d="M3.5 10h17M8 3v4M16 3v4"/>
+        </svg>
+        <span class="dock__tip">Today</span>
+      </button>
+      <button type="button" class="dock__btn" data-act="call" aria-label="Log a call">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/>
+          <path d="M11 18.5h2"/>
+        </svg>
+        <span class="dock__tip">Log a call</span>
+      </button>
+      <button type="button" class="dock__btn" data-act="compose" aria-label="Compose email">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.5 3.5 3.5 10.6l6.6 2.8 2.8 6.6z"/>
+          <path d="m10.1 13.4 4.2-4.2"/>
+        </svg>
+        <span class="dock__tip">Compose</span>
+      </button>
+      <button type="button" class="dock__btn" data-act="share" aria-label="Copy link">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="6" cy="12" r="2.5"/>
+          <circle cx="17.5" cy="6" r="2.5"/>
+          <circle cx="17.5" cy="18" r="2.5"/>
+          <path d="m8.2 10.8 7.1-3.6M8.2 13.2l7.1 3.6"/>
+        </svg>
+        <span class="dock__tip">Copy link</span>
+      </button>
+      <button type="button" class="dock__btn" data-act="export" aria-label="Export CSV">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 15.5V4M7 8.5l5-5 5 5M5 14.5v3.5A2 2 0 0 0 7 20h10a2 2 0 0 0 2-2v-3.5"/>
+        </svg>
+        <span class="dock__tip">Export CSV</span>
+      </button>
+      <span class="dock__sep" aria-hidden="true"></span>
+      <a class="dock__btn is-active" href="#/settings" data-target="settings" aria-label="Settings" aria-current="page">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2.8l2 2.1 2.9-.4.7 2.8 2.6 1.4-1 2.8 1 2.8-2.6 1.4-.7 2.8-2.9-.4-2 2.1-2-2.1-2.9.4-.7-2.8-2.6-1.4 1-2.8-1-2.8 2.6-1.4.7-2.8 2.9.4Z"/>
+        </svg>
+        <span class="dock__tip">Settings</span>
+      </a>
+      <button type="button" class="dock__btn dock__theme" data-act="theme" id="btn-theme-toggle" aria-label="Switch theme">
+        <svg class="ico ico--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z"/></svg>
+        <svg class="ico ico--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg>
+        <span class="dock__tip">Theme</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main" class="main">
+      <!-- 1. The Duplicate Page: Workspace Settings (Active by default) -->
+      <section class="view is-active" data-view="settings">
+        <!-- Page Head Title & 3 Metric Badges -->
+        <header class="head">
+          <div class="head__lead">
+            <h1 class="head__title" tabindex="-1">Workspace<br>Settings</h1>
+          </div>
+          <dl class="head__stats">
+            <div class="stat" data-stat="members">
+              <span class="stat__ico">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="9" cy="8.5" r="3.5"/>
+                  <path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5"/>
+                  <path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.8c1.8.6 3 2.2 3.5 4.7"/>
+                </svg>
+              </span>
+              <div class="stat__body">
+                <dd class="stat__value"><b data-count="5">5</b></dd>
+                <dt class="stat__label">Team members</dt>
+              </div>
+            </div>
+            <div class="stat" data-stat="alerts">
+              <span class="stat__ico">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/>
+                  <path d="M10 20.5a2 2 0 0 0 4 0"/>
+                </svg>
+              </span>
+              <div class="stat__body">
+                <dd class="stat__value"><b data-count="3">3</b></dd>
+                <dt class="stat__label">Alerts switched on</dt>
+              </div>
+            </div>
+            <div class="stat" data-stat="kb">
+              <span class="stat__ico">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <ellipse cx="12" cy="6" rx="7.5" ry="2.8"/>
+                  <path d="M4.5 6v12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V6M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/>
+                </svg>
+              </span>
+              <div class="stat__body">
+                <dd class="stat__value"><b data-count="57">57</b></dd>
+                <dt class="stat__label">KB saved in this browser</dt>
+              </div>
+            </div>
+          </dl>
+        </header>
+
+        <!-- Two Column Settings Grid -->
+        <div class="set-grid">
+          <!-- Left Column: User Profile Aside Card -->
+          <aside class="card set-me" aria-label="Your profile" data-me>
+            <div class="set-me__face">
+              <img class="av av--xl" src="photos/168-rapport/sofia-reyes.jpg" width="120" height="120" alt="Sofia Reyes" loading="lazy" decoding="async" title="Sofia Reyes" />
+              <span class="set-me__dot" title="Online" aria-label="Online" role="img"></span>
+            </div>
+            <h2 class="set-me__name" data-me-name>Sofia Reyes</h2>
+            <p class="set-me__role" data-me-role>Account Executive</p>
+            <p class="set-me__mail" data-me-mail>
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/>
+                <path d="m4 7 8 6 8-6"/>
+              </svg>
+              sofia@rapport.app
+            </p>
+
+            <!-- Quota Attainment Tile -->
+            <div class="set-me__quota">
+              <div class="set-me__qhead"><span>Q4 quota</span><b class="tnum">90%</b></div>
+              <span class="meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90" aria-label="Quarter quota attainment">
+                <span class="meter__fill meter__fill--pine" data-fill="0.9" style="transform: scaleX(0.9); transform-origin: left center;"></span>
+              </span>
+              <p class="card__sub"><b class="tnum">$94,410</b> won of $105K this quarter</p>
+            </div>
+
+            <!-- Mini Facts List -->
+            <dl class="set-me__facts">
+              <div><dt>Open deals</dt><dd class="tnum">14</dd></div>
+              <div><dt>Customers</dt><dd class="tnum">5</dd></div>
+              <div><dt>Due this week</dt><dd class="tnum">4</dd></div>
+            </dl>
+
+            <!-- Next Close Interactive Link -->
+            <a class="set-me__next" href="#/pipeline">
+              <span class="set-me__tone tone--proposal" aria-hidden="true" style="background: var(--pine);"></span>
+              <span>
+                <small>Next close</small>
+                <b>Analytics add-on</b>
+                <small>Tidewater Freight · $4,200</small>
+              </span>
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </a>
+          </aside>
+
+          <!-- Right Column: Settings Main Panel Card -->
+          <section class="card set-main" aria-label="Settings">
+            <!-- Pill Navigation Tabs -->
+            <div class="set-navwrap">
+              <div class="set-nav" role="tablist" aria-label="Settings sections">
+                <span class="set-nav__pill" id="tab-pill" aria-hidden="true"></span>
+                <button type="button" role="tab" class="set-tab" id="set-tab-profile" data-sec="profile" aria-controls="set-panel" aria-selected="true" tabindex="0">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8.5" r="3.8"/>
+                    <path d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6"/>
+                  </svg>
+                  <span>Profile</span>
+                </button>
+                <button type="button" role="tab" class="set-tab" id="set-tab-team" data-sec="team" aria-controls="set-panel" aria-selected="false" tabindex="-1">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="9" cy="8.5" r="3.5"/>
+                    <path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5"/>
+                    <path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.8c1.8.6 3 2.2 3.5 4.7"/>
+                  </svg>
+                  <span>Team</span>
+                </button>
+                <button type="button" role="tab" class="set-tab" id="set-tab-notifications" data-sec="notifications" aria-controls="set-panel" aria-selected="false" tabindex="-1">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/>
+                    <path d="M10 20.5a2 2 0 0 0 4 0"/>
+                  </svg>
+                  <span>Notifications</span>
+                </button>
+                <button type="button" role="tab" class="set-tab" id="set-tab-appearance" data-sec="appearance" aria-controls="set-panel" aria-selected="false" tabindex="-1">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>
+                  </svg>
+                  <span>Appearance</span>
+                </button>
+                <button type="button" role="tab" class="set-tab" id="set-tab-data" data-sec="data" aria-controls="set-panel" aria-selected="false" tabindex="-1">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <ellipse cx="12" cy="6" rx="7.5" ry="2.8"/>
+                    <path d="M4.5 6v12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V6M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/>
+                  </svg>
+                  <span>Data</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Dynamic Settings Stage -->
+            <div class="set-stage">
+              <div class="set-panel" id="set-panel" role="tabpanel" aria-labelledby="set-tab-profile" tabindex="0">
+                <!-- Section 1: Profile -->
+                <div class="tab-content" id="panel-profile">
+                  <form class="set-form" id="form-profile" novalidate>
+                    <header class="set-sec">
+                      <h2>Profile</h2>
+                      <p class="card__sub">How you appear to the team and on everything you send.</p>
+                    </header>
+                    <div class="set-fields">
+                      <label class="field" for="set-name">
+                        <span class="field__label">Full name</span>
+                        <input id="set-name" name="name" type="text" value="Sofia Reyes" autocomplete="name" required />
+                      </label>
+                      <label class="field" for="set-email">
+                        <span class="field__label">Email</span>
+                        <input id="set-email" name="email" type="email" value="sofia@rapport.app" autocomplete="email" required />
+                      </label>
+                      <label class="field" for="set-role">
+                        <span class="field__label">Role</span>
+                        <select id="set-role" name="role">
+                          <option selected>Account Executive</option>
+                          <option>Sales Engineer</option>
+                          <option>Customer Success</option>
+                          <option>Sales Development Rep</option>
+                          <option>Head of Sales</option>
+                        </select>
+                      </label>
+                      <label class="field" for="set-quota">
+                        <span class="field__label">Annual quota (USD)</span>
+                        <input id="set-quota" name="quota" type="number" min="0" step="1000" value="420000" inputmode="numeric" required />
+                        <span class="field__hint">A quarter of it is your quota ring on the overview.</span>
+                      </label>
+                    </div>
+                    <p class="mform__err" role="alert" id="profile-err"></p>
+                    <footer class="set-foot">
+                      <span class="set-dirty" id="profile-dirty" aria-live="polite"></span>
+                      <button type="button" class="btn btn--ghost" id="btn-discard" disabled>Discard</button>
+                      <button type="submit" class="btn btn--ink" id="btn-save" disabled>Save changes</button>
+                    </footer>
+                  </form>
+                </div>
+
+                <!-- Section 2: Team (Empty Page / Placeholder) -->
+                <div class="tab-content" id="panel-team" style="display: none;">
+                  <header class="set-sec set-sec--row">
+                    <div>
+                      <h2>Team</h2>
+                      <p class="card__sub">Team settings will be configured here.</p>
+                    </div>
+                  </header>
+                  <div class="empty-state">
+                    <p>This section is currently empty. We will work on it later.</p>
+                  </div>
+                </div>
+
+                <!-- Section 3: Notifications (Empty Page / Placeholder) -->
+                <div class="tab-content" id="panel-notifications" style="display: none;">
+                  <header class="set-sec">
+                    <h2>Notifications</h2>
+                    <p class="card__sub">Notification settings will be configured here.</p>
+                  </header>
+                  <div class="empty-state">
+                    <p>This section is currently empty. We will work on it later.</p>
+                  </div>
+                </div>
+
+                <!-- Section 4: Appearance (Empty Page / Placeholder) -->
+                <div class="tab-content" id="panel-appearance" style="display: none;">
+                  <header class="set-sec">
+                    <h2>Appearance</h2>
+                    <p class="card__sub">Appearance preferences will be configured here.</p>
+                  </header>
+                  <div class="empty-state">
+                    <p>This section is currently empty. We will work on it later.</p>
+                  </div>
+                </div>
+
+                <!-- Section 5: Data (Empty Page / Placeholder) -->
+                <div class="tab-content" id="panel-data" style="display: none;">
+                  <header class="set-sec">
+                    <h2>Data</h2>
+                    <p class="card__sub">Data management and exports will be configured here.</p>
+                  </header>
+                  <div class="empty-state">
+                    <p>This section is currently empty. We will work on it later.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- 2. Empty Page: Overview -->
+      <section class="view" data-view="overview" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Overview</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Empty Page: Pipeline -->
+      <section class="view" data-view="pipeline" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Pipeline</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Empty Page: Customers -->
+      <section class="view" data-view="customers" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Customers</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Empty Page: Schedule -->
+      <section class="view" data-view="schedule" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Schedule</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Empty Page: Finance -->
+      <section class="view" data-view="finance" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Finance</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Empty Page: Growth -->
+      <section class="view" data-view="growth" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Growth</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. Empty Page: Projects -->
+      <section class="view" data-view="projects" hidden>
+        <div class="card empty-card">
+          <header class="head">
+            <div class="head__lead">
+              <h1 class="head__title">Projects</h1>
+            </div>
+          </header>
+          <div class="empty-state">
+            <p>This page is currently empty. We will work on it later.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Buy Template Floating Pill -->
+  <a class="cc-preview-pill" href="https://codeandchill.store/checkout?item=rapport&ref=preview" target="_top" rel="noopener" aria-label="Buy the Rapport template on Code and Chill">
+    <span class="cc-preview-pill__long">Buy this template →</span>
+  </a>
+
+  <!-- Main Application Script -->
+  <script src="js/app.js"></script>
 </body>
 </html>
