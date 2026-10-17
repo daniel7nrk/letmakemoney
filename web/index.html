@@ -13,33 +13,6 @@
   <!-- Supabase Official JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Buy Preview Pill */
-    .cc-preview-pill {
-      position: fixed;
-      right: max(16px, env(safe-area-inset-right));
-      bottom: max(16px, env(safe-area-inset-bottom));
-      z-index: 2147483647;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 44px;
-      padding: 0 14px;
-      box-sizing: border-box;
-      background: #ff5c3d;
-      color: #161616;
-      font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      text-decoration: none;
-      border: 2px solid #fff;
-      box-shadow: 4px 4px 0 rgba(0, 0, 0, .35);
-      border-radius: 4px;
-      transition: background 0.15s ease;
-    }
-    .cc-preview-pill:hover {
-      background: #ff7a5f;
-    }
-
     /* Active dock dot indicator */
     .dock__btn[aria-current="page"] {
       position: relative;
@@ -577,11 +550,6 @@
       </section>
     </main>
   </div>
-
-  <!-- Buy Template Floating Pill -->
-  <a class="cc-preview-pill" href="https://codeandchill.store/checkout?item=rapport&ref=preview" target="_top" rel="noopener" aria-label="Buy the Rapport template on Code and Chill">
-    <span class="cc-preview-pill__long">Buy this template →</span>
-  </a>
 
   <!-- Main Application Script -->
   <script type="module" src="js/app.js"></script>
