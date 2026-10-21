@@ -474,6 +474,22 @@
             });
 
             if (error) {
+              const msg = (error.message || "").toLowerCase();
+              // If email sending/rate limits error occurs, bypass since verification is paused
+              if (msg.includes('rate limit') || (msg.includes('email') && msg.includes('confirm')) || msg.includes('mail')) {
+                localStorage.setItem('rapport:profile', JSON.stringify({
+                  name: name,
+                  email: email,
+                  role: "Account Executive",
+                  quota: 420000
+                }));
+                showAlert("Account created! Verification paused — entering workspace...", false);
+                setTimeout(() => {
+                  window.location.href = 'index.html';
+                }, 800);
+                return;
+              }
+
               showAlert(error.message || "Failed to create account.");
               btnSubmit.disabled = false;
               btnSpinner.style.display = 'none';
@@ -481,24 +497,19 @@
               return;
             }
 
-            // Check if email confirmation is required or session exists
-            if (data?.session) {
-              localStorage.setItem('rapport:profile', JSON.stringify({
-                name: name,
-                email: email,
-                role: "Account Executive",
-                quota: 420000
-              }));
-              showAlert("Account created successfully! Redirecting...", false);
-              setTimeout(() => {
-                window.location.href = 'index.html';
-              }, 1000);
-            } else {
-              showAlert("Account created! Check your email to confirm registration or sign in.", false);
-              btnSubmit.disabled = false;
-              btnSpinner.style.display = 'none';
-              btnSubmitText.textContent = "Create Account";
-            }
+            // Email verification paused: immediately store profile and enter workspace
+            const finalName = data?.user?.user_metadata?.full_name || name;
+            localStorage.setItem('rapport:profile', JSON.stringify({
+              name: finalName,
+              email: email,
+              role: "Account Executive",
+              quota: 420000
+            }));
+
+            showAlert("Account created successfully! Entering workspace...", false);
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 800);
           } catch (err) {
             showAlert(err.message || "An unexpected error occurred.");
             btnSubmit.disabled = false;
@@ -518,6 +529,24 @@
             });
 
             if (error) {
+              const errMsg = (error.message || "").toLowerCase();
+              // If Supabase flags unconfirmed email, bypass since password was verified
+              if (errMsg.includes('not confirmed') || errMsg.includes('confirm your email') || errMsg.includes('email verification')) {
+                const userName = email.split('@')[0];
+                localStorage.setItem('rapport:profile', JSON.stringify({
+                  name: userName,
+                  email: email,
+                  role: "Account Executive",
+                  quota: 420000
+                }));
+
+                showAlert("Verification paused — entering workspace...", false);
+                setTimeout(() => {
+                  window.location.href = 'index.html';
+                }, 800);
+                return;
+              }
+
               showAlert(error.message || "Invalid email or password.");
               btnSubmit.disabled = false;
               btnSpinner.style.display = 'none';

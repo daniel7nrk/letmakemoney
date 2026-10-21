@@ -87,21 +87,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         localStorage.setItem('rapport:profile', JSON.stringify(profileState));
         applyProfileEverywhere(profileState);
-
-        if (authLinkText) authLinkText.textContent = "Sign Out";
-        if (authLink) {
-          authLink.href = "#";
-          authLink.addEventListener('click', async (e) => {
-            e.preventDefault();
-            await supabase.auth.signOut();
-            localStorage.removeItem('rapport:profile');
-            window.location.reload();
-          });
-        }
       }
     } catch (err) {
       console.warn("Supabase session check error:", err);
     }
+  }
+
+  // Reflect signed-in status and sign-out handler across local & Supabase sessions
+  const hasSavedProfile = localStorage.getItem('rapport:profile');
+  if ((currentUser || hasSavedProfile) && authLinkText && authLink) {
+    authLinkText.textContent = "Sign Out";
+    authLink.href = "#";
+    authLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (supabase) {
+        try { await supabase.auth.signOut(); } catch (err) {}
+      }
+      localStorage.removeItem('rapport:profile');
+      window.location.reload();
+    });
   }
 
   // 3. Live Synchronization: as user types in the form, update everywhere in real-time
