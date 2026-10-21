@@ -4,28 +4,28 @@ import { getSupabase } from './supabaseClient.js';
 let familyMembers = [];
 let activeTabId = 'all';
 
-// Default starter members (2 people as mentioned by user) if table is pending schema exposure
+// Default starter members (synced with Supabase Authentication users)
 const defaultMembers = [
   {
-    id: 'mem_1',
-    name: 'Sofia Reyes',
+    id: '79968a25-0472-44e3-8f1a-e89803320a2e',
+    name: 'Daniel Ngaruka',
     relationship: 'Family Lead',
-    email: 'sofia@rapport.app',
+    email: 'ngarukadaniel122@gmail.com',
     phone: '+250 788 123 456',
-    allowance: 250000,
-    balance: 182400,
+    allowance: 350000,
+    balance: 245000,
     currency: 'RWF',
     status: 'Active',
-    avatar: 'photos/168-rapport/sofia-reyes.jpg'
+    avatar: null
   },
   {
     id: 'mem_2',
-    name: 'David Reyes',
+    name: 'Family Member',
     relationship: 'Family Member',
-    email: 'david.reyes@family.net',
+    email: 'family.member2@promptpay.app',
     phone: '+250 788 987 654',
     allowance: 200000,
-    balance: 95000,
+    balance: 120000,
     currency: 'RWF',
     status: 'Active',
     avatar: null
@@ -44,7 +44,7 @@ async function loadFamilyMembers(supabase) {
     const cached = localStorage.getItem('promptpay:family_members');
     if (cached) {
       const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].name !== 'Sofia Reyes') {
         familyMembers = parsed;
       }
     }
@@ -94,17 +94,19 @@ async function loadFamilyMembers(supabase) {
 }
 
 function normalizeMember(d, index) {
+  const meta = d.raw_user_meta_data || d.user_metadata || {};
+  const displayName = d.display_name || d.name || d.full_name || meta.display_name || meta.full_name || meta.name || (d.email ? d.email.split('@')[0] : `Member ${index + 1}`);
   return {
     id: d.id || `mem_${index + 1}`,
-    name: d.name || d.full_name || d.first_name ? `${d.first_name || ''} ${d.last_name || ''}`.trim() : (d.email ? d.email.split('@')[0] : `Member ${index + 1}`),
-    relationship: d.relationship || d.role || (index === 0 ? 'Family Lead' : 'Family Member'),
+    name: displayName,
+    relationship: d.relationship || d.role || meta.role || (index === 0 ? 'Family Lead' : 'Family Member'),
     email: d.email || '',
-    phone: d.phone || d.telephone || d.phone_number || '+250 788 000 000',
-    allowance: Number(d.allowance || d.budget || 200000),
-    balance: Number(d.balance || 120000),
+    phone: d.phone || d.telephone || d.phone_number || meta.phone || '+250 788 000 000',
+    allowance: Number(d.allowance || d.budget || meta.allowance || 200000),
+    balance: Number(d.balance || meta.balance || 120000),
     currency: d.currency || 'RWF',
     status: d.status || 'Active',
-    avatar: d.avatar || d.photo_url || d.photoUri || null
+    avatar: d.avatar || d.photo_url || d.photoUri || meta.avatar || null
   };
 }
 
