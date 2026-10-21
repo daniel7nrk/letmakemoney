@@ -30,6 +30,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400..700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/rapport.css" />
   <link rel="stylesheet" href="css/rapport-settings.css" />
+  <link rel="stylesheet" href="css/rapport-family.css" />
   <!-- Supabase Official JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -115,25 +116,11 @@
 
   <div class="app">
     <!-- Top Header -->
-    <header class="top">
+    <header class="top" style="display: flex; justify-content: space-between; align-items: center;">
       <a class="brand magnetic" href="#/settings" aria-label="Rapport">
         <span class="brand__mark" aria-hidden="true">R</span>
         <span class="brand__name">rapport</span>
       </a>
-
-      <!-- Center Navigation Tabs (Direct to empty pages for later work) -->
-      <nav class="tabs" aria-label="Main">
-        <div class="tabs__track">
-          <a class="tab" href="#/overview" data-target="overview">Overview</a>
-          <a class="tab" href="#/pipeline" data-target="pipeline">Pipeline</a>
-          <a class="tab" href="#/customers" data-target="customers">Customers</a>
-          <a class="tab" href="#/schedule" data-target="schedule">Schedule</a>
-          <a class="tab" href="#/finance" data-target="finance">Finance</a>
-          <a class="tab" href="#/growth" data-target="growth">Growth</a>
-          <a class="tab" href="#/projects" data-target="projects">Projects</a>
-          <span class="tabs__pill" id="main-tabs-pill" aria-hidden="true"></span>
-        </div>
-      </nav>
 
       <!-- Right Header Tools -->
       <div class="top__tools">
@@ -664,17 +651,64 @@
         </div>
       </section>
 
-      <!-- 16. Empty Page: Family -->
+      <!-- 16. Family Financial Report & Workspace -->
       <section class="view" data-view="family" hidden>
-        <div class="card empty-card">
-          <header class="head">
-            <div class="head__lead">
-              <h1 class="head__title">Family</h1>
-            </div>
-          </header>
-          <div class="empty-state">
-            <p>This page is currently empty. We will work on it later.</p>
+        <!-- Page Head Title & 3 Metric Badges -->
+        <header class="head">
+          <div class="head__lead">
+            <h1 class="head__title" tabindex="-1">Family<br>Report</h1>
           </div>
+          <dl class="head__stats">
+            <div class="stat" data-stat="family-members">
+              <span class="stat__ico">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="9" cy="8.5" r="3.5"/>
+                  <path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5"/>
+                  <path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.8c1.8.6 3 2.2 3.5 4.7"/>
+                </svg>
+              </span>
+              <div class="stat__body">
+                <dd class="stat__value"><b id="stat-family-count" data-count="2">2</b></dd>
+                <dt class="stat__label">Family members</dt>
+              </div>
+            </div>
+            <div class="stat" data-stat="family-budget">
+              <span class="stat__ico">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="14" rx="3"/>
+                  <path d="M3 10h18M7 15h2"/>
+                </svg>
+              </span>
+              <div class="stat__body">
+                <dd class="stat__value"><b id="stat-family-spending">450,000 RWF</b></dd>
+                <dt class="stat__label">Monthly allowance pool</dt>
+              </div>
+            </div>
+            <div class="stat" data-stat="family-alerts">
+              <span class="stat__ico">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <path d="m9 12 2 2 4-4"/>
+                </svg>
+              </span>
+              <div class="stat__body">
+                <dd class="stat__value"><b id="stat-family-safety" class="text-good">100%</b></dd>
+                <dt class="stat__label">Fraud & safety shield</dt>
+              </div>
+            </div>
+          </dl>
+        </header>
+
+        <!-- Member Tab Sub-Navigation (All Members first, then each member from the database) -->
+        <div class="family-navwrap">
+          <div class="family-seg" id="family-member-tabs" role="tablist">
+            <!-- Dynamically populated by family.js -->
+          </div>
+        </div>
+
+        <!-- Dynamic Family Report Panels (Up to middle of the page) -->
+        <div id="family-panels-container">
+          <!-- Dynamically populated by family.js -->
         </div>
       </section>
     </main>

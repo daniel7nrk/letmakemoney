@@ -1,5 +1,6 @@
 // Navigation and Interactive Controller with Ubiquitous User Profile Sync
 import { getSupabase } from './supabaseClient.js';
+import { initFamilyView } from './family.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Ensure html has js and is-ready classes for Rapport styling
@@ -230,18 +231,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    // Update Top Tabs
-    let foundTab = null;
-    topTabs.forEach(t => {
-      if (t.dataset.target === targetName) {
-        t.classList.add('is-active');
-        foundTab = t;
-      } else {
-        t.classList.remove('is-active');
-      }
-    });
-    updateMainTabsPill(foundTab);
-
     // Update Dock Buttons
     allDockBtns.forEach(btn => {
       if (btn.dataset.target === targetName) {
@@ -252,6 +241,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.removeAttribute('aria-current');
       }
     });
+
+    if (targetName === 'family') {
+      initFamilyView();
+    }
   }
 
   topTabs.forEach(tab => {
