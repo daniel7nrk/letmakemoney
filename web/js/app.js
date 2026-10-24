@@ -357,6 +357,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // --- Top Bell Notification Button ---
+  const btnBell = document.getElementById('btn-bell');
+  if (btnBell) {
+    btnBell.addEventListener('click', () => {
+      location.hash = '#/notification';
+      showView('notification');
+    });
+  }
+
   // ==========================================
   // --- Family Finances & Household Module ---
   // ==========================================
