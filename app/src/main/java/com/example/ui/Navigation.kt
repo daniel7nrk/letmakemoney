@@ -32,7 +32,7 @@ import androidx.navigation.navArgument
 import androidx.compose.ui.platform.LocalContext
 import com.example.notification.NotificationHelper
 import com.example.ui.screens.*
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 
 sealed class Screen(val route: String, val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector? = null) {
     object Welcome : Screen("welcome", "Welcome")
@@ -174,10 +174,10 @@ fun AppNavigation(
                         Surface(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(26.dp)),
-                            color = MaterialTheme.colorScheme.surface,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                            shadowElevation = 8.dp
+                                .clip(RoundedCornerShape(999.dp)),
+                            color = RapportDockLight,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x24FFFFFF)),
+                            shadowElevation = 14.dp
                         ) {
                             NavigationBar(
                                 containerColor = Color.Transparent,
@@ -197,10 +197,11 @@ fun AppNavigation(
                             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                             label = { Text(strings.navHome, maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Home.route) FontWeight.Bold else FontWeight.Normal) },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = RoyalBlue,
-                                selectedTextColor = RoyalBlue,
-                                unselectedTextColor = Color(0xFF64748B),
-                                indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                                selectedIconColor = RapportButter,
+                                selectedTextColor = RapportButter,
+                                unselectedIconColor = RapportOnDockLight.copy(alpha = 0.65f),
+                                unselectedTextColor = RapportOnDockLight.copy(alpha = 0.65f),
+                                indicatorColor = Color(0x22F2C94C)
                             )
                         )
 
@@ -217,10 +218,11 @@ fun AppNavigation(
                             icon = { Icon(Icons.AutoMirrored.Filled.ReceiptLong, contentDescription = "Transactions") },
                             label = { Text(strings.navTransactions, maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Transactions.route) FontWeight.Bold else FontWeight.Normal) },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = RoyalBlue,
-                                selectedTextColor = RoyalBlue,
-                                unselectedTextColor = Color(0xFF64748B),
-                                indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                                selectedIconColor = RapportButter,
+                                selectedTextColor = RapportButter,
+                                unselectedIconColor = RapportOnDockLight.copy(alpha = 0.65f),
+                                unselectedTextColor = RapportOnDockLight.copy(alpha = 0.65f),
+                                indicatorColor = Color(0x22F2C94C)
                             )
                         )
 
@@ -236,24 +238,25 @@ fun AppNavigation(
                                 Box(
                                     modifier = Modifier
                                         .size(width = 46.dp, height = 32.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(RoyalBlue)
+                                        .clip(RoundedCornerShape(999.dp))
+                                        .background(RapportPine)
                                         .testTag("fab_add_transaction"),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         Icons.Default.Add,
                                         contentDescription = "Add Transaction",
-                                        tint = Color.White,
+                                        tint = RapportOnDockLight,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
                             },
-                            label = { Text(if (selectedLanguage == com.example.model.AppLanguage.FRENCH) "Ajouter" else "Add", maxLines = 1, fontSize = 11.sp, color = RoyalBlue, fontWeight = FontWeight.Bold) },
+                            label = { Text(if (selectedLanguage == com.example.model.AppLanguage.FRENCH) "Ajouter" else "Add", maxLines = 1, fontSize = 11.sp, color = RapportPine, fontWeight = FontWeight.Bold) },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = RoyalBlue,
-                                selectedTextColor = RoyalBlue,
-                                unselectedTextColor = RoyalBlue,
+                                selectedIconColor = RapportPine,
+                                selectedTextColor = RapportPine,
+                                unselectedIconColor = RapportPine,
+                                unselectedTextColor = RapportPine,
                                 indicatorColor = Color.Transparent
                             )
                         )
@@ -271,10 +274,11 @@ fun AppNavigation(
                             icon = { Icon(Icons.Default.BarChart, contentDescription = "Reports") },
                             label = { Text(strings.navReports, maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Reports.route) FontWeight.Bold else FontWeight.Normal) },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = RoyalBlue,
-                                selectedTextColor = RoyalBlue,
-                                unselectedTextColor = Color(0xFF64748B),
-                                indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                                selectedIconColor = RapportButter,
+                                selectedTextColor = RapportButter,
+                                unselectedIconColor = RapportOnDockLight.copy(alpha = 0.65f),
+                                unselectedTextColor = RapportOnDockLight.copy(alpha = 0.65f),
+                                indicatorColor = Color(0x22F2C94C)
                             )
                         )
 
@@ -291,10 +295,11 @@ fun AppNavigation(
                             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
                             label = { Text(strings.navSettings, maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Profile.route) FontWeight.Bold else FontWeight.Normal) },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = RoyalBlue,
-                                selectedTextColor = RoyalBlue,
-                                unselectedTextColor = Color(0xFF64748B),
-                                indicatorColor = RoyalBlue.copy(alpha = 0.12f)
+                                selectedIconColor = RapportButter,
+                                selectedTextColor = RapportButter,
+                                unselectedIconColor = RapportOnDockLight.copy(alpha = 0.65f),
+                                unselectedTextColor = RapportOnDockLight.copy(alpha = 0.65f),
+                                indicatorColor = Color(0x22F2C94C)
                             )
                         )
                             }

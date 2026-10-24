@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.CategoryEntity
 import com.example.data.TransactionEntity
 import com.example.model.Country
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 import com.example.ui.util.FormatUtil
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,7 +102,7 @@ fun PendingReviewScreen(
                         .fillMaxWidth()
                         .height(52.dp)
                         .testTag("back_to_dashboard_button"),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(999.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = RoyalBlue)
                 ) {
                     Text("Back to Dashboard", fontWeight = FontWeight.Bold)
@@ -236,7 +236,7 @@ fun PendingTransactionCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("desc_input_${transaction.id}"),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -249,7 +249,7 @@ fun PendingTransactionCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("notes_input_${transaction.id}"),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -260,7 +260,7 @@ fun PendingTransactionCard(
                     .fillMaxWidth()
                     .height(48.dp)
                     .testTag("confirm_cat_button_${transaction.id}"),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = RoyalBlue)
             ) {
                 Icon(Icons.Default.CheckCircle, contentDescription = null)

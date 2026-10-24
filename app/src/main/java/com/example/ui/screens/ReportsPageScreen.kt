@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.CategoryEntity
 import com.example.data.TransactionEntity
 import com.example.model.Country
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 import com.example.ui.util.FormatUtil
 
 @Composable
@@ -78,8 +78,8 @@ fun ReportsPageScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFFF1F5F9))
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                     .padding(4.dp)
             ) {
                 listOf("Weekly", "Monthly", "Yearly").forEach { period ->
@@ -88,7 +88,7 @@ fun ReportsPageScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(999.dp))
                             .background(if (isSel) RoyalBlue else Color.Transparent)
                             .clickable { selectedTimeframe = period },
                         contentAlignment = Alignment.Center
@@ -109,9 +109,9 @@ fun ReportsPageScreen(
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(26.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
                 Column(modifier = Modifier.padding(22.dp)) {
@@ -136,9 +136,9 @@ fun ReportsPageScreen(
             if (totalFees > 0) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFDE68A)),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBEB)),
+                    shape = RoundedCornerShape(26.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, RapportButter.copy(alpha = 0.4f)),
+                    colors = CardDefaults.cardColors(containerColor = RapportButter.copy(alpha = 0.15f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Row(
@@ -166,7 +166,7 @@ fun ReportsPageScreen(
                         }
                         Surface(
                             color = Color(0xFFFEF3C7),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(999.dp)
                         ) {
                             Text(
                                 text = "Category: Transaction Fees",
@@ -182,9 +182,9 @@ fun ReportsPageScreen(
             // Smart Tip Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFDBEAFE)),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF6FF))
+                shape = RoundedCornerShape(22.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, RapportPine.copy(alpha = 0.25f)),
+                colors = CardDefaults.cardColors(containerColor = RapportPine.copy(alpha = 0.12f))
             ) {
                 Row(
                     modifier = Modifier.padding(18.dp),
@@ -234,9 +234,9 @@ fun ReportsPageScreen(
             if (categoryTotals.isEmpty()) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    shape = RoundedCornerShape(22.dp),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
                         Text("No categorized expenses yet", color = Color(0xFF64748B))
@@ -247,9 +247,9 @@ fun ReportsPageScreen(
                     val ratio = (amount / maxCategorySpend).toFloat()
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        shape = RoundedCornerShape(22.dp),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                     ) {
                         Column(modifier = Modifier.padding(18.dp)) {
@@ -277,7 +277,7 @@ fun ReportsPageScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(6.dp)
-                                    .clip(RoundedCornerShape(3.dp)),
+                                    .clip(RoundedCornerShape(999.dp)),
                                 color = RoyalBlue,
                                 trackColor = Color(0xFFF1F5F9)
                             )

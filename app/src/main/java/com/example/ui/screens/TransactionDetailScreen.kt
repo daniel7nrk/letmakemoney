@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.CategoryEntity
 import com.example.data.TransactionEntity
 import com.example.model.Country
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 import com.example.ui.util.FormatUtil
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,7 +80,7 @@ fun TransactionDetailScreen(
             // Hero Amount Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(26.dp),
                 colors = CardDefaults.cardColors(containerColor = RoyalBlue)
             ) {
                 Column(
@@ -110,7 +110,7 @@ fun TransactionDetailScreen(
 
                     Surface(
                         color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.2f),
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(999.dp)
                     ) {
                         Text(
                             text = "Fee: ${FormatUtil.formatCurrency(transaction.fee, selectedCountry.currencyCode)} · ${transaction.feeCategory}",
@@ -169,7 +169,7 @@ fun TransactionDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("detail_description_input"),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -211,7 +211,7 @@ fun TransactionDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("detail_notes_input"),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -258,7 +258,7 @@ fun TransactionDetailScreen(
                     .fillMaxWidth()
                     .height(52.dp)
                     .testTag("save_detail_button"),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(999.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = RoyalBlue)
             ) {
                 Icon(Icons.Default.Save, contentDescription = null)
@@ -274,7 +274,7 @@ fun TransactionDetailScreen(
                     .fillMaxWidth()
                     .height(52.dp)
                     .testTag("delete_tx_button"),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(999.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
             ) {
                 Icon(Icons.Default.Delete, contentDescription = null)

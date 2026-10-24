@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 
 @Composable
 fun PinSetupScreen(
@@ -150,9 +150,9 @@ fun PinSetupScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
                         .height(64.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                    shape = RoundedCornerShape(26.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -259,13 +259,13 @@ fun PinSetupScreen(
                                             else -> onDigitClick(key)
                                         }
                                     },
-                                shape = RoundedCornerShape(16.dp),
+                                shape = RoundedCornerShape(999.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = if (isSpecial) Color(0xFFEFF6FF) else Color.White
+                                    containerColor = if (isSpecial) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
                                 ),
                                 border = androidx.compose.foundation.BorderStroke(
                                     1.dp,
-                                    if (isSpecial) Color(0xFFDBEAFE) else Color(0xFFF1F5F9)
+                                    MaterialTheme.colorScheme.outlineVariant
                                 ),
                                 elevation = CardDefaults.cardElevation(defaultElevation = if (isSpecial) 0.dp else 1.dp)
                             ) {

@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.auth.AuthManager
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -168,7 +168,7 @@ fun ProfilePhotoScreen(
                         .fillMaxWidth()
                         .height(52.dp)
                         .testTag("gallery_picker_button"),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(999.dp)
                 ) {
                     Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
@@ -181,7 +181,7 @@ fun ProfilePhotoScreen(
                         .fillMaxWidth()
                         .height(52.dp)
                         .testTag("camera_picker_button"),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(999.dp)
                 ) {
                     Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))

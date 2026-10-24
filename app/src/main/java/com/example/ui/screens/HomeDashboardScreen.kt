@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.TransactionEntity
 import com.example.data.UserProfileEntity
 import com.example.model.Country
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 import com.example.ui.util.FormatUtil
 
 @Composable
@@ -147,7 +147,7 @@ fun HomeDashboardScreen(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
+                    shape = RoundedCornerShape(26.dp),
                     colors = CardDefaults.cardColors(containerColor = RoyalBlue),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
@@ -230,9 +230,9 @@ fun HomeDashboardScreen(
                             .fillMaxWidth()
                             .clickable { onNavigateToPendingReview() }
                             .testTag("pending_review_banner"),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF7ED)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFFEDD5))
+                        shape = RoundedCornerShape(22.dp),
+                        colors = CardDefaults.cardColors(containerColor = RapportButter.copy(alpha = 0.15f)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, RapportButter.copy(alpha = 0.4f))
                     ) {
                         Row(
                             modifier = Modifier
@@ -243,7 +243,7 @@ fun HomeDashboardScreen(
                             Icon(
                                 imageVector = Icons.Default.PendingActions,
                                 contentDescription = null,
-                                tint = Color(0xFFD97706),
+                                tint = RapportTomato,
                                 modifier = Modifier.size(28.dp)
                             )
 
@@ -266,7 +266,7 @@ fun HomeDashboardScreen(
                             Icon(
                                 imageVector = Icons.Default.ChevronRight,
                                 contentDescription = "Review",
-                                tint = Color(0xFFD97706)
+                                tint = RapportTomato
                             )
                         }
                     }
@@ -295,9 +295,9 @@ fun HomeDashboardScreen(
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        shape = RoundedCornerShape(22.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
                         Column(
                             modifier = Modifier
@@ -449,8 +449,8 @@ fun TransactionCardItem(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Surface(
-                        color = Color(0xFFFEF3C7),
-                        shape = RoundedCornerShape(4.dp)
+                        color = RapportButter.copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(999.dp)
                     ) {
                         Text(
                             text = transaction.feeCategory.ifBlank { "Fee" },

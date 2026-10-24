@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.CategoryEntity
 import com.example.data.TransactionEntity
 import com.example.model.Country
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 import com.example.ui.util.FormatUtil
 
 data class DaySpendData(
@@ -148,9 +148,9 @@ fun TransactionsPageScreen(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    shape = RoundedCornerShape(26.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Row(
@@ -189,10 +189,10 @@ fun TransactionsPageScreen(
                                 // Determine spend intensity color
                                 val barColor = when {
                                     day.totalAmount <= 0.0 -> Color(0xFFD1D5DB) // Neutral gray for no spend
-                                    avgDailySpend <= 0.0 -> Color(0xFF10B981)   // Default green
-                                    day.totalAmount > 1.15 * avgDailySpend -> Color(0xFFEF4444) // Red: notably above average
-                                    day.totalAmount >= 0.85 * avgDailySpend -> Color(0xFFF59E0B) // Yellow: close to average
-                                    else -> Color(0xFF10B981) // Green: below average
+                                    avgDailySpend <= 0.0 -> RapportGood   // Default green
+                                    day.totalAmount > 1.15 * avgDailySpend -> RapportTomato // Red: notably above average
+                                    day.totalAmount >= 0.85 * avgDailySpend -> RapportButter // Yellow: close to average
+                                    else -> RapportGood // Green: below average
                                 }
 
                                 val barAlpha = if (selectedDayIndex == null || isSelected) 1f else 0.35f
@@ -250,8 +250,8 @@ fun TransactionsPageScreen(
                             horizontalArrangement = Arrangement.SpaceAround,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            LegendBadge(color = Color(0xFF10B981), label = "Below Avg")
-                            LegendBadge(color = Color(0xFFF59E0B), label = "Around Avg")
+                            LegendBadge(color = RapportGood, label = "Below Avg")
+                            LegendBadge(color = RapportButter, label = "Around Avg")
                         }
                         Spacer(modifier = Modifier.height(6.dp))
                         Row(
@@ -259,7 +259,7 @@ fun TransactionsPageScreen(
                             horizontalArrangement = Arrangement.SpaceAround,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            LegendBadge(color = Color(0xFFEF4444), label = "Above Avg")
+                            LegendBadge(color = RapportTomato, label = "Above Avg")
                             LegendBadge(color = Color(0xFFD1D5DB), label = "No Spend")
                         }
                     }
@@ -273,9 +273,9 @@ fun TransactionsPageScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("day_filter_active_card"),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = RoyalBlue.copy(alpha = 0.08f)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, RoyalBlue.copy(alpha = 0.3f))
+                        shape = RoundedCornerShape(22.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                     ) {
                         Row(
                             modifier = Modifier
@@ -332,15 +332,15 @@ fun TransactionsPageScreen(
                     Box {
                         Surface(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(999.dp))
                                 .clickable { categoryDropdownExpanded = true }
                                 .border(
                                     width = 1.dp,
-                                    color = if (selectedCategoryFilter != "All") RoyalBlue else Color(0xFFD1D5DB),
-                                    shape = RoundedCornerShape(12.dp)
+                                    color = if (selectedCategoryFilter != "All") RoyalBlue else MaterialTheme.colorScheme.outlineVariant,
+                                    shape = RoundedCornerShape(999.dp)
                                 )
                                 .testTag("category_filter_dropdown"),
-                            color = if (selectedCategoryFilter != "All") RoyalBlue.copy(alpha = 0.08f) else Color.White
+                            color = if (selectedCategoryFilter != "All") RoyalBlue.copy(alpha = 0.08f) else MaterialTheme.colorScheme.surface
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
@@ -414,7 +414,7 @@ fun TransactionsPageScreen(
                             .fillMaxWidth()
                             .padding(vertical = 12.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(26.dp)
                     ) {
                         Column(
                             modifier = Modifier
@@ -458,7 +458,7 @@ fun TransactionsPageScreen(
                             .fillMaxWidth()
                             .padding(vertical = 12.dp)
                             .testTag("load_older_transactions_button"),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(999.dp)
                     ) {
                         if (isLoadingOlder) {
                             CircularProgressIndicator(

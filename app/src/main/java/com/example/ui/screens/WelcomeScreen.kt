@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 
 @Composable
 fun WelcomeScreen(
@@ -92,9 +92,9 @@ fun WelcomeScreen(
                 ) {
                     Card(
                         modifier = Modifier.weight(1f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        shape = RoundedCornerShape(16.dp)
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        shape = RoundedCornerShape(22.dp)
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
@@ -115,9 +115,9 @@ fun WelcomeScreen(
 
                     Card(
                         modifier = Modifier.weight(1f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        shape = RoundedCornerShape(16.dp)
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        shape = RoundedCornerShape(22.dp)
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
@@ -181,7 +181,7 @@ fun WelcomeScreen(
                         .fillMaxWidth()
                         .height(56.dp)
                         .testTag("get_started_button"),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(999.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = RoyalBlue)
                 ) {
                     Text("Get Started", fontSize = 18.sp, fontWeight = FontWeight.Bold)

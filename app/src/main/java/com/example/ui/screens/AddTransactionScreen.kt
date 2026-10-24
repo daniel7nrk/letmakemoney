@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.CategoryEntity
 import com.example.model.Country
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +63,7 @@ fun AddTransactionScreen(
             // Amount Input Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(26.dp),
                 colors = CardDefaults.cardColors(containerColor = RoyalBlue)
             ) {
                 Column(
@@ -105,7 +105,7 @@ fun AddTransactionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("fee_text_field"),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp)
             )
 
             // Description Input
@@ -117,7 +117,7 @@ fun AddTransactionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("description_text_field"),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp)
             )
 
             // Category Selection Grid
@@ -160,7 +160,7 @@ fun AddTransactionScreen(
                     .fillMaxWidth()
                     .height(56.dp)
                     .testTag("save_manual_transaction_button"),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(999.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = RoyalBlue)
             ) {
                 Icon(Icons.Default.Save, contentDescription = null)

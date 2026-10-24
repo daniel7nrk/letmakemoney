@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.model.Country
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 
 @Composable
 fun CountrySelectionScreen(
@@ -137,7 +137,7 @@ fun CountrySelectionScreen(
                     .fillMaxWidth()
                     .height(56.dp)
                     .testTag("continue_country_button"),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(999.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = RoyalBlue)
             ) {
                 Text("Continue with ${selected.currencyCode}", fontSize = 18.sp, fontWeight = FontWeight.Bold)

@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.AppNotificationEntity
 import com.example.data.ScamAlertEntity
 import com.example.data.TransactionEntity
-import com.example.ui.theme.RoyalBlue
+import com.example.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -167,9 +167,9 @@ fun NotificationsScreen(
                                 .weight(1f)
                                 .height(48.dp)
                                 .testTag("trigger_pending_reminder"),
-                            shape = RoundedCornerShape(12.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-                            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White)
+                            shape = RoundedCornerShape(999.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                            colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.surface)
                         ) {
                             Icon(
                                 Icons.Default.RateReview,
@@ -192,9 +192,9 @@ fun NotificationsScreen(
                                 .weight(1f)
                                 .height(48.dp)
                                 .testTag("trigger_weekly_report"),
-                            shape = RoundedCornerShape(12.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-                            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White)
+                            shape = RoundedCornerShape(999.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                            colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.surface)
                         ) {
                             Icon(
                                 Icons.Default.Info,
@@ -220,11 +220,11 @@ fun NotificationsScreen(
                     listOf("All", "Transactions").forEach { f ->
                         val isSel = selectedFilter == f
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = if (isSel) RoyalBlue else Color.White,
+                            shape = RoundedCornerShape(999.dp),
+                            color = if (isSel) RoyalBlue else MaterialTheme.colorScheme.surface,
                             border = androidx.compose.foundation.BorderStroke(
                                 1.dp,
-                                if (isSel) RoyalBlue else Color(0xFFE2E8F0)
+                                if (isSel) RoyalBlue else MaterialTheme.colorScheme.outlineVariant
                             ),
                             modifier = Modifier.clickable { selectedFilter = f }
                         ) {
@@ -250,9 +250,9 @@ fun NotificationsScreen(
                     ) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(20.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                            shape = RoundedCornerShape(26.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                         ) {
                             Column(
                                 modifier = Modifier
