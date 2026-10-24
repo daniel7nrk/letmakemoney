@@ -35,6 +35,9 @@ class MainActivity : FragmentActivity() {
         schedulePendingReviewWorker()
         scheduleSpendingReportWorker()
 
+        // Background Supabase sync (100% offline-first: runs only if online, never blocks)
+        com.example.sync.SupabaseSyncManager.syncIfOnline(applicationContext)
+
         handleIntent(intent)
 
         setContent {

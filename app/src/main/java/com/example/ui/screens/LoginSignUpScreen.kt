@@ -23,16 +23,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.auth.AuthManager
-import com.example.ui.theme.RoyalBlue
+import com.example.model.AppLanguage
+import com.example.ui.theme.ElectricBlue
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginSignUpScreen(
     authManager: AuthManager,
     onLoginSuccess: () -> Unit,
-    onSignUpSuccess: () -> Unit
+    onSignUpSuccess: () -> Unit,
+    initialLanguage: AppLanguage = AppLanguage.ENGLISH
 ) {
     var isSignUp by remember { mutableStateOf(false) }
+    var currentLang by remember { mutableStateOf(initialLanguage) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var fullName by remember { mutableStateOf("") }
@@ -40,6 +43,7 @@ fun LoginSignUpScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val coroutineScope = rememberCoroutineScope()
+    val isFrench = currentLang == AppLanguage.FRENCH
 
     Scaffold(
         modifier = Modifier
@@ -52,18 +56,50 @@ fun LoginSignUpScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
+                .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Language Switcher Pill in Top Right
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Surface(
+                    onClick = {
+                        currentLang = if (isFrench) AppLanguage.ENGLISH else AppLanguage.FRENCH
+                    },
+                    shape = RoundedCornerShape(999.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                ) {
+                    Text(
+                        text = if (isFrench) "🇺🇸 English" else "🇫🇷 Français",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
-                text = if (isSignUp) "Create Account" else "Welcome Back",
+                text = if (isSignUp) {
+                    if (isFrench) "Créer un compte" else "Create Account"
+                } else {
+                    if (isFrench) "Bon retour" else "Welcome Back"
+                },
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onBackground
             )
 
             Text(
-                text = "100% On-Device Auth & Storage. Your transactions and credentials never leave this device.",
+                text = if (isFrench) {
+                    "Stockage 100% hors ligne. Vos transactions et identifiants ne quittent jamais cet appareil."
+                } else {
+                    "100% On-Device Auth & Storage. Your transactions and credentials never leave this device."
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -75,16 +111,16 @@ fun LoginSignUpScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(4.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(if (!isSignUp) RoyalBlue else Color.Transparent)
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(if (!isSignUp) ElectricBlue else Color.Transparent)
                         .clickable {
                             isSignUp = false
                             errorMessage = null
@@ -92,7 +128,7 @@ fun LoginSignUpScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "Sign In",
+                        if (isFrench) "Se connecter" else "Sign In",
                         color = if (!isSignUp) Color.White else MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
@@ -102,8 +138,8 @@ fun LoginSignUpScreen(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(if (isSignUp) RoyalBlue else Color.Transparent)
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(if (isSignUp) ElectricBlue else Color.Transparent)
                         .clickable {
                             isSignUp = true
                             errorMessage = null
@@ -111,7 +147,7 @@ fun LoginSignUpScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "Sign Up",
+                        if (isFrench) "Créer compte" else "Sign Up",
                         color = if (isSignUp) Color.White else MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
@@ -124,13 +160,13 @@ fun LoginSignUpScreen(
                 OutlinedTextField(
                     value = fullName,
                     onValueChange = { fullName = it },
-                    label = { Text("Full Name") },
-                    placeholder = { Text("e.g. Alex Morgan") },
+                    label = { Text(if (isFrench) "Nom complet" else "Full Name") },
+                    placeholder = { Text(if (isFrench) "ex. Alex Morgan" else "e.g. Alex Morgan") },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("full_name_input"),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -139,13 +175,13 @@ fun LoginSignUpScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email Address") },
+                label = { Text(if (isFrench) "Adresse email" else "Email Address") },
                 placeholder = { Text("alex@example.com") },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("email_input"),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -153,13 +189,13 @@ fun LoginSignUpScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text(if (isFrench) "Mot de passe" else "Password") },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("password_input"),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp)
             )
 
             if (errorMessage != null) {
@@ -201,16 +237,20 @@ fun LoginSignUpScreen(
                     .fillMaxWidth()
                     .height(56.dp)
                     .testTag("submit_auth_button"),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = RoyalBlue),
+                shape = RoundedCornerShape(999.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue),
                 enabled = !isLoading
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
                     Text(
-                        if (isSignUp) "Create Account" else "Sign In",
-                        fontSize = 18.sp,
+                        if (isSignUp) {
+                            if (isFrench) "Créer un compte" else "Create Account"
+                        } else {
+                            if (isFrench) "Se connecter" else "Sign In"
+                        },
+                        fontSize = 17.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -236,9 +276,12 @@ fun LoginSignUpScreen(
                     .fillMaxWidth()
                     .height(52.dp)
                     .testTag("google_login_button"),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(999.dp)
             ) {
-                Text("Continue with Google", fontWeight = FontWeight.SemiBold)
+                Text(
+                    if (isFrench) "Continuer avec Google" else "Continue with Google",
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }

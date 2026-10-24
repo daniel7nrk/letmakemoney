@@ -10,7 +10,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ReceiptLong
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material3.*
 import androidx.compose.ui.platform.testTag
 import androidx.compose.runtime.*
@@ -41,7 +41,7 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
     object Login : Screen("login", "Login")
     object ProfilePhoto : Screen("profile_photo", "Profile Photo")
     object Home : Screen("home", "Home", Icons.Default.Home)
-    object Transactions : Screen("transactions", "Transactions", Icons.Default.ReceiptLong)
+    object Transactions : Screen("transactions", "Transactions", Icons.AutoMirrored.Filled.ReceiptLong)
     object Reports : Screen("reports", "Reports", Icons.Default.BarChart)
     object Profile : Screen("profile", "Profile", Icons.Default.Person)
     object PendingReview : Screen("pending_review", "Pending Review")
@@ -165,11 +165,25 @@ fun AppNavigation(
         Scaffold(
             bottomBar = {
                 if (isBottomBarVisible) {
-                    NavigationBar(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                        tonalElevation = 8.dp,
-                        windowInsets = NavigationBarDefaults.windowInsets
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(26.dp)),
+                            color = MaterialTheme.colorScheme.surface,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                            shadowElevation = 8.dp
+                        ) {
+                            NavigationBar(
+                                containerColor = Color.Transparent,
+                                tonalElevation = 0.dp,
+                                windowInsets = WindowInsets(0, 0, 0, 0)
+                            ) {
                         // 1. Home
                         NavigationBarItem(
                             selected = currentRoute == Screen.Home.route,
@@ -200,7 +214,7 @@ fun AppNavigation(
                                     restoreState = true
                                 }
                             },
-                            icon = { Icon(Icons.Default.ReceiptLong, contentDescription = "Transactions") },
+                            icon = { Icon(Icons.AutoMirrored.Filled.ReceiptLong, contentDescription = "Transactions") },
                             label = { Text(strings.navTransactions, maxLines = 1, fontSize = 11.sp, fontWeight = if (currentRoute == Screen.Transactions.route) FontWeight.Bold else FontWeight.Normal) },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = RoyalBlue,
@@ -283,6 +297,8 @@ fun AppNavigation(
                                 indicatorColor = RoyalBlue.copy(alpha = 0.12f)
                             )
                         )
+                            }
+                        }
                     }
                 }
             }
@@ -315,6 +331,7 @@ fun AppNavigation(
             composable(Screen.Login.route) {
                 LoginSignUpScreen(
                     authManager = viewModel.authManager,
+                    initialLanguage = selectedLanguage,
                     onLoginSuccess = {
                         if (userProfile?.pinHash.isNullOrBlank()) {
                             navController.navigate(Screen.PinSetup.route) {
