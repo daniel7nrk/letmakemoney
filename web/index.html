@@ -1063,11 +1063,11 @@
             </div>
           </div>
           <div class="head__actions">
-            <button type="button" class="btn btn--ink btn--sm" id="btn-open-add-member">
+            <button type="button" class="btn btn--ghost btn--sm" id="btn-sync-supabase">
               <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 5v14M5 12h14"/>
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
               </svg>
-              <span>Add Family Member</span>
+              <span>Sync with Supabase</span>
             </button>
           </div>
         </header>
@@ -1216,10 +1216,7 @@
                 <p class="card__sub">Family dependents with authorized allowances and individual spending</p>
               </div>
               <div class="card__tools">
-                <button type="button" class="btn btn--ghost btn--sm" id="btn-add-member-secondary">
-                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                  <span>Add Member</span>
-                </button>
+                <span class="status-pill status-pill--active" style="font-size: 11px;">Supabase Live</span>
               </div>
             </div>
 
@@ -1231,63 +1228,6 @@
       </section>
     </main>
   </div>
-
-  <!-- Modal: Add Family Member -->
-  <dialog class="modal" id="modal-add-member" aria-labelledby="modal-member-title">
-    <form class="mform" id="form-add-member" method="dialog">
-      <div class="mform__head">
-        <div>
-          <h2 class="mform__title" id="modal-member-title">Add Family Member</h2>
-          <p class="mform__sub">Create a household member profile and assign a monthly allowance.</p>
-        </div>
-        <button type="button" class="ibtn ibtn--sm ibtn--glass" id="btn-close-member-modal" aria-label="Close dialog">
-          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <div class="mform__grid">
-        <label class="field field--wide">
-          <span class="field__label">Full Name</span>
-          <input type="text" id="member-name" required placeholder="e.g. Maya Jenkins" autocomplete="off" />
-        </label>
-        <label class="field">
-          <span class="field__label">Relationship</span>
-          <select id="member-relation" required>
-            <option value="Spouse">Spouse</option>
-            <option value="Child" selected>Child</option>
-            <option value="Parent">Parent</option>
-            <option value="Sibling">Sibling</option>
-            <option value="Dependent">Dependent</option>
-            <option value="Other">Other</option>
-          </select>
-        </label>
-        <label class="field">
-          <span class="field__label">Role / Tag</span>
-          <select id="member-tag">
-            <option value="College">College</option>
-            <option value="High School">High School</option>
-            <option value="Co-Organizer">Co-Organizer</option>
-            <option value="Dependent" selected>Dependent</option>
-          </select>
-        </label>
-        <label class="field">
-          <span class="field__label">Monthly Allowance ($)</span>
-          <input type="number" id="member-allowance" required min="50" step="50" value="1000" />
-        </label>
-        <label class="field">
-          <span class="field__label">Initial Spent This Month ($)</span>
-          <input type="number" id="member-spent" min="0" step="10" value="250" />
-        </label>
-      </div>
-
-      <div class="mform__err" id="member-form-err"></div>
-
-      <div class="mform__foot">
-        <button type="button" class="btn btn--ghost" id="btn-cancel-member-modal">Cancel</button>
-        <button type="submit" class="btn btn--ink">Add Member</button>
-      </div>
-    </form>
-  </dialog>
 
   <!-- Main Application Script -->
   <script type="module" src="js/app.js"></script>

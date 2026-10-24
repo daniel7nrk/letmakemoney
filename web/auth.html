@@ -423,6 +423,30 @@
         if (inputConfirm) inputConfirm.type = showPass ? 'text' : 'password';
       });
 
+      function recordSupabaseFamilyUser(u) {
+        try {
+          let users = JSON.parse(localStorage.getItem('rapport:supabase_family_users') || '[]');
+          const idx = users.findIndex(item => item.email.toLowerCase() === u.email.toLowerCase());
+          const newEntry = {
+            id: u.id || `usr_${Date.now()}`,
+            name: u.name || u.email.split('@')[0],
+            email: u.email,
+            relation: u.role || 'Family Member',
+            tag: 'Member',
+            spent: u.spent || Math.floor(Math.random() * 800) + 200,
+            budget: u.budget || 1500,
+            color: ['#f2c94c', '#c8431f', '#6cc59a', '#8cc7b4'][users.length % 4],
+            avTone: ['av--t0', 'av--t1', 'av--t2', 'av--t3'][users.length % 4]
+          };
+          if (idx >= 0) {
+            users[idx] = { ...users[idx], ...newEntry };
+          } else {
+            users.push(newEntry);
+          }
+          localStorage.setItem('rapport:supabase_family_users', JSON.stringify(users));
+        } catch (e) {}
+      }
+
       // Form Submit
       authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -505,6 +529,12 @@
               role: "Account Executive",
               quota: 420000
             }));
+            recordSupabaseFamilyUser({
+              id: data?.user?.id,
+              name: finalName,
+              email: email,
+              role: "Family Member"
+            });
 
             showAlert("Account created successfully! Entering workspace...", false);
             setTimeout(() => {
@@ -562,6 +592,12 @@
               role: user?.user_metadata?.role || "Account Executive",
               quota: 420000
             }));
+            recordSupabaseFamilyUser({
+              id: user?.id,
+              name: userName,
+              email: email,
+              role: user?.user_metadata?.role || "Family Member"
+            });
 
             showAlert("Welcome back! Redirecting...", false);
             setTimeout(() => {

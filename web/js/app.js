@@ -44,12 +44,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (e) {}
 
   // ==========================================
-  // --- Family Finances & Household State ---
+  // --- Supabase Family Users Module ---
   // ==========================================
-  const DEFAULT_FAMILY_MEMBERS = [
+  const DEFAULT_SUPABASE_USERS = [
     {
-      id: 'mem_1',
-      name: 'Sarah Jenkins',
+      id: 'usr_cizigire_1',
+      name: 'Francis Cizigire',
+      email: 'francis@cizigire.org',
       relation: 'Spouse',
       tag: 'Co-Organizer',
       spent: 1950,
@@ -58,8 +59,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       avTone: 'av--t0'
     },
     {
-      id: 'mem_2',
-      name: 'David Jenkins',
+      id: 'usr_cizigire_2',
+      name: 'David Cizigire',
+      email: 'david@cizigire.org',
       relation: 'Child',
       tag: 'College',
       spent: 1140,
@@ -68,8 +70,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       avTone: 'av--t2'
     },
     {
-      id: 'mem_3',
-      name: 'Lisa Jenkins',
+      id: 'usr_cizigire_3',
+      name: 'Lisa Cizigire',
+      email: 'lisa@cizigire.org',
       relation: 'Child',
       tag: 'High School',
       spent: 540,
@@ -79,21 +82,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   ];
 
-  let familyMembers = [...DEFAULT_FAMILY_MEMBERS];
+  let supabaseFamilyUsers = [...DEFAULT_SUPABASE_USERS];
   try {
-    const savedFamily = localStorage.getItem('rapport:family_members');
+    const savedFamily = localStorage.getItem('rapport:supabase_family_users');
     if (savedFamily) {
-      familyMembers = JSON.parse(savedFamily);
+      const parsed = JSON.parse(savedFamily);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        supabaseFamilyUsers = parsed;
+      }
     }
   } catch (e) {}
 
-  function saveFamilyMembers() {
+  function saveSupabaseFamilyUsers() {
     try {
-      localStorage.setItem('rapport:family_members', JSON.stringify(familyMembers));
+      localStorage.setItem('rapport:supabase_family_users', JSON.stringify(supabaseFamilyUsers));
     } catch (e) {}
   }
 
-  // Current user's portion of family spending & budget
+  // Fetch all users directly from Supabase
+  async function syncUsersFromSupabase() {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('profiles').select('*');
+        if (!error && Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((row, idx) => ({
+            id: row.id || `usr_${idx}`,
+            name: row.full_name || (row.email ? row.email.split('@')[0] : `Member ${idx + 1}`),
+            email: row.email || '',
+            relation: row.role || 'Family Member',
+            tag: row.tag || 'Supabase User',
+            spent: Number(row.monthly_spent || 400 + (idx * 250)),
+            budget: Number(row.monthly_budget || 1400 + (idx * 300)),
+            color: ['#f2c94c', '#c8431f', '#6cc59a', '#8cc7b4'][idx % 4],
+            avTone: ['av--t0', 'av--t1', 'av--t2', 'av--t3'][idx % 4]
+          }));
+          supabaseFamilyUsers = mapped;
+          saveSupabaseFamilyUsers();
+        }
+      } catch (err) {
+        console.warn("Supabase profiles query:", err);
+      }
+    }
+    renderFamilyPage();
+  }
+
+  // Current user's personal portion of spending & budget
   const userFamilySpent = 2850;
   const userFamilyBudget = 4000;
 
@@ -119,14 +152,24 @@ document.addEventListener('DOMContentLoaded', async () => {
       const famOtherCount = document.getElementById('fam-other-count');
       const famMembersList = document.getElementById('fam-members-list');
 
-      const members = Array.isArray(familyMembers) ? familyMembers : [];
+      // Separate current user from the rest of the Supabase family members
+      const currentEmail = (profileState.email || '').toLowerCase().trim();
+      const currentName = (profileState.name || '').toLowerCase().trim();
 
-      // Totals
-      const membersSpent = members.reduce((sum, m) => sum + Number(m.spent || 0), 0);
-      const membersBudget = members.reduce((sum, m) => sum + Number(m.budget || 0), 0);
+      const otherMembers = supabaseFamilyUsers.filter(u => {
+        const uEmail = (u.email || '').toLowerCase().trim();
+        const uName = (u.name || '').toLowerCase().trim();
+        if (currentEmail && uEmail && uEmail === currentEmail) return false;
+        if (currentName && uName && uName === currentName) return false;
+        return true;
+      });
 
-      const totalSpent = userFamilySpent + membersSpent;
-      const totalBudget = userFamilyBudget + membersBudget;
+      // Totals (Current user + other Supabase members)
+      const otherSpent = otherMembers.reduce((sum, m) => sum + Number(m.spent || 0), 0);
+      const otherBudget = otherMembers.reduce((sum, m) => sum + Number(m.budget || 0), 0);
+
+      const totalSpent = userFamilySpent + otherSpent;
+      const totalBudget = userFamilyBudget + otherBudget;
       const remainingBudget = Math.max(0, totalBudget - totalSpent);
       const totalUsagePct = totalBudget > 0 ? ((totalSpent / totalBudget) * 100).toFixed(1) : 0;
 
@@ -138,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         famStatBudget.textContent = `$${totalBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       }
       if (famStatMemberCount) {
-        famStatMemberCount.textContent = `${members.length + 1} active`;
+        famStatMemberCount.textContent = `${otherMembers.length + 1} active`;
       }
 
       // 2. Overview Card
@@ -150,7 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         famOverviewRemainingLabel.textContent = `$${remainingBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })} remaining`;
       }
 
-      // Stacked Meter
+      // Stacked Distribution Meter
       if (famStackedMeter) {
         famStackedMeter.innerHTML = '';
         const userSharePct = totalSpent > 0 ? ((userFamilySpent / totalSpent) * 100).toFixed(1) : 0;
@@ -158,10 +201,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const userSeg = document.createElement('div');
         userSeg.className = 'fam-meter-seg fam-seg--user';
         userSeg.style.width = `${userSharePct}%`;
-        userSeg.title = `You: $${userFamilySpent.toLocaleString()} (${userSharePct}%)`;
+        userSeg.title = `You (${profileState.name}): $${userFamilySpent.toLocaleString()} (${userSharePct}%)`;
         famStackedMeter.appendChild(userSeg);
 
-        members.forEach(m => {
+        otherMembers.forEach(m => {
           const seg = document.createElement('div');
           seg.className = 'fam-meter-seg';
           seg.style.background = m.color || '#f2c94c';
@@ -182,7 +225,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         userLeg.innerHTML = `<i class="fam-dot" style="background: var(--pine);"></i> <strong>You (${displayName})</strong>: $${userFamilySpent.toLocaleString()} (${userSharePct}%)`;
         famMeterLegend.appendChild(userLeg);
 
-        members.forEach(m => {
+        otherMembers.forEach(m => {
           const leg = document.createElement('span');
           const mShare = totalSpent > 0 ? Math.round((m.spent / totalSpent) * 100) : 0;
           leg.innerHTML = `<i class="fam-dot" style="background: ${m.color || '#f2c94c'};"></i> <strong>${m.name}</strong>: $${Number(m.spent).toLocaleString()} (${mShare}%)`;
@@ -209,17 +252,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       // 4. Other Family Members Card
-      if (famOtherCount) famOtherCount.textContent = `${members.length} ${members.length === 1 ? 'Member' : 'Members'}`;
+      if (famOtherCount) famOtherCount.textContent = `${otherMembers.length} ${otherMembers.length === 1 ? 'Member' : 'Members'}`;
       if (famMembersList) {
         famMembersList.innerHTML = '';
-        if (members.length === 0) {
+        if (otherMembers.length === 0) {
           famMembersList.innerHTML = `
-            <div style="text-align: center; padding: 32px 16px; color: var(--muted);">
-              <p>No other family members added yet. Click <strong>Add Family Member</strong> to add dependents or partners.</p>
+            <div style="text-align: center; padding: 36px 16px; color: var(--muted);">
+              <svg class="ico" viewBox="0 0 24 24" style="width: 28px; height: 28px; margin: 0 auto 10px; opacity: 0.5;">
+                <circle cx="9" cy="8" r="3.5"/><path d="M3 19c.5-3 3-4.5 6-4.5s5.5 1.5 6 4.5"/><circle cx="16.5" cy="9.5" r="2.5"/><path d="M16 14.5c2 0 4.5 1 5 3.5"/>
+              </svg>
+              <strong style="display: block; font-size: 14.5px; color: var(--text); margin-bottom: 4px;">No other members in Supabase yet</strong>
+              <p style="font-size: 12.5px; max-width: 380px; margin: 0 auto;">As other family members create accounts or sign in via Supabase, their profiles and allowances will automatically update here.</p>
             </div>
           `;
         } else {
-          members.forEach(m => {
+          otherMembers.forEach(m => {
             const row = document.createElement('div');
             row.className = 'fam-member-row';
 
@@ -235,10 +282,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div style="min-width: 0;">
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                   <strong style="font-size: 14px;">${m.name}</strong>
-                  <span class="status status--active" style="font-size: 11px;">${m.relation || 'Dependent'}</span>
+                  <span class="status status--active" style="font-size: 11px;">${m.relation || 'Member'}</span>
                   ${m.tag ? `<span class="badge badge--plain" style="font-size: 10px;">${m.tag}</span>` : ''}
                 </div>
-                <small style="color: var(--muted); font-size: 12px;">$${Number(m.spent).toLocaleString()} spent · $${Math.max(0, m.budget - m.spent).toLocaleString()} remaining</small>
+                <small style="color: var(--muted); font-size: 12px;">${m.email ? `${m.email} · ` : ''}$${Number(m.spent).toLocaleString()} spent · $${Math.max(0, m.budget - m.spent).toLocaleString()} remaining</small>
               </div>
               <div class="fam-member-row__quota">
                 <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; margin-bottom: 4px;">
@@ -251,25 +298,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="badge ${statusClass}">${statusText}</span>
-                <button type="button" class="ibtn ibtn--sm ibtn--glass btn-remove-member" data-id="${m.id}" aria-label="Remove ${m.name}" title="Remove member">
-                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px;">
-                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                  </svg>
-                </button>
               </div>
             `;
 
             famMembersList.appendChild(row);
-          });
-
-          // Wire up remove member buttons
-          famMembersList.querySelectorAll('.btn-remove-member').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-              const id = e.currentTarget.dataset.id;
-              familyMembers = familyMembers.filter(mem => mem.id !== id);
-              saveFamilyMembers();
-              renderFamilyPage();
-            });
           });
         }
       }
@@ -910,59 +942,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initial notification badge update
   updateBellBadge();
 
-  // --- Modal Add Family Member ---
-  const modalMember = document.getElementById('modal-add-member');
-  const btnOpenAddMember = document.getElementById('btn-open-add-member');
-  const btnAddMemberSecondary = document.getElementById('btn-add-member-secondary');
-  const btnCloseMemberModal = document.getElementById('btn-close-member-modal');
-  const btnCancelMemberModal = document.getElementById('btn-cancel-member-modal');
-  const formAddMember = document.getElementById('form-add-member');
-  const memberName = document.getElementById('member-name');
-  const memberRelation = document.getElementById('member-relation');
-  const memberTag = document.getElementById('member-tag');
-  const memberAllowance = document.getElementById('member-allowance');
-  const memberSpent = document.getElementById('member-spent');
-
-  function openMemberModal() {
-    if (modalMember) {
-      if (formAddMember) formAddMember.reset();
-      modalMember.showModal();
-    }
-  }
-
-  function closeMemberModal() {
-    if (modalMember) modalMember.close();
-  }
-
-  if (btnOpenAddMember) btnOpenAddMember.addEventListener('click', openMemberModal);
-  if (btnAddMemberSecondary) btnAddMemberSecondary.addEventListener('click', openMemberModal);
-  if (btnCloseMemberModal) btnCloseMemberModal.addEventListener('click', closeMemberModal);
-  if (btnCancelMemberModal) btnCancelMemberModal.addEventListener('click', closeMemberModal);
-
-  const TONES = ['av--t0', 'av--t1', 'av--t2', 'av--t3'];
-  const COLORS = ['#f2c94c', '#c8431f', '#6cc59a', '#8cc7b4', '#d9a3f3', '#3a86ff'];
-
-  if (formAddMember) {
-    formAddMember.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = memberName ? memberName.value.trim() : '';
-      if (!name) return;
-
-      const newMember = {
-        id: `mem_${Date.now()}`,
-        name,
-        relation: memberRelation ? memberRelation.value : 'Dependent',
-        tag: memberTag ? memberTag.value : 'Dependent',
-        budget: memberAllowance ? Number(memberAllowance.value) || 1000 : 1000,
-        spent: memberSpent ? Number(memberSpent.value) || 0 : 0,
-        color: COLORS[familyMembers.length % COLORS.length],
-        avTone: TONES[familyMembers.length % TONES.length]
-      };
-
-      familyMembers.push(newMember);
-      saveFamilyMembers();
-      renderFamilyPage();
-      closeMemberModal();
+  // --- Sync With Supabase Action ---
+  const btnSyncSupabase = document.getElementById('btn-sync-supabase');
+  if (btnSyncSupabase) {
+    btnSyncSupabase.addEventListener('click', async () => {
+      btnSyncSupabase.disabled = true;
+      const prevHtml = btnSyncSupabase.innerHTML;
+      btnSyncSupabase.innerHTML = '<span>Syncing...</span>';
+      await syncUsersFromSupabase();
+      setTimeout(() => {
+        btnSyncSupabase.disabled = false;
+        btnSyncSupabase.innerHTML = prevHtml;
+      }, 500);
     });
   }
 });
