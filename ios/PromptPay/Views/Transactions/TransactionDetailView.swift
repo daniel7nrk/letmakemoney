@@ -23,36 +23,38 @@ public struct TransactionDetailView: View {
     public var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Hero Amount Card
+                // Hero Amount Card (Card 26px)
                 VStack(spacing: 8) {
                     Text(transaction.merchant.isEmpty ? transaction.description : transaction.merchant)
-                        .font(.system(size: 17, weight: .medium))
+                        .font(.urbanist(17, weight: .semibold))
                         .foregroundColor(.white.opacity(0.85))
 
                     Text(FormatUtil.formatAmount(transaction.amount, currency: transaction.currency))
-                        .font(.system(size: 34, weight: .bold))
+                        .font(.urbanist(36, weight: .bold))
                         .foregroundColor(.white)
 
-                    Text("Fee: \(FormatUtil.formatAmount(transaction.fee, currency: transaction.currency)) · \(transaction.feeCategory)")
-                        .font(.system(size: 13, weight: .semibold))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(Color.white.opacity(0.2))
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                    if transaction.fee > 0 {
+                        Text("Fee: \(FormatUtil.formatAmount(transaction.fee, currency: transaction.currency)) · \(transaction.feeCategory)")
+                            .font(.urbanist(13, weight: .semibold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 5)
+                            .background(Color.white.opacity(0.2))
+                            .foregroundColor(.white)
+                            .clipShape(Capsule())
+                    }
 
                     Text(FormatUtil.formatDate(transaction.dateEpochMillis))
-                        .font(.system(size: 13))
+                        .font(.urbanist(13, weight: .regular))
                         .foregroundColor(.white.opacity(0.75))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 28)
                 .padding(.horizontal, 20)
                 .background(Color.royalBlue)
-                .cornerRadius(24)
-                .shadow(color: Color.royalBlue.opacity(0.25), radius: 10, x: 0, y: 5)
+                .cornerRadius(26)
+                .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 5)
 
-                // Meta Information Card
+                // Meta Information Card (Card 26px)
                 VStack(spacing: 12) {
                     DetailRowView(title: "Payment Method", value: transaction.paymentMethod)
                     Divider()
@@ -60,7 +62,7 @@ public struct TransactionDetailView: View {
                     DetailRowView(
                         title: "Source",
                         value: transaction.source == "SMS" ? "SMS Alert (Fixed)" : "Manual Entry (Fixed)",
-                        badgeColor: transaction.source == "SMS" ? .promptPurple : .promptSuccess
+                        badgeColor: transaction.source == "SMS" ? .promptPurple : .rapportGood
                     )
                     Divider()
                     DetailRowView(title: "Transaction Fee", value: FormatUtil.formatAmount(transaction.fee, currency: transaction.currency))
@@ -69,26 +71,27 @@ public struct TransactionDetailView: View {
                     Divider()
                     DetailRowView(title: "Status", value: transaction.status)
                 }
-                .padding(18)
+                .padding(20)
                 .background(Color.promptCard)
-                .cornerRadius(18)
+                .cornerRadius(26)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 18)
+                    RoundedRectangle(cornerRadius: 26)
                         .stroke(Color.promptBorder, lineWidth: 1)
                 )
 
                 // Description Field
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Transaction Description")
-                        .font(.system(size: 15, weight: .bold))
+                        .font(.urbanist(14, weight: .bold))
                         .foregroundColor(.promptTextPrimary)
 
                     TextField("Enter description...", text: $descriptionText)
+                        .font(.urbanist(15, weight: .medium))
                         .padding(14)
-                        .background(Color.promptSurface)
-                        .cornerRadius(12)
+                        .background(Color.promptCard)
+                        .cornerRadius(14)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12)
+                            RoundedRectangle(cornerRadius: 14)
                                 .stroke(Color.promptBorder, lineWidth: 1)
                         )
                 }
@@ -96,7 +99,7 @@ public struct TransactionDetailView: View {
                 // Category Selector
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Category")
-                        .font(.system(size: 15, weight: .bold))
+                        .font(.urbanist(14, weight: .bold))
                         .foregroundColor(.promptTextPrimary)
 
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -106,14 +109,14 @@ public struct TransactionDetailView: View {
                                     selectedCategory = cat.name
                                 }) {
                                     Text(cat.name)
-                                        .font(.system(size: 13, weight: .medium))
-                                        .padding(.horizontal, 14)
-                                        .padding(.vertical, 8)
-                                        .background(selectedCategory == cat.name ? Color.royalBlue : Color.promptSurface)
+                                        .font(.urbanist(13, weight: .semibold))
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 9)
+                                        .background(selectedCategory == cat.name ? Color.royalBlue : Color.promptCard)
                                         .foregroundColor(selectedCategory == cat.name ? .white : .promptTextPrimary)
-                                        .cornerRadius(20)
+                                        .clipShape(Capsule())
                                         .overlay(
-                                            RoundedRectangle(cornerRadius: 20)
+                                            Capsule()
                                                 .stroke(selectedCategory == cat.name ? Color.clear : Color.promptBorder, lineWidth: 1)
                                         )
                                 }
@@ -124,28 +127,29 @@ public struct TransactionDetailView: View {
 
                 // Notes Field
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Notes")
-                        .font(.system(size: 15, weight: .bold))
+                    Text("Personal Notes")
+                        .font(.urbanist(14, weight: .bold))
                         .foregroundColor(.promptTextPrimary)
 
-                    TextField("Add transaction note...", text: $notesText)
+                    TextField("Add note (optional)...", text: $notesText)
+                        .font(.urbanist(15, weight: .medium))
                         .padding(14)
-                        .background(Color.promptSurface)
-                        .cornerRadius(12)
+                        .background(Color.promptCard)
+                        .cornerRadius(14)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12)
+                            RoundedRectangle(cornerRadius: 14)
                                 .stroke(Color.promptBorder, lineWidth: 1)
                         )
                 }
 
-                // Recurring Toggle
+                // Recurring Toggle Card
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Flag as Recurring")
-                            .font(.system(size: 15, weight: .semibold))
+                        Text("Recurring Subscription / Bill")
+                            .font(.urbanist(15, weight: .semibold))
                             .foregroundColor(.promptTextPrimary)
-                        Text("Monthly rent, subscriptions, or fixed bills")
-                            .font(.system(size: 12))
+                        Text("Mark as monthly or repeating payment")
+                            .font(.urbanist(12, weight: .regular))
                             .foregroundColor(.promptTextSecondary)
                     }
                     Spacer()
@@ -154,31 +158,29 @@ public struct TransactionDetailView: View {
                 }
                 .padding(16)
                 .background(Color.promptCard)
-                .cornerRadius(14)
+                .cornerRadius(22)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 14)
+                    RoundedRectangle(cornerRadius: 22)
                         .stroke(Color.promptBorder, lineWidth: 1)
                 )
 
-                // Save Button
+                // Save Changes Button (Pill)
                 Button(action: {
                     var updated = transaction
-                    updated.description = descriptionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? transaction.merchant : descriptionText
+                    updated.description = descriptionText
                     updated.category = selectedCategory
                     updated.notes = notesText
                     updated.isRecurring = isRecurring
-                    updated.status = "CONFIRMED"
-                    // viewModel.updateTransaction automatically locks existing.source immutably
                     viewModel.updateTransaction(updated)
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Text("Save Changes")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.urbanist(16, weight: .bold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                         .background(Color.royalBlue)
-                        .cornerRadius(14)
+                        .clipShape(Capsule())
                 }
                 .padding(.top, 10)
             }
@@ -214,20 +216,20 @@ public struct DetailRowView: View {
     public var body: some View {
         HStack {
             Text(title)
-                .font(.system(size: 14))
+                .font(.urbanist(14, weight: .regular))
                 .foregroundColor(.promptTextSecondary)
             Spacer()
             if let badgeColor = badgeColor {
                 Text(value)
-                    .font(.system(size: 13, weight: .bold))
+                    .font(.urbanist(12, weight: .bold))
                     .foregroundColor(badgeColor)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
                     .background(badgeColor.opacity(0.12))
-                    .cornerRadius(6)
+                    .clipShape(Capsule())
             } else {
                 Text(value)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.urbanist(14, weight: .semibold))
                     .foregroundColor(.promptTextPrimary)
             }
         }

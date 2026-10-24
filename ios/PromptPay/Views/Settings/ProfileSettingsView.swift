@@ -18,41 +18,41 @@ public struct ProfileSettingsView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    // Profile Header Card
+                    // Profile Header Card (Card 26px)
                     HStack(spacing: 16) {
                         Circle()
                             .fill(Color.royalBlue)
                             .frame(width: 60, height: 60)
                             .overlay(
                                 Text(viewModel.userProfile?.name.prefix(1).uppercased() ?? "P")
-                                    .font(.system(size: 24, weight: .bold))
+                                    .font(.urbanist(24, weight: .bold))
                                     .foregroundColor(.white)
                             )
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text(viewModel.userProfile?.name.isEmpty == false ? viewModel.userProfile!.name : "PromptPay User")
-                                .font(.system(size: 18, weight: .bold))
+                                .font(.urbanist(18, weight: .bold))
                                 .foregroundColor(.promptTextPrimary)
 
                             Text(viewModel.userProfile?.email.isEmpty == false ? viewModel.userProfile!.email : "user@promptpay.com")
-                                .font(.system(size: 14))
+                                .font(.urbanist(14, weight: .regular))
                                 .foregroundColor(.promptTextSecondary)
                         }
 
                         Spacer()
                     }
-                    .padding(18)
+                    .padding(20)
                     .background(Color.promptCard)
-                    .cornerRadius(18)
+                    .cornerRadius(26)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 18)
+                        RoundedRectangle(cornerRadius: 26)
                             .stroke(Color.promptBorder, lineWidth: 1)
                     )
 
                     // Account Settings Group
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 10) {
                         Text(strings.settingsAccountGroup)
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.urbanist(14, weight: .bold))
                             .foregroundColor(.promptTextSecondary)
                             .padding(.horizontal, 4)
 
@@ -83,17 +83,17 @@ public struct ProfileSettingsView: View {
                             .buttonStyle(PlainButtonStyle())
                         }
                         .background(Color.promptCard)
-                        .cornerRadius(18)
+                        .cornerRadius(26)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 18)
+                            RoundedRectangle(cornerRadius: 26)
                                 .stroke(Color.promptBorder, lineWidth: 1)
                         )
                     }
 
                     // Security & Privacy Group
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 10) {
                         Text(strings.settingsSecurityGroup)
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.urbanist(14, weight: .bold))
                             .foregroundColor(.promptTextSecondary)
                             .padding(.horizontal, 4)
 
@@ -107,11 +107,11 @@ public struct ProfileSettingsView: View {
 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(strings.settingsMomoScam)
-                                        .font(.system(size: 15, weight: .semibold))
+                                        .font(.urbanist(15, weight: .semibold))
                                         .foregroundColor(.promptTextPrimary)
 
                                     Text(strings.settingsMomoScamSubtitle)
-                                        .font(.system(size: 12))
+                                        .font(.urbanist(12, weight: .regular))
                                         .foregroundColor(.promptTextSecondary)
                                 }
 
@@ -126,14 +126,14 @@ public struct ProfileSettingsView: View {
                             .padding(16)
                         }
                         .background(Color.promptCard)
-                        .cornerRadius(18)
+                        .cornerRadius(26)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 18)
+                            RoundedRectangle(cornerRadius: 26)
                                 .stroke(Color.promptBorder, lineWidth: 1)
                         )
                     }
 
-                    // Sign Out Button
+                    // Sign Out Button (Pill)
                     Button(action: {
                         viewModel.signOut()
                     }) {
@@ -141,21 +141,22 @@ public struct ProfileSettingsView: View {
                             Image(systemName: "rectangle.portrait.and.arrow.right")
                                 .font(.system(size: 16, weight: .bold))
                             Text(strings.settingsSignOut)
-                                .font(.system(size: 15, weight: .bold))
+                                .font(.urbanist(15, weight: .bold))
                         }
-                        .foregroundColor(.red)
+                        .foregroundColor(.rapportTomato)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                         .background(Color.promptCard)
-                        .cornerRadius(16)
+                        .clipShape(Capsule())
                         .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.red.opacity(0.3), lineWidth: 1)
+                            Capsule()
+                                .stroke(Color.rapportTomato.opacity(0.3), lineWidth: 1)
                         )
                     }
                     .padding(.top, 8)
                 }
                 .padding(20)
+                .padding(.bottom, 80) // Space for floating dock
             }
             .background(Color.promptSurface.ignoresSafeArea())
             .navigationBarTitle(strings.settingsTitle, displayMode: .inline)
@@ -198,11 +199,11 @@ private struct SettingsRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.urbanist(15, weight: .semibold))
                     .foregroundColor(.promptTextPrimary)
 
                 Text(subtitle)
-                    .font(.system(size: 13))
+                    .font(.urbanist(13, weight: .regular))
                     .foregroundColor(.promptTextSecondary)
             }
 

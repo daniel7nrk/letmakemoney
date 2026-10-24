@@ -11,11 +11,11 @@ public struct CountrySelectionView: View {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Select Your Country")
-                        .font(.system(size: 26, weight: .bold))
+                        .font(.urbanist(26, weight: .bold))
                         .foregroundColor(.promptTextPrimary)
 
                     Text("This customizes your default mobile money provider patterns and currency display.")
-                        .font(.system(size: 15))
+                        .font(.urbanist(15, weight: .regular))
                         .foregroundColor(.promptTextSecondary)
                 }
                 .padding(.horizontal, 24)
@@ -34,11 +34,11 @@ public struct CountrySelectionView: View {
 
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(country.countryName)
-                                            .font(.system(size: 16, weight: .semibold))
+                                            .font(.urbanist(16, weight: .semibold))
                                             .foregroundColor(.promptTextPrimary)
 
                                         Text("\(country.currencyCode) - \(country.currencyName)")
-                                            .font(.system(size: 13))
+                                            .font(.urbanist(13, weight: .regular))
                                             .foregroundColor(.promptTextSecondary)
                                     }
 
@@ -56,9 +56,9 @@ public struct CountrySelectionView: View {
                                 }
                                 .padding(16)
                                 .background(isSelected ? Color.royalBlue.opacity(0.06) : Color.promptCard)
-                                .cornerRadius(14)
+                                .cornerRadius(22)
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 14)
+                                    RoundedRectangle(cornerRadius: 22)
                                         .stroke(isSelected ? Color.royalBlue : Color.promptBorder, lineWidth: 1.5)
                                 )
                             }
@@ -72,12 +72,12 @@ public struct CountrySelectionView: View {
 
                 Button(action: onContinue) {
                     Text("Continue")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.urbanist(17, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                         .background(Color.royalBlue)
-                        .cornerRadius(14)
+                        .clipShape(Capsule())
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 16)

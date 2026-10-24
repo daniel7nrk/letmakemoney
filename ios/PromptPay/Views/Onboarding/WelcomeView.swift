@@ -25,11 +25,11 @@ public struct WelcomeView: View {
 
                 VStack(spacing: 12) {
                     Text("PromptPay")
-                        .font(.system(size: 32, weight: .bold))
+                        .font(.urbanist(32, weight: .bold))
                         .foregroundColor(.promptTextPrimary)
 
                     Text("Automated mobile money & bank transaction tracking with real-time scam & fraud defense.")
-                        .font(.system(size: 16))
+                        .font(.urbanist(15, weight: .regular))
                         .foregroundColor(.promptTextSecondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
@@ -60,12 +60,12 @@ public struct WelcomeView: View {
 
                 Button(action: onGetStarted) {
                     Text("Get Started")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.urbanist(17, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                         .background(Color.royalBlue)
-                        .cornerRadius(14)
+                        .clipShape(Capsule())
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 16)
@@ -82,11 +82,11 @@ public struct WelcomeView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.urbanist(15, weight: .semibold))
                     .foregroundColor(.promptTextPrimary)
 
                 Text(desc)
-                    .font(.system(size: 13))
+                    .font(.urbanist(13, weight: .regular))
                     .foregroundColor(.promptTextSecondary)
             }
         }

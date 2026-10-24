@@ -21,15 +21,15 @@ public struct PinSetupView: View {
                         .padding(.top, 40)
 
                     Text(isConfirming ? "Confirm Your PIN" : "Set Up 4-Digit PIN")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(.urbanist(24, weight: .bold))
                         .foregroundColor(.promptTextPrimary)
 
                     Text(isConfirming ? "Re-enter the 4-digit PIN you just chose" : "Secure PromptPay on your iPhone")
-                        .font(.system(size: 15))
+                        .font(.urbanist(15, weight: .regular))
                         .foregroundColor(.promptTextSecondary)
                 }
 
-                // PIN indicator dots
+                // PIN indicator dots in a Rapport Pill Card
                 HStack(spacing: 20) {
                     let currentLength = isConfirming ? confirmPin.count : pin.count
                     ForEach(0..<4) { index in
@@ -38,17 +38,24 @@ public struct PinSetupView: View {
                             .frame(width: 18, height: 18)
                     }
                 }
+                .padding(.horizontal, 28)
                 .padding(.vertical, 16)
+                .background(Color.promptCard)
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(Color.promptBorder, lineWidth: 1)
+                )
 
                 if let error = errorMessage {
                     Text(error)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.urbanist(14, weight: .medium))
                         .foregroundColor(.promptDanger)
                 }
 
                 Spacer()
 
-                // Custom Keypad
+                // Custom Keypad (Capsule/Circle buttons)
                 VStack(spacing: 16) {
                     ForEach([[1, 2, 3], [4, 5, 6], [7, 8, 9]], id: \.self) { row in
                         HStack(spacing: 32) {
@@ -83,7 +90,7 @@ public struct PinSetupView: View {
     private func keypadButton(_ text: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(text)
-                .font(.system(size: 28, weight: .medium))
+                .font(.urbanist(28, weight: .semibold))
                 .foregroundColor(.promptTextPrimary)
                 .frame(width: 72, height: 72)
                 .background(Color.promptCard)
@@ -110,9 +117,9 @@ public struct PinSetupView: View {
                     viewModel.savePin(pin)
                     onComplete()
                 } else {
-                    errorMessage = "PINs do not match. Try again."
-                    confirmPin = ""
+                    errorMessage = "PINs do not match. Please try again."
                     pin = ""
+                    confirmPin = ""
                     isConfirming = false
                 }
             }
@@ -120,10 +127,10 @@ public struct PinSetupView: View {
     }
 
     private func deleteDigit() {
-        if isConfirming {
-            if !confirmPin.isEmpty { confirmPin.removeLast() }
-        } else {
+        if !isConfirming {
             if !pin.isEmpty { pin.removeLast() }
+        } else {
+            if !confirmPin.isEmpty { confirmPin.removeLast() }
         }
     }
 }

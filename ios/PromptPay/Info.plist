@@ -34,5 +34,12 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>urbanist_regular.ttf</string>
+		<string>urbanist_medium.ttf</string>
+		<string>urbanist_semibold.ttf</string>
+		<string>urbanist_bold.ttf</string>
+	</array>
 </dict>
 </plist>

@@ -23,11 +23,11 @@ public struct LoginSignUpView: View {
                             .padding(.top, 40)
 
                         Text(isSignUp ? "Create Your Account" : "Welcome Back")
-                            .font(.system(size: 26, weight: .bold))
+                            .font(.urbanist(26, weight: .bold))
                             .foregroundColor(.promptTextPrimary)
 
                         Text(isSignUp ? "Set up your secure financial profile" : "Log in to view your verified transactions")
-                            .font(.system(size: 15))
+                            .font(.urbanist(15, weight: .regular))
                             .foregroundColor(.promptTextSecondary)
                     }
 
@@ -35,73 +35,77 @@ public struct LoginSignUpView: View {
                         if isSignUp {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text("Full Name")
-                                    .font(.system(size: 13, weight: .semibold))
+                                    .font(.urbanist(13, weight: .semibold))
                                     .foregroundColor(.promptTextSecondary)
 
                                 TextField("Jane Doe", text: $name)
+                                    .font(.urbanist(15, weight: .medium))
                                     .padding(14)
                                     .background(Color.promptCard)
-                                    .cornerRadius(12)
-                                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.promptBorder, lineWidth: 1))
+                                    .cornerRadius(14)
+                                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.promptBorder, lineWidth: 1))
                             }
                         }
 
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Email Address")
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(.urbanist(13, weight: .semibold))
                                 .foregroundColor(.promptTextSecondary)
 
                             TextField("email@example.com", text: $email)
+                                .font(.urbanist(15, weight: .medium))
                                 .keyboardType(.emailAddress)
                                 .autocapitalization(.none)
                                 .padding(14)
                                 .background(Color.promptCard)
-                                .cornerRadius(12)
-                                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.promptBorder, lineWidth: 1))
+                                .cornerRadius(14)
+                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.promptBorder, lineWidth: 1))
                         }
 
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Password")
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(.urbanist(13, weight: .semibold))
                                 .foregroundColor(.promptTextSecondary)
 
                             SecureField("••••••••", text: $password)
+                                .font(.urbanist(15, weight: .medium))
                                 .padding(14)
                                 .background(Color.promptCard)
-                                .cornerRadius(12)
-                                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.promptBorder, lineWidth: 1))
+                                .cornerRadius(14)
+                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.promptBorder, lineWidth: 1))
                         }
 
                         if let error = errorMessage {
                             Text(error)
-                                .font(.system(size: 13))
+                                .font(.urbanist(13, weight: .medium))
                                 .foregroundColor(.promptDanger)
                         }
 
+                        // Submit Button (Pill)
                         Button(action: handleAuth) {
                             Text(isSignUp ? "Sign Up" : "Log In")
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.urbanist(17, weight: .semibold))
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
                                 .background(Color.royalBlue)
-                                .cornerRadius(14)
+                                .clipShape(Capsule())
                         }
                         .padding(.top, 8)
 
-                        // Sign In with Apple (Native iOS style)
+                        // Sign In with Apple (Pill)
                         Button(action: handleAppleSignIn) {
                             HStack {
                                 Image(systemName: "applelogo")
                                     .font(.system(size: 18))
                                 Text("Continue with Apple")
-                                    .font(.system(size: 16, weight: .medium))
+                                    .font(.urbanist(16, weight: .semibold))
                             }
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 15)
+                            .padding(.vertical, 16)
                             .background(Color.black)
-                            .cornerRadius(14)
+                            .clipShape(Capsule())
                         }
 
                         Button(action: {
@@ -109,38 +113,47 @@ public struct LoginSignUpView: View {
                             errorMessage = nil
                         }) {
                             Text(isSignUp ? "Already have an account? Log In" : "Don't have an account? Sign Up")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.urbanist(14, weight: .semibold))
                                 .foregroundColor(.royalBlue)
                         }
                         .padding(.top, 4)
                     }
-                    .padding(.horizontal, 24)
+                    .padding(24)
+                    .background(Color.promptCard)
+                    .cornerRadius(26)
+                    .overlay(RoundedRectangle(cornerRadius: 26).stroke(Color.promptBorder, lineWidth: 1))
+                    .padding(.horizontal, 20)
                 }
             }
         }
     }
 
     private func handleAuth() {
-        guard !email.isEmpty, !password.isEmpty else {
-            errorMessage = "Please enter email and password."
+        if isSignUp && name.trimmingCharacters(in: .whitespaces).isEmpty {
+            errorMessage = "Please enter your name"
             return
         }
-        var profile = viewModel.userProfile
+        if email.trimmingCharacters(in: .whitespaces).isEmpty || !email.contains("@") {
+            errorMessage = "Please enter a valid email address"
+            return
+        }
+        if password.count < 6 {
+            errorMessage = "Password must be at least 6 characters"
+            return
+        }
+
+        var profile = viewModel.userProfile ?? UserProfile()
+        profile.name = isSignUp ? name : (profile.name.isEmpty ? "Jane Doe" : profile.name)
         profile.email = email
-        if isSignUp { profile.name = name }
-        profile.hasCompletedOnboarding = true
-        viewModel.userProfile = profile
-        StorageService.shared.saveUserProfile(profile)
+        viewModel.updateProfile(profile)
         onAuthSuccess()
     }
 
     private func handleAppleSignIn() {
-        var profile = viewModel.userProfile
-        profile.email = "apple.user@promptpay.com"
-        profile.name = "Apple User"
-        profile.hasCompletedOnboarding = true
-        viewModel.userProfile = profile
-        StorageService.shared.saveUserProfile(profile)
+        var profile = viewModel.userProfile ?? UserProfile()
+        if profile.name.isEmpty { profile.name = "Apple User" }
+        if profile.email.isEmpty { profile.email = "apple.id@icloud.com" }
+        viewModel.updateProfile(profile)
         onAuthSuccess()
     }
 }

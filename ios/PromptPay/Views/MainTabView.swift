@@ -30,69 +30,74 @@ public struct MainTabView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            // Custom Bottom Navigation Bar with Centered Plus Button
-            VStack(spacing: 0) {
-                Divider()
-                HStack(spacing: 0) {
-                    // Home
-                    TabBarItem(
-                        icon: "house.fill",
-                        title: strings.navHome,
-                        isSelected: selectedTab == 0
-                    ) {
-                        selectedTab = 0
-                    }
+            // Rapport Floating Capsule Dock
+            HStack(spacing: 0) {
+                // Home
+                TabBarItem(
+                    icon: "house.fill",
+                    title: strings.navHome,
+                    isSelected: selectedTab == 0
+                ) {
+                    selectedTab = 0
+                }
 
-                    // Transactions
-                    TabBarItem(
-                        icon: "list.bullet.rectangle.fill",
-                        title: strings.navTransactions,
-                        isSelected: selectedTab == 1
-                    ) {
-                        selectedTab = 1
-                    }
+                // Transactions
+                TabBarItem(
+                    icon: "list.bullet.rectangle.fill",
+                    title: strings.navTransactions,
+                    isSelected: selectedTab == 1
+                ) {
+                    selectedTab = 1
+                }
 
-                    // Centered Floating Add (+) Action Button
-                    Button(action: {
-                        showAddTransactionSheet = true
-                    }) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.royalBlue)
-                                .frame(width: 52, height: 52)
-                                .shadow(color: Color.royalBlue.opacity(0.35), radius: 6, x: 0, y: 3)
+                // Centered Floating Add (+) Action Button (Rapport Pine Pill)
+                Button(action: {
+                    showAddTransactionSheet = true
+                }) {
+                    ZStack {
+                        Capsule()
+                            .fill(Color.rapportPine)
+                            .frame(width: 46, height: 32)
+                            .shadow(color: Color.rapportPine.opacity(0.4), radius: 6, x: 0, y: 2)
 
-                            Image(systemName: "plus")
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .offset(y: -8)
-
-                    // Reports
-                    TabBarItem(
-                        icon: "chart.pie.fill",
-                        title: strings.navReports,
-                        isSelected: selectedTab == 2
-                    ) {
-                        selectedTab = 2
-                    }
-
-                    // Settings / More
-                    TabBarItem(
-                        icon: "gearshape.fill",
-                        title: strings.navSettings,
-                        isSelected: selectedTab == 3
-                    ) {
-                        selectedTab = 3
+                        Image(systemName: "plus")
+                            .font(.system(size: 17, weight: .bold))
+                            .foregroundColor(Color.rapportOnDock)
                     }
                 }
-                .padding(.horizontal, 8)
-                .padding(.top, 8)
-                .padding(.bottom, 24)
-                .background(Color.promptCard.edgesIgnoringSafeArea(.bottom))
+                .frame(maxWidth: .infinity)
+
+                // Reports
+                TabBarItem(
+                    icon: "chart.pie.fill",
+                    title: strings.navReports,
+                    isSelected: selectedTab == 2
+                ) {
+                    selectedTab = 2
+                }
+
+                // Settings / More
+                TabBarItem(
+                    icon: "gearshape.fill",
+                    title: strings.navSettings,
+                    isSelected: selectedTab == 3
+                ) {
+                    selectedTab = 3
+                }
             }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(
+                Capsule()
+                    .fill(Color.rapportDock)
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.white.opacity(0.14), lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.28), radius: 14, x: 0, y: 6)
+            )
+            .padding(.horizontal, 16)
+            .padding(.bottom, 12)
         }
         .edgesIgnoringSafeArea(.bottom)
         .sheet(isPresented: $showAddTransactionSheet) {
@@ -109,15 +114,16 @@ public struct TabBarItem: View {
 
     public var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
+            VStack(spacing: 3) {
                 Image(systemName: icon)
-                    .font(.system(size: 20))
-                    .foregroundColor(isSelected ? .royalBlue : .promptTextSecondary)
+                    .font(.system(size: 18))
+                    .foregroundColor(isSelected ? .rapportButter : .rapportOnDock.opacity(0.65))
                 Text(title)
-                    .font(.system(size: 11, weight: isSelected ? .bold : .normal))
-                    .foregroundColor(isSelected ? .royalBlue : .promptTextSecondary)
+                    .font(.urbanist(11, weight: isSelected ? .bold : .medium))
+                    .foregroundColor(isSelected ? .rapportButter : .rapportOnDock.opacity(0.65))
             }
             .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
         }
     }
 }

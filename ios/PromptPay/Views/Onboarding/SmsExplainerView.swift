@@ -10,11 +10,11 @@ public struct SmsExplainerView: View {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Automated SMS Protection")
-                        .font(.system(size: 26, weight: .bold))
+                        .font(.urbanist(26, weight: .bold))
                         .foregroundColor(.promptTextPrimary)
 
                     Text("How PromptPay automatically captures your mobile money transactions on iPhone.")
-                        .font(.system(size: 15))
+                        .font(.urbanist(15, weight: .regular))
                         .foregroundColor(.promptTextSecondary)
                 }
                 .padding(.horizontal, 24)
@@ -57,12 +57,12 @@ public struct SmsExplainerView: View {
 
                 Button(action: onContinue) {
                     Text("Enable & Continue")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.urbanist(17, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                         .background(Color.royalBlue)
-                        .cornerRadius(14)
+                        .clipShape(Capsule())
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 16)
@@ -84,21 +84,21 @@ public struct SmsExplainerView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.urbanist(16, weight: .semibold))
                     .foregroundColor(.promptTextPrimary)
 
                 Text(desc)
-                    .font(.system(size: 13))
+                    .font(.urbanist(13, weight: .regular))
                     .foregroundColor(.promptTextSecondary)
                     .lineSpacing(2)
             }
         }
-        .padding(16)
+        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.promptCard)
-        .cornerRadius(14)
+        .cornerRadius(22)
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 22)
                 .stroke(Color.promptBorder, lineWidth: 1)
         )
     }

@@ -17,32 +17,37 @@ public struct AddTransactionView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    // Source locked badge info banner
-                    HStack {
+                    // Source locked badge info banner (Tile)
+                    HStack(spacing: 12) {
                         Image(systemName: "lock.shield.fill")
-                            .foregroundColor(.royalBlue)
+                            .font(.system(size: 20))
+                            .foregroundColor(.rapportPine)
                         Text("This entry will be permanently marked as **Manual Entry (Fixed)** and cannot be altered to an SMS record.")
-                            .font(.system(size: 13))
+                            .font(.urbanist(13, weight: .medium))
                             .foregroundColor(.promptTextPrimary)
                     }
-                    .padding(14)
-                    .background(Color.royalBlue.opacity(0.08))
-                    .cornerRadius(12)
+                    .padding(16)
+                    .background(Color.rapportPine.opacity(0.1))
+                    .cornerRadius(22)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 22)
+                            .stroke(Color.rapportPine.opacity(0.2), lineWidth: 1)
+                    )
 
-                    // Amount input
+                    // Amount input (Card)
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Amount (\(viewModel.selectedCountry.currencyCode))")
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.urbanist(14, weight: .bold))
                             .foregroundColor(.promptTextPrimary)
 
                         TextField("0.00", text: $amountText)
                             .keyboardType(.decimalPad)
-                            .font(.system(size: 24, weight: .bold))
+                            .font(.urbanist(28, weight: .bold))
                             .padding(14)
-                            .background(Color.promptSurface)
-                            .cornerRadius(12)
+                            .background(Color.promptCard)
+                            .cornerRadius(14)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12)
+                                RoundedRectangle(cornerRadius: 14)
                                     .stroke(Color.promptBorder, lineWidth: 1)
                             )
                     }
@@ -50,17 +55,17 @@ public struct AddTransactionView: View {
                     // Transaction Fee input (optional)
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Transaction Fee (\(viewModel.selectedCountry.currencyCode)) - Optional")
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.urbanist(14, weight: .bold))
                             .foregroundColor(.promptTextPrimary)
 
                         TextField("0", text: $feeText)
                             .keyboardType(.decimalPad)
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.urbanist(18, weight: .semibold))
                             .padding(14)
-                            .background(Color.promptSurface)
-                            .cornerRadius(12)
+                            .background(Color.promptCard)
+                            .cornerRadius(14)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12)
+                                RoundedRectangle(cornerRadius: 14)
                                     .stroke(Color.promptBorder, lineWidth: 1)
                             )
                     }
@@ -68,15 +73,16 @@ public struct AddTransactionView: View {
                     // Description / Merchant
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Description / Merchant")
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.urbanist(14, weight: .bold))
                             .foregroundColor(.promptTextPrimary)
 
                         TextField("e.g. Groceries, Coffee, Taxi", text: $descriptionText)
+                            .font(.urbanist(15, weight: .medium))
                             .padding(14)
-                            .background(Color.promptSurface)
-                            .cornerRadius(12)
+                            .background(Color.promptCard)
+                            .cornerRadius(14)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12)
+                                RoundedRectangle(cornerRadius: 14)
                                     .stroke(Color.promptBorder, lineWidth: 1)
                             )
                     }
@@ -84,7 +90,7 @@ public struct AddTransactionView: View {
                     // Category selection
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Category")
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.urbanist(14, weight: .bold))
                             .foregroundColor(.promptTextPrimary)
 
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -94,14 +100,14 @@ public struct AddTransactionView: View {
                                         selectedCategory = cat.name
                                     }) {
                                         Text(cat.name)
-                                            .font(.system(size: 13, weight: .medium))
-                                            .padding(.horizontal, 14)
-                                            .padding(.vertical, 8)
-                                            .background(selectedCategory == cat.name ? Color.royalBlue : Color.promptSurface)
+                                            .font(.urbanist(13, weight: .semibold))
+                                            .padding(.horizontal, 16)
+                                            .padding(.vertical, 9)
+                                            .background(selectedCategory == cat.name ? Color.royalBlue : Color.promptCard)
                                             .foregroundColor(selectedCategory == cat.name ? .white : .promptTextPrimary)
-                                            .cornerRadius(20)
+                                            .clipShape(Capsule())
                                             .overlay(
-                                                RoundedRectangle(cornerRadius: 20)
+                                                Capsule()
                                                     .stroke(selectedCategory == cat.name ? Color.clear : Color.promptBorder, lineWidth: 1)
                                             )
                                     }
@@ -110,7 +116,7 @@ public struct AddTransactionView: View {
                         }
                     }
 
-                    // Submit button
+                    // Submit button (Pill)
                     Button(action: {
                         guard let amt = Double(amountText), amt > 0 else { return }
                         let feeAmt = Double(feeText) ?? 0.0
@@ -124,12 +130,12 @@ public struct AddTransactionView: View {
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Text("Save Transaction")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.urbanist(16, weight: .bold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
                             .background(Color.royalBlue)
-                            .cornerRadius(14)
+                            .clipShape(Capsule())
                     }
                     .padding(.top, 12)
                 }

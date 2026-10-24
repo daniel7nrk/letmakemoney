@@ -11,18 +11,18 @@ public struct TransactionCardView: View {
 
     public var body: some View {
         Button(action: { onTap?() }) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 // Top row: Merchant name and Amount
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(transaction.merchant.isEmpty ? transaction.description : transaction.merchant)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.urbanist(16, weight: .bold))
                             .foregroundColor(.promptTextPrimary)
                             .lineLimit(1)
 
                         if !transaction.description.isEmpty && transaction.description != transaction.merchant {
                             Text(transaction.description)
-                                .font(.system(size: 13))
+                                .font(.urbanist(13, weight: .regular))
                                 .foregroundColor(.promptTextSecondary)
                                 .lineLimit(1)
                         }
@@ -32,21 +32,23 @@ public struct TransactionCardView: View {
 
                     VStack(alignment: .trailing, spacing: 3) {
                         Text(FormatUtil.formatAmount(transaction.amount, currency: transaction.currency))
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.urbanist(16, weight: .bold))
                             .foregroundColor(.promptTextPrimary)
 
-                        HStack(spacing: 4) {
-                            Text("Fee: \(FormatUtil.formatAmount(transaction.fee, currency: transaction.currency))")
-                                .font(.system(size: 11, weight: .medium))
-                                .foregroundColor(transaction.fee > 0 ? Color.orange : .promptTextSecondary)
+                        if transaction.fee > 0 {
+                            HStack(spacing: 4) {
+                                Text("Fee: \(FormatUtil.formatAmount(transaction.fee, currency: transaction.currency))")
+                                    .font(.urbanist(11, weight: .medium))
+                                    .foregroundColor(.rapportTomato)
 
-                            Text(transaction.feeCategory.isEmpty ? "Fee" : transaction.feeCategory)
-                                .font(.system(size: 9, weight: .bold))
-                                .padding(.horizontal, 4)
-                                .padding(.vertical, 1)
-                                .background(Color.yellow.opacity(0.2))
-                                .foregroundColor(Color.orange)
-                                .cornerRadius(4)
+                                Text(transaction.feeCategory.isEmpty ? "Fee" : transaction.feeCategory)
+                                    .font(.urbanist(9, weight: .bold))
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.rapportButter.opacity(0.2))
+                                    .foregroundColor(.rapportTomato)
+                                    .clipShape(Capsule())
+                            }
                         }
                     }
                 }
@@ -55,37 +57,37 @@ public struct TransactionCardView: View {
                 HStack(spacing: 8) {
                     // Category Badge
                     Text(transaction.category)
-                        .font(.system(size: 11, weight: .medium))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Color.royalBlue.opacity(0.12))
+                        .font(.urbanist(11, weight: .semibold))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Color.royalBlue.opacity(0.08))
                         .foregroundColor(.royalBlue)
-                        .cornerRadius(6)
+                        .clipShape(Capsule())
 
                     // Source Badge (Strictly locked: SMS vs Manual)
                     Text(transaction.source == "SMS" ? "SMS Alert (Fixed)" : "Manual Entry (Fixed)")
-                        .font(.system(size: 10, weight: .semibold))
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(transaction.source == "SMS" ? Color.promptPurple.opacity(0.12) : Color.promptSuccess.opacity(0.12))
-                        .foregroundColor(transaction.source == "SMS" ? .promptPurple : .promptSuccess)
-                        .cornerRadius(4)
+                        .font(.urbanist(10, weight: .semibold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(transaction.source == "SMS" ? Color.promptPurple.opacity(0.12) : Color.rapportGood.opacity(0.12))
+                        .foregroundColor(transaction.source == "SMS" ? .promptPurple : .rapportGood)
+                        .clipShape(Capsule())
 
                     Spacer()
 
                     Text(FormatUtil.formatDate(transaction.dateEpochMillis))
-                        .font(.system(size: 11))
+                        .font(.urbanist(11, weight: .regular))
                         .foregroundColor(.promptTextSecondary)
                 }
             }
-            .padding(14)
+            .padding(16)
             .background(Color.promptCard)
-            .cornerRadius(14)
+            .cornerRadius(22)
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                RoundedRectangle(cornerRadius: 22)
                     .stroke(Color.promptBorder, lineWidth: 1)
             )
-            .shadow(color: Color.black.opacity(0.02), radius: 4, x: 0, y: 2)
+            .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 3)
         }
         .buttonStyle(PlainButtonStyle())
     }

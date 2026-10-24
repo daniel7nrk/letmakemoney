@@ -26,12 +26,12 @@ public struct TransactionsView: View {
             VStack(spacing: 0) {
                 // Search & Filter Header
                 VStack(spacing: 12) {
-                    // Search bar
+                    // Search bar (Pill)
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.promptTextSecondary)
                         TextField("Search transactions...", text: $searchQuery)
-                            .font(.system(size: 14))
+                            .font(.urbanist(14, weight: .medium))
                         if !searchQuery.isEmpty {
                             Button(action: { searchQuery = "" }) {
                                 Image(systemName: "xmark.circle.fill")
@@ -39,18 +39,19 @@ public struct TransactionsView: View {
                             }
                         }
                     }
-                    .padding(12)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
                     .background(Color.promptSurface)
-                    .cornerRadius(12)
+                    .clipShape(Capsule())
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12)
+                        Capsule()
                             .stroke(Color.promptBorder, lineWidth: 1)
                     )
 
-                    // Category Dropdown Menu
+                    // Category Dropdown Menu (Pill)
                     HStack {
                         Text("Category:")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.urbanist(13, weight: .medium))
                             .foregroundColor(.promptTextSecondary)
 
                         Menu {
@@ -63,20 +64,20 @@ public struct TransactionsView: View {
                                 }
                             }
                         } label: {
-                            HStack {
+                            HStack(spacing: 6) {
                                 Text(selectedCategory == "All" ? "All Categories" : selectedCategory)
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .font(.urbanist(13, weight: .semibold))
                                     .foregroundColor(.promptTextPrimary)
                                 Image(systemName: "chevron.down")
-                                    .font(.system(size: 12))
+                                    .font(.system(size: 11))
                                     .foregroundColor(.promptTextSecondary)
                             }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
                             .background(Color.promptSurface)
-                            .cornerRadius(10)
+                            .clipShape(Capsule())
                             .overlay(
-                                RoundedRectangle(cornerRadius: 10)
+                                Capsule()
                                     .stroke(Color.promptBorder, lineWidth: 1)
                             )
                         }
@@ -84,7 +85,7 @@ public struct TransactionsView: View {
                         Spacer()
 
                         Text("\(filteredTransactions.count) items")
-                            .font(.system(size: 12))
+                            .font(.urbanist(12, weight: .regular))
                             .foregroundColor(.promptTextSecondary)
                     }
                 }
@@ -101,12 +102,12 @@ public struct TransactionsView: View {
                 // Transaction list
                 if filteredTransactions.isEmpty {
                     Spacer()
-                    VStack(spacing: 8) {
+                    VStack(spacing: 10) {
                         Image(systemName: "tray")
                             .font(.system(size: 40))
                             .foregroundColor(.promptTextSecondary.opacity(0.6))
                         Text("No transactions found")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.urbanist(16, weight: .semibold))
                             .foregroundColor(.promptTextSecondary)
                     }
                     Spacer()
@@ -120,6 +121,7 @@ public struct TransactionsView: View {
                             }
                         }
                         .padding(16)
+                        .padding(.bottom, 80) // Space for floating dock
                     }
                 }
             }
