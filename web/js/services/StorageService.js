@@ -261,8 +261,12 @@ class StorageService {
     const a = document.createElement('a');
     a.href = url;
     a.download = `PromptPay_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      if (a.parentNode) a.parentNode.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 250);
   }
 
   async importBackup(jsonString) {

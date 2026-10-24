@@ -20,7 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import android.content.Intent
+import android.widget.Toast
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,6 +43,7 @@ fun ReportsPageScreen(
     categories: List<CategoryEntity>,
     selectedCountry: Country
 ) {
+    val context = LocalContext.current
     var selectedTimeframe by remember { mutableStateOf("Monthly") }
     var showExportDialog by remember { mutableStateOf(false) }
 
@@ -330,11 +337,78 @@ fun ReportsPageScreen(
     if (showExportDialog) {
         AlertDialog(
             onDismissRequest = { showExportDialog = false },
-            title = { Text("Export Summary") },
-            text = { Text("Your transaction data has been compiled locally as a CSV report.") },
+            title = { Text("Export Financial Data") },
+            text = {
+                Text(
+                    "Export " + transactions.size + " transactions compiled as a CSV or JSON report for your records, accounting, or backup."
+                )
+            },
             confirmButton = {
-                TextButton(onClick = { showExportDialog = false }) {
-                    Text("Download CSV")
+                TextButton(onClick = {
+                    showExportDialog = false
+                    try {
+                        val csvHeader = "ID,Date,Merchant,Category,Source,Status,Amount,Currency,Fee,FeeCategory\n"
+                        val csvBody = transactions.joinToString("\n") { t ->
+                            val dateStr = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(t.dateEpochMillis))
+                            val cleanMerchant = t.merchant.replace("\"", "\"\"")
+                            val cleanCat = t.category.replace("\"", "\"\"")
+                            val cleanSource = t.source.replace("\"", "\"\"")
+                            val cleanStatus = t.status.replace("\"", "\"\"")
+                            val cleanFeeCat = t.feeCategory.replace("\"", "\"\"")
+                            "\"" + t.id + "\",\"" + dateStr + "\",\"" + cleanMerchant + "\",\"" + cleanCat + "\",\"" + cleanSource + "\",\"" + cleanStatus + "\"," + t.amount + ",\"" + t.currency + "\"," + t.fee + ",\"" + cleanFeeCat + "\""
+                        }
+                        val fullCsv = "\uFEFF" + csvHeader + csvBody
+
+                        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/csv"
+                            putExtra(Intent.EXTRA_SUBJECT, "PromptPay Financial Report (" + currencyCode + ")")
+                            putExtra(Intent.EXTRA_TEXT, fullCsv)
+                        }
+                        context.startActivity(Intent.createChooser(sendIntent, "Export Financial Data (CSV)"))
+                        Toast.makeText(context, "Exporting " + transactions.size + " transactions...", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Export failed: " + e.message, Toast.LENGTH_SHORT).show()
+                    }
+                }) {
+                    Text("Export CSV")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showExportDialog = false
+                    try {
+                        val json = buildString {
+                            append("[\n")
+                            transactions.forEachIndexed { index, t ->
+                                val dateStr = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).format(Date(t.dateEpochMillis))
+                                append("  {\n")
+                                append("    \"id\": \"" + t.id + "\",\n")
+                                append("    \"date\": \"" + dateStr + "\",\n")
+                                append("    \"merchant\": \"" + t.merchant.replace(""", "\\"") + "\",\n")
+                                append("    \"category\": \"" + t.category.replace(""", "\\"") + "\",\n")
+                                append("    \"source\": \"" + t.source + "\",\n")
+                                append("    \"status\": \"" + t.status + "\",\n")
+                                append("    \"amount\": " + t.amount + ",\n")
+                                append("    \"currency\": \"" + t.currency + "\",\n")
+                                append("    \"fee\": " + t.fee + ",\n")
+                                append("    \"feeCategory\": \"" + t.feeCategory + "\"\n")
+                                append("  }" + if (index < transactions.size - 1) "," else "" + "\n")
+                            }
+                            append("]\n")
+                        }
+
+                        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "application/json"
+                            putExtra(Intent.EXTRA_SUBJECT, "PromptPay JSON Backup (" + currencyCode + ")")
+                            putExtra(Intent.EXTRA_TEXT, json)
+                        }
+                        context.startActivity(Intent.createChooser(sendIntent, "Export JSON Backup"))
+                        Toast.makeText(context, "Exporting JSON backup...", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Export failed: " + e.message, Toast.LENGTH_SHORT).show()
+                    }
+                }) {
+                    Text("Export JSON")
                 }
             }
         )

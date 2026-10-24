@@ -413,6 +413,15 @@ class App {
     const btnExportTxCsv = document.getElementById('btn-export-tx-csv');
     if (btnExportTxCsv) btnExportTxCsv.addEventListener('click', () => this.exportCsv('transactions'));
 
+    const btnExportTxLogCsv = document.getElementById('btn-export-tx-log-csv');
+    if (btnExportTxLogCsv) btnExportTxLogCsv.addEventListener('click', () => this.exportCsv('transactions'));
+
+    const btnReportExportCsv = document.getElementById('btn-report-export-csv');
+    if (btnReportExportCsv) btnReportExportCsv.addEventListener('click', () => this.exportCsv('transactions'));
+
+    const btnReportExportJson = document.getElementById('btn-report-export-json');
+    if (btnReportExportJson) btnReportExportJson.addEventListener('click', () => storage.exportBackup());
+
     const btnExportCatsCsv = document.getElementById('btn-export-cats-csv');
     if (btnExportCatsCsv) btnExportCatsCsv.addEventListener('click', () => this.exportCsv('categories'));
 
@@ -765,24 +774,38 @@ class App {
       csv = 'Date,Merchant,Category,Source,Status,Amount,Currency,Fee,FeeCategory\n';
       this.transactions.forEach(t => {
         const d = new Date(t.dateEpochMillis).toISOString();
-        csv += `"${d}","${t.merchant || ''}","${t.category || ''}","${t.source || ''}","${t.status || ''}",${t.amount},"${t.currency}",${t.fee || 0},"${t.feeCategory || ''}"\n`;
+        const m = (t.merchant || '').replace(/"/g, '""');
+        const c = (t.category || '').replace(/"/g, '""');
+        const s = (t.source || '').replace(/"/g, '""');
+        const st = (t.status || '').replace(/"/g, '""');
+        const fc = (t.feeCategory || '').replace(/"/g, '""');
+        csv += `"${d}","${m}","${c}","${s}","${st}",${t.amount},"${t.currency}",${t.fee || 0},"${fc}"\n`;
       });
       filename = `PromptPay_Transactions_${new Date().toISOString().slice(0, 10)}.csv`;
     } else {
       csv = 'ID,Name,Tag,Color,Keywords\n';
       this.categories.forEach(c => {
-        csv += `${c.id},"${c.name}","${c.tag || ''}","${c.colorHex || ''}","${c.keywords || ''}"\n`;
+        const name = (c.name || '').replace(/"/g, '""');
+        const tag = (c.tag || '').replace(/"/g, '""');
+        const color = (c.colorHex || '').replace(/"/g, '""');
+        const kw = (c.keywords || '').replace(/"/g, '""');
+        csv += `${c.id},"${name}","${tag}","${color}","${kw}"\n`;
       });
       filename = `PromptPay_Categories_${new Date().toISOString().slice(0, 10)}.csv`;
     }
 
-    const blob = new Blob([csv], { type: 'text/csv' });
+    // Prepend UTF-8 BOM so Excel opens with proper character encoding
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      if (a.parentNode) a.parentNode.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 250);
     this.showToast(`Exported ${filename}`);
   }
 

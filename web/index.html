@@ -265,10 +265,16 @@
                 <button class="filter-pill" data-filter="MANUAL" id="pill-filter-manual">Manual Only</button>
               </div>
             </div>
-            <button class="btn btn--ghost btn--sm" id="btn-export-backup">
-              <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span id="btn-export-text">Export Backup (JSON)</span>
-            </button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn--ghost btn--sm" id="btn-export-tx-log-csv">
+                <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Export CSV</span>
+              </button>
+              <button class="btn btn--ghost btn--sm" id="btn-export-backup">
+                <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span id="btn-export-text">Export Backup (JSON)</span>
+              </button>
+            </div>
           </div>
           <div class="table-wrap">
             <table class="table">
@@ -324,6 +330,25 @@
           <div class="card chart-container">
             <span class="card__title" id="lbl-spending-distribution">Spending Distribution by Category</span>
             <div id="report-chart-donut" class="chart-canvas" style="flex-direction:column;"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card__head" style="flex-wrap:wrap;gap:14px;align-items:center;">
+            <div>
+              <h3 class="card__title" id="lbl-report-export-title">Export Financial Data</h3>
+              <p class="card__sub" id="lbl-report-export-sub">Download your transaction history as CSV or get a full JSON backup.</p>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn btn--ghost btn--sm" id="btn-report-export-csv">
+                <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Export CSV</span>
+              </button>
+              <button class="btn btn--ghost btn--sm" id="btn-report-export-json">
+                <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Download JSON Backup</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
