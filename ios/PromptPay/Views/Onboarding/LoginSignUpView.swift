@@ -142,7 +142,7 @@ public struct LoginSignUpView: View {
             return
         }
 
-        var profile = viewModel.userProfile ?? UserProfile()
+        var profile = viewModel.userProfile
         profile.name = isSignUp ? name : (profile.name.isEmpty ? "Jane Doe" : profile.name)
         profile.email = email
         viewModel.updateProfile(profile)
@@ -150,7 +150,7 @@ public struct LoginSignUpView: View {
     }
 
     private func handleAppleSignIn() {
-        var profile = viewModel.userProfile ?? UserProfile()
+        var profile = viewModel.userProfile
         if profile.name.isEmpty { profile.name = "Apple User" }
         if profile.email.isEmpty { profile.email = "apple.id@icloud.com" }
         viewModel.updateProfile(profile)

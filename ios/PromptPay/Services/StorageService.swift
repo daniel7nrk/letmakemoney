@@ -29,6 +29,9 @@ public final class StorageService {
         if loadCategories().isEmpty {
             saveCategories(Category.defaults)
         }
+        if loadTransactions().isEmpty {
+            saveTransactions(Transaction.defaults)
+        }
         if loadNotifications().isEmpty {
             saveNotifications(AppNotification.defaults)
         }

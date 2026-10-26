@@ -65,6 +65,12 @@ public final class MainViewModel: ObservableObject {
         storage.saveUserProfile(updated)
     }
 
+    public func updateProfile(_ profile: UserProfile) {
+        self.userProfile = profile
+        storage.saveUserProfile(profile)
+        refreshAll()
+    }
+
     public func signOut() {
         self.isUnlocked = false
     }
@@ -171,6 +177,16 @@ public final class MainViewModel: ObservableObject {
         processIncomingSms(sender: "SMS Ingestion", body: text)
         detectedClipboardText = nil
         showClipboardImportPrompt = false
+    }
+
+    public func handleDeepLink(url: URL) {
+        guard url.scheme == "promptpay" else { return }
+        let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        let sender = components?.queryItems?.first(where: { $0.name == "sender" })?.value ?? "Automated SMS"
+        let body = components?.queryItems?.first(where: { $0.name == "body" })?.value ?? components?.queryItems?.first(where: { $0.name == "text" })?.value ?? ""
+        if !body.isEmpty {
+            processIncomingSms(sender: sender, body: body)
+        }
     }
 
     // MARK: - Manual & Editing Operations

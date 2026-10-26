@@ -17,15 +17,19 @@ public struct MainTabView: View {
             Group {
                 switch selectedTab {
                 case 0:
-                    TransactionsView(viewModel: viewModel)
+                    HomeDashboardView(viewModel: viewModel) { targetTab in
+                        selectedTab = targetTab
+                    }
                 case 1:
                     TransactionsView(viewModel: viewModel)
                 case 2:
-                    TransactionsView(viewModel: viewModel)
+                    ReportsView(viewModel: viewModel)
                 case 3:
                     ProfileSettingsView(viewModel: viewModel)
                 default:
-                    TransactionsView(viewModel: viewModel)
+                    HomeDashboardView(viewModel: viewModel) { targetTab in
+                        selectedTab = targetTab
+                    }
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

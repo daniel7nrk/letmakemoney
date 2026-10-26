@@ -48,5 +48,64 @@ public struct Transaction: Identifiable, Codable, Equatable {
         self.paymentMethod = paymentMethod
     }
 
+    public static let defaults: [Transaction] = [
+        Transaction(
+            id: 1,
+            amount: 8500.0,
+            currency: "RWF",
+            dateEpochMillis: Int64(Date().timeIntervalSince1970 * 1000) - 3600000,
+            description: "Simba Supermarket (SMS)",
+            merchant: "Simba Supermarket",
+            category: "Food & Dining",
+            fee: 100.0,
+            feeCategory: "Transaction Fee",
+            source: "SMS",
+            status: "CONFIRMED",
+            paymentMethod: "MTN MoMo"
+        ),
+        Transaction(
+            id: 2,
+            amount: 3200.0,
+            currency: "RWF",
+            dateEpochMillis: Int64(Date().timeIntervalSince1970 * 1000) - 18000000,
+            description: "Yego Moto (SMS)",
+            merchant: "Yego Moto",
+            category: "Transport",
+            fee: 50.0,
+            feeCategory: "Transaction Fee",
+            source: "SMS",
+            status: "CONFIRMED",
+            paymentMethod: "Airtel Money"
+        ),
+        Transaction(
+            id: 3,
+            amount: 15000.0,
+            currency: "RWF",
+            dateEpochMillis: Int64(Date().timeIntervalSince1970 * 1000) - 86400000,
+            description: "EUCL Cashpower (SMS)",
+            merchant: "EUCL Cashpower",
+            category: "Rent & Utilities",
+            fee: 200.0,
+            feeCategory: "Transaction Fee",
+            source: "SMS",
+            status: "CONFIRMED",
+            paymentMethod: "MTN MoMo"
+        ),
+        Transaction(
+            id: 4,
+            amount: 5000.0,
+            currency: "RWF",
+            dateEpochMillis: Int64(Date().timeIntervalSince1970 * 1000) - 172800000,
+            description: "Kigali Fresh Mart (SMS)",
+            merchant: "Kigali Fresh Mart",
+            category: "Uncategorized",
+            fee: 100.0,
+            feeCategory: "Transaction Fee",
+            source: "SMS",
+            status: "PENDING",
+            paymentMethod: "MTN MoMo"
+        )
+    ]
+
     public typealias BooleanType = Bool
 }

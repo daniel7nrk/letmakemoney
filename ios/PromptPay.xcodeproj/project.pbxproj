@@ -1,0 +1,468 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4CD6DBF1CE35C76C81FA8D72 /* PromptPayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46035E8C1AD702800C1C402C /* PromptPayApp.swift */; };
+		944E3E887F2EB9296F87367A /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8066C987BB6534A8151896 /* MainViewModel.swift */; };
+		E6C62D8B55665BB4FF384997 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619CED231609C1964D816DBD /* AppLanguage.swift */; };
+		FC923E8BB49505EC2C75B29B /* AppNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9003A63E8791879F634EE1F2 /* AppNotification.swift */; };
+		8F67020312ECE84EA94B49A5 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5162121FBE6F9DB1969493B8 /* Category.swift */; };
+		93D34961D01639E158CD18DE /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD5E458927CA770D1D1EDCC /* Country.swift */; };
+		A5B5944931437BFD719817DF /* ScamAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885333B6AECD7961E4C88763 /* ScamAlert.swift */; };
+		C9D9877A6057CAD4316B6600 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C30AA3938FBB7907E307CE /* Transaction.swift */; };
+		A880850A1862344A76167F1C /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3519F5F4B288569C8469F50C /* UserProfile.swift */; };
+		1C5760FA16F517CED48F1853 /* AppStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 830FEFDA276A0EF667CE86FD /* AppStrings.swift */; };
+		E9A8726E5B5AB2D3492D8A70 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75ED1EB408F32BA224166B53 /* Color+Theme.swift */; };
+		B0A8CB75F9B1C3F4446A471F /* Font+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E1CF08A21A2A6B9BB6CD54 /* Font+Theme.swift */; };
+		EA0F556DD7A26DF5BF1C5FC8 /* FormatUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BA4F7BEABE9A1FE4E4AD42 /* FormatUtil.swift */; };
+		74F4EAB50C685E67C35156A9 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB36F3F11D29DFD5D769F6D /* MainTabView.swift */; };
+		CE06A5F26A1C8DB92CFCC712 /* ProfileSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8346390234BC0479D28B32B /* ProfileSettingsView.swift */; };
+		2B4B0706DABA005B58E7F2DA /* HomeDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE7BA558F4C1D69D4CFC219 /* HomeDashboardView.swift */; };
+		57A0AD7A9D17B475C04E522D /* SimulateSmsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A7F64869D6B99916A95E1B /* SimulateSmsSheet.swift */; };
+		D8EB42434D922BC76D0EF0D7 /* TransactionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A02C10F9EEB6B54A989590A /* TransactionCardView.swift */; };
+		38C992161E3720325358BC98 /* AddTransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E5D7E42FE06E7DB99675C31 /* AddTransactionView.swift */; };
+		39F13ADE6EF013DF4AAB4E8F /* TransactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7BED98C2832CF38AAD8123 /* TransactionDetailView.swift */; };
+		5CB42E76E77FF5D2C32941E9 /* TransactionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D9F7DC20B769B24CEBE5F4 /* TransactionsView.swift */; };
+		9DCA097E78AAF6675E426973 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C87A31BA788F91A64D545E /* NotificationsView.swift */; };
+		13043343040503393708DD9E /* CountrySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DD0A4C077F8DBD21635062 /* CountrySelectionView.swift */; };
+		DE39ECC06249BDE53E67D8D0 /* LoginSignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29985F2606544385AEB98814 /* LoginSignUpView.swift */; };
+		438B91AD7649902CA2976518 /* PinSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAA0B68B7653772E002A81A /* PinSetupView.swift */; };
+		C94E11A4B5A263F177B1865F /* SmsExplainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D07A3EDA4A779AB26A86CA /* SmsExplainerView.swift */; };
+		9FF521BCA6FAC6B0A32B5369 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFD2FA250A136FE95866B12 /* WelcomeView.swift */; };
+		AC5C295ED005EB55D92BE40A /* ReportsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C5EF86AA37631CBBA89D3FE /* ReportsView.swift */; };
+		806B135F147EF08BE94792C0 /* BiometricAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA9A4739FF14C25DE7FDF7A /* BiometricAuthService.swift */; };
+		6212D2A2916AF98A7DDA772E /* SMSParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111E9BC55199877A6464E0E0 /* SMSParser.swift */; };
+		1C6C7B4C26AAA653EB5A72E3 /* ScamDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044C97EFFCE62C841379405A /* ScamDetector.swift */; };
+		F78B689A90B758A9D8505A86 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB99D27EE1065DF55A199C /* StorageService.swift */; };
+		6B1B055905CA5472CA4723AC /* TrustedSenderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5437A0B1D481072451EBFF71 /* TrustedSenderManager.swift */; };
+		AD9B0E7BDC3A223044799B8C /* urbanist_bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8AAEF86B28CDCD7385846DC3 /* urbanist_bold.ttf */; };
+		ACD672EED5C6AD60B8CC10F1 /* urbanist_medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 61B446FC19D61732012F2374 /* urbanist_medium.ttf */; };
+		03BFD8BDFF1CC0A7702DF7CC /* urbanist_regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 49AD979DBD24E6D3119398A2 /* urbanist_regular.ttf */; };
+		66EB142E0488158891CFBB38 /* urbanist_semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28E095B27A0D4FF7F67EF9C3 /* urbanist_semibold.ttf */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		CDBBC8739DD0964AD25B866E /* PromptPay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PromptPay.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		46035E8C1AD702800C1C402C /* PromptPayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PromptPayApp.swift"; sourceTree = "<group>"; };
+		BC8066C987BB6534A8151896 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainViewModel.swift"; sourceTree = "<group>"; };
+		619CED231609C1964D816DBD /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppLanguage.swift"; sourceTree = "<group>"; };
+		9003A63E8791879F634EE1F2 /* AppNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppNotification.swift"; sourceTree = "<group>"; };
+		5162121FBE6F9DB1969493B8 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Category.swift"; sourceTree = "<group>"; };
+		4DD5E458927CA770D1D1EDCC /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Country.swift"; sourceTree = "<group>"; };
+		885333B6AECD7961E4C88763 /* ScamAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScamAlert.swift"; sourceTree = "<group>"; };
+		55C30AA3938FBB7907E307CE /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Transaction.swift"; sourceTree = "<group>"; };
+		3519F5F4B288569C8469F50C /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserProfile.swift"; sourceTree = "<group>"; };
+		830FEFDA276A0EF667CE86FD /* AppStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppStrings.swift"; sourceTree = "<group>"; };
+		75ED1EB408F32BA224166B53 /* Color+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Theme.swift"; sourceTree = "<group>"; };
+		23E1CF08A21A2A6B9BB6CD54 /* Font+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Theme.swift"; sourceTree = "<group>"; };
+		A7BA4F7BEABE9A1FE4E4AD42 /* FormatUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormatUtil.swift"; sourceTree = "<group>"; };
+		7CB36F3F11D29DFD5D769F6D /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainTabView.swift"; sourceTree = "<group>"; };
+		E8346390234BC0479D28B32B /* ProfileSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileSettingsView.swift"; sourceTree = "<group>"; };
+		BDE7BA558F4C1D69D4CFC219 /* HomeDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeDashboardView.swift"; sourceTree = "<group>"; };
+		50A7F64869D6B99916A95E1B /* SimulateSmsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SimulateSmsSheet.swift"; sourceTree = "<group>"; };
+		2A02C10F9EEB6B54A989590A /* TransactionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionCardView.swift"; sourceTree = "<group>"; };
+		6E5D7E42FE06E7DB99675C31 /* AddTransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddTransactionView.swift"; sourceTree = "<group>"; };
+		5F7BED98C2832CF38AAD8123 /* TransactionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionDetailView.swift"; sourceTree = "<group>"; };
+		71D9F7DC20B769B24CEBE5F4 /* TransactionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionsView.swift"; sourceTree = "<group>"; };
+		84C87A31BA788F91A64D545E /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationsView.swift"; sourceTree = "<group>"; };
+		E2DD0A4C077F8DBD21635062 /* CountrySelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CountrySelectionView.swift"; sourceTree = "<group>"; };
+		29985F2606544385AEB98814 /* LoginSignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoginSignUpView.swift"; sourceTree = "<group>"; };
+		2CAA0B68B7653772E002A81A /* PinSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PinSetupView.swift"; sourceTree = "<group>"; };
+		15D07A3EDA4A779AB26A86CA /* SmsExplainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SmsExplainerView.swift"; sourceTree = "<group>"; };
+		4BFD2FA250A136FE95866B12 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WelcomeView.swift"; sourceTree = "<group>"; };
+		7C5EF86AA37631CBBA89D3FE /* ReportsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReportsView.swift"; sourceTree = "<group>"; };
+		DBA9A4739FF14C25DE7FDF7A /* BiometricAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BiometricAuthService.swift"; sourceTree = "<group>"; };
+		111E9BC55199877A6464E0E0 /* SMSParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SMSParser.swift"; sourceTree = "<group>"; };
+		044C97EFFCE62C841379405A /* ScamDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScamDetector.swift"; sourceTree = "<group>"; };
+		F2BB99D27EE1065DF55A199C /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageService.swift"; sourceTree = "<group>"; };
+		5437A0B1D481072451EBFF71 /* TrustedSenderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrustedSenderManager.swift"; sourceTree = "<group>"; };
+		8AAEF86B28CDCD7385846DC3 /* urbanist_bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "urbanist_bold.ttf"; sourceTree = "<group>"; };
+		61B446FC19D61732012F2374 /* urbanist_medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "urbanist_medium.ttf"; sourceTree = "<group>"; };
+		49AD979DBD24E6D3119398A2 /* urbanist_regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "urbanist_regular.ttf"; sourceTree = "<group>"; };
+		28E095B27A0D4FF7F67EF9C3 /* urbanist_semibold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "urbanist_semibold.ttf"; sourceTree = "<group>"; };
+		8767EEB4FBF6D294CB12D03D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		36E2D336F4D2831692B077F8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3710DEE3C87ED20C8972E8CF /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				84C87A31BA788F91A64D545E /* NotificationsView.swift */,
+			);
+			path = "Notifications"; sourceTree = "<group>";
+		};
+		14B6AD99ED45966F6FA71D35 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				E8346390234BC0479D28B32B /* ProfileSettingsView.swift */,
+			);
+			path = "Settings"; sourceTree = "<group>";
+		};
+		4403A93331F946CE7E37EB8A /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				E2DD0A4C077F8DBD21635062 /* CountrySelectionView.swift */,
+				29985F2606544385AEB98814 /* LoginSignUpView.swift */,
+				2CAA0B68B7653772E002A81A /* PinSetupView.swift */,
+				15D07A3EDA4A779AB26A86CA /* SmsExplainerView.swift */,
+				4BFD2FA250A136FE95866B12 /* WelcomeView.swift */,
+			);
+			path = "Onboarding"; sourceTree = "<group>";
+		};
+		BED62AD6F9FE46D1D8F22895 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				2A02C10F9EEB6B54A989590A /* TransactionCardView.swift */,
+			);
+			path = "Components"; sourceTree = "<group>";
+		};
+		B906759CDED776C0842E94CA /* Transactions */ = {
+			isa = PBXGroup;
+			children = (
+				6E5D7E42FE06E7DB99675C31 /* AddTransactionView.swift */,
+				5F7BED98C2832CF38AAD8123 /* TransactionDetailView.swift */,
+				71D9F7DC20B769B24CEBE5F4 /* TransactionsView.swift */,
+			);
+			path = "Transactions"; sourceTree = "<group>";
+		};
+		A4A6676D4504672AF4288256 /* Reports */ = {
+			isa = PBXGroup;
+			children = (
+				7C5EF86AA37631CBBA89D3FE /* ReportsView.swift */,
+			);
+			path = "Reports"; sourceTree = "<group>";
+		};
+		1214E8A164A126FB1016777F /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				BDE7BA558F4C1D69D4CFC219 /* HomeDashboardView.swift */,
+				50A7F64869D6B99916A95E1B /* SimulateSmsSheet.swift */,
+			);
+			path = "Home"; sourceTree = "<group>";
+		};
+		4F16101BC2322109B8E53263 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				619CED231609C1964D816DBD /* AppLanguage.swift */,
+				9003A63E8791879F634EE1F2 /* AppNotification.swift */,
+				5162121FBE6F9DB1969493B8 /* Category.swift */,
+				4DD5E458927CA770D1D1EDCC /* Country.swift */,
+				885333B6AECD7961E4C88763 /* ScamAlert.swift */,
+				55C30AA3938FBB7907E307CE /* Transaction.swift */,
+				3519F5F4B288569C8469F50C /* UserProfile.swift */,
+			);
+			path = "Models"; sourceTree = "<group>";
+		};
+		C97349DDC5A83CCA2EBF3499 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				7CB36F3F11D29DFD5D769F6D /* MainTabView.swift */,
+				3710DEE3C87ED20C8972E8CF /* Notifications */,
+				14B6AD99ED45966F6FA71D35 /* Settings */,
+				4403A93331F946CE7E37EB8A /* Onboarding */,
+				BED62AD6F9FE46D1D8F22895 /* Components */,
+				B906759CDED776C0842E94CA /* Transactions */,
+				A4A6676D4504672AF4288256 /* Reports */,
+				1214E8A164A126FB1016777F /* Home */,
+			);
+			path = "Views"; sourceTree = "<group>";
+		};
+		4763BCBFE460AEC3BBDDBA84 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				DBA9A4739FF14C25DE7FDF7A /* BiometricAuthService.swift */,
+				111E9BC55199877A6464E0E0 /* SMSParser.swift */,
+				044C97EFFCE62C841379405A /* ScamDetector.swift */,
+				F2BB99D27EE1065DF55A199C /* StorageService.swift */,
+				5437A0B1D481072451EBFF71 /* TrustedSenderManager.swift */,
+			);
+			path = "Services"; sourceTree = "<group>";
+		};
+		190067C06419857482F7E6AE /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				8AAEF86B28CDCD7385846DC3 /* urbanist_bold.ttf */,
+				61B446FC19D61732012F2374 /* urbanist_medium.ttf */,
+				49AD979DBD24E6D3119398A2 /* urbanist_regular.ttf */,
+				28E095B27A0D4FF7F67EF9C3 /* urbanist_semibold.ttf */,
+			);
+			path = "Fonts"; sourceTree = "<group>";
+		};
+		D17D3969C56FFA3CF6924843 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				BC8066C987BB6534A8151896 /* MainViewModel.swift */,
+			);
+			path = "ViewModels"; sourceTree = "<group>";
+		};
+		F306FC506464DA55DA140F96 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				830FEFDA276A0EF667CE86FD /* AppStrings.swift */,
+				75ED1EB408F32BA224166B53 /* Color+Theme.swift */,
+				23E1CF08A21A2A6B9BB6CD54 /* Font+Theme.swift */,
+				A7BA4F7BEABE9A1FE4E4AD42 /* FormatUtil.swift */,
+			);
+			path = "Extensions"; sourceTree = "<group>";
+		};
+		E5E7F808DE73297A3C842A3C /* PromptPay */ = {
+			isa = PBXGroup;
+			children = (
+				8767EEB4FBF6D294CB12D03D /* Info.plist */,
+				46035E8C1AD702800C1C402C /* PromptPayApp.swift */,
+				4F16101BC2322109B8E53263 /* Models */,
+				C97349DDC5A83CCA2EBF3499 /* Views */,
+				4763BCBFE460AEC3BBDDBA84 /* Services */,
+				190067C06419857482F7E6AE /* Fonts */,
+				D17D3969C56FFA3CF6924843 /* ViewModels */,
+				F306FC506464DA55DA140F96 /* Extensions */,
+			);
+			path = PromptPay; sourceTree = "<group>";
+		};
+		6D159F361021D92BC3E10E55 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CDBBC8739DD0964AD25B866E /* PromptPay.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5C999E731352905727541C3C = {
+			isa = PBXGroup;
+			children = (
+				E5E7F808DE73297A3C842A3C /* PromptPay */,
+				6D159F361021D92BC3E10E55 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1779EE2CB7F0216D78353A98 /* PromptPay */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCBA909DEA747C22C71114CD /* Build configuration list for PBXNativeTarget "PromptPay" */;
+			buildPhases = (
+				DE6EE531638FBF802B9F50F8 /* Sources */,
+				36E2D336F4D2831692B077F8 /* Frameworks */,
+				505DCE76C480DFFAA8952713 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PromptPay;
+			productName = PromptPay;
+			productReference = CDBBC8739DD0964AD25B866E /* PromptPay.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E35552567B307DB0016A53C0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = 66C115E9D28FAC0EC0475D61 /* Build configuration list for PBXProject "PromptPay" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5C999E731352905727541C3C;
+			productRefGroup = 6D159F361021D92BC3E10E55 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1779EE2CB7F0216D78353A98 /* PromptPay */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		505DCE76C480DFFAA8952713 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD9B0E7BDC3A223044799B8C /* urbanist_bold.ttf in Resources */,
+				ACD672EED5C6AD60B8CC10F1 /* urbanist_medium.ttf in Resources */,
+				03BFD8BDFF1CC0A7702DF7CC /* urbanist_regular.ttf in Resources */,
+				66EB142E0488158891CFBB38 /* urbanist_semibold.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DE6EE531638FBF802B9F50F8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4CD6DBF1CE35C76C81FA8D72 /* PromptPayApp.swift in Sources */,
+				944E3E887F2EB9296F87367A /* MainViewModel.swift in Sources */,
+				E6C62D8B55665BB4FF384997 /* AppLanguage.swift in Sources */,
+				FC923E8BB49505EC2C75B29B /* AppNotification.swift in Sources */,
+				8F67020312ECE84EA94B49A5 /* Category.swift in Sources */,
+				93D34961D01639E158CD18DE /* Country.swift in Sources */,
+				A5B5944931437BFD719817DF /* ScamAlert.swift in Sources */,
+				C9D9877A6057CAD4316B6600 /* Transaction.swift in Sources */,
+				A880850A1862344A76167F1C /* UserProfile.swift in Sources */,
+				1C5760FA16F517CED48F1853 /* AppStrings.swift in Sources */,
+				E9A8726E5B5AB2D3492D8A70 /* Color+Theme.swift in Sources */,
+				B0A8CB75F9B1C3F4446A471F /* Font+Theme.swift in Sources */,
+				EA0F556DD7A26DF5BF1C5FC8 /* FormatUtil.swift in Sources */,
+				74F4EAB50C685E67C35156A9 /* MainTabView.swift in Sources */,
+				CE06A5F26A1C8DB92CFCC712 /* ProfileSettingsView.swift in Sources */,
+				2B4B0706DABA005B58E7F2DA /* HomeDashboardView.swift in Sources */,
+				57A0AD7A9D17B475C04E522D /* SimulateSmsSheet.swift in Sources */,
+				D8EB42434D922BC76D0EF0D7 /* TransactionCardView.swift in Sources */,
+				38C992161E3720325358BC98 /* AddTransactionView.swift in Sources */,
+				39F13ADE6EF013DF4AAB4E8F /* TransactionDetailView.swift in Sources */,
+				5CB42E76E77FF5D2C32941E9 /* TransactionsView.swift in Sources */,
+				9DCA097E78AAF6675E426973 /* NotificationsView.swift in Sources */,
+				13043343040503393708DD9E /* CountrySelectionView.swift in Sources */,
+				DE39ECC06249BDE53E67D8D0 /* LoginSignUpView.swift in Sources */,
+				438B91AD7649902CA2976518 /* PinSetupView.swift in Sources */,
+				C94E11A4B5A263F177B1865F /* SmsExplainerView.swift in Sources */,
+				9FF521BCA6FAC6B0A32B5369 /* WelcomeView.swift in Sources */,
+				AC5C295ED005EB55D92BE40A /* ReportsView.swift in Sources */,
+				806B135F147EF08BE94792C0 /* BiometricAuthService.swift in Sources */,
+				6212D2A2916AF98A7DDA772E /* SMSParser.swift in Sources */,
+				1C6C7B4C26AAA653EB5A72E3 /* ScamDetector.swift in Sources */,
+				F78B689A90B758A9D8505A86 /* StorageService.swift in Sources */,
+				6B1B055905CA5472CA4723AC /* TrustedSenderManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4A8193A6E565F63D7B8F27FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		2D119E475333A59904493C69 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = "wholemodule";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		6C3BD29BACD43619C95BBDDA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGNING_REQUIRED = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_FILE = PromptPay/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.promptpay.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7EF40E66A1F8D4C16434023E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGNING_REQUIRED = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_FILE = PromptPay/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.promptpay.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		66C115E9D28FAC0EC0475D61 /* Build configuration list for PBXProject "PromptPay" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A8193A6E565F63D7B8F27FB /* Debug */,
+				2D119E475333A59904493C69 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCBA909DEA747C22C71114CD /* Build configuration list for PBXNativeTarget "PromptPay" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6C3BD29BACD43619C95BBDDA /* Debug */,
+				7EF40E66A1F8D4C16434023E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E35552567B307DB0016A53C0 /* Project object */;
+}

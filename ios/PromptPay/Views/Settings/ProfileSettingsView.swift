@@ -24,17 +24,17 @@ public struct ProfileSettingsView: View {
                             .fill(Color.royalBlue)
                             .frame(width: 60, height: 60)
                             .overlay(
-                                Text(viewModel.userProfile?.name.prefix(1).uppercased() ?? "P")
+                                Text(viewModel.userProfile.name.isEmpty ? "P" : String(viewModel.userProfile.name.prefix(1)).uppercased())
                                     .font(.urbanist(24, weight: .bold))
                                     .foregroundColor(.white)
                             )
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(viewModel.userProfile?.name.isEmpty == false ? viewModel.userProfile!.name : "PromptPay User")
+                            Text(viewModel.userProfile.name.isEmpty ? "PromptPay User" : viewModel.userProfile.name)
                                 .font(.urbanist(18, weight: .bold))
                                 .foregroundColor(.promptTextPrimary)
 
-                            Text(viewModel.userProfile?.email.isEmpty == false ? viewModel.userProfile!.email : "user@promptpay.com")
+                            Text(viewModel.userProfile.email.isEmpty ? "user@promptpay.com" : viewModel.userProfile.email)
                                 .font(.urbanist(14, weight: .regular))
                                 .foregroundColor(.promptTextSecondary)
                         }
