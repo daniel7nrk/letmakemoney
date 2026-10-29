@@ -18,11 +18,18 @@ public final class MainViewModel: ObservableObject {
     @Published public var detectedClipboardText: String? = nil
     @Published public var showClipboardImportPrompt: Bool = false
 
+    /// Current network status — propagated from NetworkMonitor.
+    @Published public private(set) var isOnline: Bool = false
+
     private let storage = StorageService.shared
     private let parser = SMSParser.shared
     private let detector = ScamDetector.shared
     private let senderManager = TrustedSenderManager.shared
     private let biometrics = BiometricAuthService.shared
+    private let network = NetworkMonitor.shared
+    private let syncService = SupabaseSyncService.shared
+
+    private var cancellables = Set<AnyCancellable>()
 
     public var pendingTransactions: [Transaction] {
         transactions.filter { $0.status == "PENDING" }
@@ -38,6 +45,21 @@ public final class MainViewModel: ObservableObject {
 
     public init() {
         refreshAll()
+        // When network comes online → auto-sync any pending offline data to Supabase
+        network.$isConnected
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] connected in
+                guard let self = self else { return }
+                self.isOnline = connected
+                if connected {
+                    print("[MainViewModel] 🌐 Network online — triggering Supabase sync")
+                    self.syncService.syncAllPendingData()
+                } else {
+                    print("[MainViewModel] 📴 Network offline — all data saved locally")
+                }
+            }
+            .store(in: &cancellables)
     }
 
     public func refreshAll() {

@@ -24,13 +24,10 @@ public final class StorageService {
         seedInitialDataIfEmpty()
     }
 
-    // MARK: - Initial Seeding
+    // MARK: - Initial Seeding (no fake data — only categories, notifications, and empty profile)
     private func seedInitialDataIfEmpty() {
         if loadCategories().isEmpty {
             saveCategories(Category.defaults)
-        }
-        if loadTransactions().isEmpty {
-            saveTransactions(Transaction.defaults)
         }
         if loadNotifications().isEmpty {
             saveNotifications(AppNotification.defaults)
@@ -85,6 +82,19 @@ public final class StorageService {
     public func deleteTransaction(id: Int64) {
         var list = loadTransactions()
         list.removeAll { $0.id == id }
+        saveTransactions(list)
+    }
+
+    public func loadUnsyncedTransactions() -> [Transaction] {
+        loadTransactions().filter { !$0.isSynced }
+    }
+
+    public func markTransactionsAsSynced(_ ids: [Int64]) {
+        var list = loadTransactions()
+        let idSet = Set(ids)
+        for i in list.indices where idSet.contains(list[i].id) {
+            list[i].isSynced = true
+        }
         saveTransactions(list)
     }
 
