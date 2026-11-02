@@ -13,6 +13,10 @@ public struct UserProfile: Identifiable, Codable, Equatable {
     public var hasCompletedOnboarding: Bool
     public var pinHash: String?
     public var lockMode: String          // "PIN", "BIOMETRIC", or "NONE"
+    /// UUID from Supabase auth.users — set after the one-time online login.
+    public var supabaseUserId: String?
+    /// True once the user has completed the one-time Supabase login (or skipped it).
+    public var hasCompletedSupabaseLogin: Bool
 
     public init(
         id: Int = 1,
@@ -26,7 +30,9 @@ public struct UserProfile: Identifiable, Codable, Equatable {
         biometricEnabled: Bool = false,
         hasCompletedOnboarding: Bool = false,
         pinHash: String? = nil,
-        lockMode: String = "PIN"
+        lockMode: String = "PIN",
+        supabaseUserId: String? = nil,
+        hasCompletedSupabaseLogin: Bool = false
     ) {
         self.id = id
         self.name = name
@@ -40,5 +46,7 @@ public struct UserProfile: Identifiable, Codable, Equatable {
         self.hasCompletedOnboarding = hasCompletedOnboarding
         self.pinHash = pinHash
         self.lockMode = lockMode
+        self.supabaseUserId = supabaseUserId
+        self.hasCompletedSupabaseLogin = hasCompletedSupabaseLogin
     }
 }

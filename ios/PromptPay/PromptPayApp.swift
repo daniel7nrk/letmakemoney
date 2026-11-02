@@ -24,6 +24,7 @@ public struct ContentView: View {
         case smsExplainer
         case login
         case pinSetup
+        case supabaseLogin   // one-time cloud login step
     }
 
     public var body: some View {
@@ -50,7 +51,14 @@ public struct ContentView: View {
                     }
                 case .pinSetup:
                     PinSetupView(viewModel: viewModel) {
+                        onboardingStep = .supabaseLogin
+                    }
+                case .supabaseLogin:
+                    SupabaseLoginView {
+                        // Mark supabase login as done, save userId if available
                         var updated = viewModel.userProfile
+                        updated.hasCompletedSupabaseLogin = true
+                        updated.supabaseUserId = SupabaseAuthService.shared.userId
                         updated.hasCompletedOnboarding = true
                         viewModel.updateProfile(updated)
                     }
