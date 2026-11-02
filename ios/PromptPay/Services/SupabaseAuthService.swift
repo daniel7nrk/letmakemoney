@@ -12,10 +12,12 @@ import Security
 public final class SupabaseAuthService: ObservableObject {
     public static let shared = SupabaseAuthService()
 
-    // ─── YOUR SUPABASE PROJECT VALUES ────────────────────────────────────────
-    static let supabaseURL = "https://YOUR_PROJECT_REF.supabase.co"
-    static let supabaseKey = "YOUR_ANON_KEY"
+    // ─── SUPABASE PROJECT CREDENTIALS (anon/publishable key — safe in app) ───
+    static let supabaseURL = "https://berurshibbxpunyselmd.supabase.co"
+    static let supabaseKey = "sb_publishable_fRdux5ehpwczDqez9SLi_g_znW3Czty"
     // ─────────────────────────────────────────────────────────────────────────
+    // NOTE: The secret/service_role key must NEVER go in an iOS app.
+    //       Only the publishable (anon) key above is used here.
 
     private let session = URLSession(configuration: .default)
 
