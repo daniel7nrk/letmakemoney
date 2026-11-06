@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// One-time Supabase login screen.
-/// Shown only once — after login, the JWT is stored in Keychain and
+/// Shown only once during onboarding — after login, the JWT is stored in Keychain and
 /// the user NEVER needs internet again just to open the app.
 /// Internet is only used later for background Supabase sync.
 public struct SupabaseLoginView: View {
@@ -16,12 +16,7 @@ public struct SupabaseLoginView: View {
 
     public var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                colors: [Color("AccentGreen").opacity(0.15), Color(.systemBackground)],
-                startPoint: .top, endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            Color.promptSurface.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 28) {
@@ -29,34 +24,40 @@ public struct SupabaseLoginView: View {
                     VStack(spacing: 10) {
                         Image(systemName: "bolt.circle.fill")
                             .font(.system(size: 64))
-                            .foregroundColor(Color("AccentGreen"))
+                            .foregroundColor(.rapportPine)
                         Text("PromptPay")
-                            .font(.largeTitle.bold())
+                            .font(.urbanist(32, weight: .bold))
+                            .foregroundColor(.promptTextPrimary)
                         Text(isSignUp
                              ? "Create your account\nto enable cloud backup"
                              : "Sign in to enable\ncloud backup & sync")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .font(.urbanist(15, weight: .medium))
+                            .foregroundColor(.promptTextSecondary)
                             .multilineTextAlignment(.center)
                     }
                     .padding(.top, 40)
 
-                    // Info card
+                    // Info card (Rapport Tile 22px)
                     HStack(alignment: .top, spacing: 12) {
                         Image(systemName: "wifi.slash")
-                            .foregroundColor(.orange)
+                            .foregroundColor(.rapportButter)
                             .font(.title3)
                         VStack(alignment: .leading, spacing: 4) {
                             Text("One-time online login")
-                                .font(.headline)
+                                .font(.urbanist(15, weight: .bold))
+                                .foregroundColor(.promptTextPrimary)
                             Text("After signing in once, the app works 100% offline. Internet is only used to sync your transactions to the cloud.")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                                .font(.urbanist(13, weight: .regular))
+                                .foregroundColor(.promptTextSecondary)
                         }
                     }
-                    .padding()
-                    .background(Color.orange.opacity(0.1))
-                    .cornerRadius(12)
+                    .padding(16)
+                    .background(Color.rapportButter.opacity(0.12))
+                    .cornerRadius(22)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 22)
+                            .stroke(Color.rapportButter.opacity(0.3), lineWidth: 1)
+                    )
                     .padding(.horizontal)
 
                     // Form
@@ -64,53 +65,64 @@ public struct SupabaseLoginView: View {
                         // Email field
                         HStack {
                             Image(systemName: "envelope")
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.promptTextSecondary)
                                 .frame(width: 24)
                             TextField("Email address", text: $email)
+                                .font(.urbanist(15, weight: .medium))
                                 .keyboardType(.emailAddress)
                                 .autocapitalization(.none)
                                 .autocorrectionDisabled()
                         }
-                        .padding()
-                        .background(Color(.secondarySystemBackground))
-                        .cornerRadius(12)
+                        .padding(14)
+                        .background(Color.promptCard)
+                        .cornerRadius(14)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.promptBorder, lineWidth: 1)
+                        )
 
                         // Password field
                         HStack {
                             Image(systemName: "lock")
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.promptTextSecondary)
                                 .frame(width: 24)
                             if showPassword {
                                 TextField("Password", text: $password)
+                                    .font(.urbanist(15, weight: .medium))
                                     .autocapitalization(.none)
                                     .autocorrectionDisabled()
                             } else {
                                 SecureField("Password", text: $password)
+                                    .font(.urbanist(15, weight: .medium))
                             }
                             Button {
                                 showPassword.toggle()
                             } label: {
                                 Image(systemName: showPassword ? "eye.slash" : "eye")
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.promptTextSecondary)
                             }
                         }
-                        .padding()
-                        .background(Color(.secondarySystemBackground))
-                        .cornerRadius(12)
+                        .padding(14)
+                        .background(Color.promptCard)
+                        .cornerRadius(14)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.promptBorder, lineWidth: 1)
+                        )
 
                         // Error message
                         if let err = auth.authError {
                             HStack {
                                 Image(systemName: "exclamationmark.triangle.fill")
-                                    .foregroundColor(.red)
+                                    .foregroundColor(.promptDanger)
                                 Text(err)
-                                    .font(.caption)
-                                    .foregroundColor(.red)
+                                    .font(.urbanist(13, weight: .medium))
+                                    .foregroundColor(.promptDanger)
                             }
                             .padding(.horizontal)
                         }
 
-                        // Primary action button
+                        // Primary action button (Capsule)
                         Button {
                             Task {
                                 if isSignUp {
@@ -129,7 +141,7 @@ public struct SupabaseLoginView: View {
                                         .tint(.white)
                                 } else {
                                     Text(isSignUp ? "Create Account & Continue" : "Sign In & Continue")
-                                        .fontWeight(.semibold)
+                                        .font(.urbanist(16, weight: .bold))
                                 }
                             }
                             .frame(maxWidth: .infinity)
@@ -137,10 +149,10 @@ public struct SupabaseLoginView: View {
                             .background(
                                 (email.isEmpty || password.count < 6 || auth.isLoading)
                                 ? Color.gray.opacity(0.4)
-                                : Color("AccentGreen")
+                                : Color.royalBlue
                             )
                             .foregroundColor(.white)
-                            .cornerRadius(14)
+                            .clipShape(Capsule())
                         }
                         .disabled(email.isEmpty || password.count < 6 || auth.isLoading)
 
@@ -152,8 +164,8 @@ public struct SupabaseLoginView: View {
                             Text(isSignUp
                                  ? "Already have an account? Sign In"
                                  : "No account yet? Create one")
-                                .font(.subheadline)
-                                .foregroundColor(Color("AccentGreen"))
+                                .font(.urbanist(14, weight: .semibold))
+                                .foregroundColor(.royalBlue)
                         }
 
                         // Skip option (offline-only, no cloud backup)
@@ -161,12 +173,19 @@ public struct SupabaseLoginView: View {
                             onAuthenticated()
                         } label: {
                             Text("Skip — use offline only")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                                .font(.urbanist(12, weight: .medium))
+                                .foregroundColor(.promptTextSecondary)
                                 .underline()
                         }
                         .padding(.top, 4)
                     }
+                    .padding(22)
+                    .background(Color.promptCard)
+                    .cornerRadius(26)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 26)
+                            .stroke(Color.promptBorder, lineWidth: 1)
+                    )
                     .padding(.horizontal)
 
                     Spacer(minLength: 40)
