@@ -54,14 +54,14 @@ class StorageService {
       localStorage.setItem('promptpay_categories', JSON.stringify(DEFAULT_CATEGORIES));
     }
     if (!localStorage.getItem('promptpay_transactions')) {
-      localStorage.setItem('promptpay_transactions', JSON.stringify(INITIAL_TRANSACTIONS));
+      localStorage.setItem('promptpay_transactions', JSON.stringify([]));
     }
     if (!localStorage.getItem('promptpay_scam_alerts')) {
-      localStorage.setItem('promptpay_scam_alerts', JSON.stringify(INITIAL_SCAM_ALERTS));
+      localStorage.setItem('promptpay_scam_alerts', JSON.stringify([]));
     }
     if (!localStorage.getItem('promptpay_profile')) {
       localStorage.setItem('promptpay_profile', JSON.stringify({
-        name: 'Jane Doe',
+        name: '',
         countryCode: 'RWANDA',
         currencyCode: 'RWF',
         scamFilteringEnabled: true,
@@ -80,25 +80,11 @@ class StorageService {
       }
     }
 
-    const txs = await this.getAll('transactions');
-    if (txs.length === 0) {
-      for (const tx of INITIAL_TRANSACTIONS) {
-        await this.put('transactions', tx);
-      }
-    }
-
-    const scams = await this.getAll('scam_alerts');
-    if (scams.length === 0) {
-      for (const scam of INITIAL_SCAM_ALERTS) {
-        await this.put('scam_alerts', scam);
-      }
-    }
-
     const profile = await this.get('settings', 'user_profile');
     if (!profile) {
       await this.put('settings', {
         key: 'user_profile',
-        name: 'Jane Doe',
+        name: '',
         countryCode: 'RWANDA',
         currencyCode: 'RWF',
         scamFilteringEnabled: true,
@@ -219,7 +205,7 @@ class StorageService {
     const profile = await this.get('settings', 'user_profile');
     if (!profile) {
       return {
-        name: 'Jane Doe',
+        name: '',
         countryCode: 'RWANDA',
         currencyCode: 'RWF',
         scamFilteringEnabled: true,

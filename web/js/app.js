@@ -134,6 +134,8 @@ const I18N = {
     modalAddLoanTitle: "Record Loan / Debt",
     lblLoanType: "Loan Type",
     btnSaveLoan: "Save Loan",
+    btnSignOut: "Sign Out",
+    btnSignOutWorkspace: "Sign Out of Workspace",
     statusOnline: "Online",
     statusOffline: "Offline (Local)"
   },
@@ -258,6 +260,8 @@ const I18N = {
     modalAddLoanTitle: "Enregistrer un Prêt / Dette",
     lblLoanType: "Type de Prêt",
     btnSaveLoan: "Enregistrer le Prêt",
+    btnSignOut: "Se déconnecter",
+    btnSignOutWorkspace: "Se déconnecter de l'espace",
     statusOnline: "En ligne",
     statusOffline: "Hors ligne (Local)"
   }
@@ -271,10 +275,10 @@ class App {
     this.lang = localStorage.getItem('rapport:lang') || 'en';
     this.selectedCountry = COUNTRIES.RWANDA;
     this.profile = {
-      name: 'Daniel Ngaruka',
-      email: 'daniel@promptpay.app',
-      monthlyBudget: 450000,
-      role: 'Account Executive'
+      name: '',
+      email: '',
+      monthlyBudget: 0,
+      role: 'Member'
     };
     this.transactions = [];
     this.categories = [];
@@ -286,14 +290,9 @@ class App {
   }
 
   async init() {
-    // 1. Load Local Profile
-    const savedProf = localStorage.getItem('rapport:profile');
-    if (savedProf) {
-      try {
-        const parsed = JSON.parse(savedProf);
-        this.profile = { ...this.profile, ...parsed };
-      } catch (e) {}
-    }
+    // 1. Enforce Login Requirement
+    const isAuthed = await this.checkAuth();
+    if (!isAuthed) return;
 
     // 2. Load Language & Country
     const savedCountry = localStorage.getItem('rapport:country');
@@ -301,7 +300,7 @@ class App {
       this.selectedCountry = COUNTRIES[savedCountry];
     }
 
-    // 3. Load Storage Data
+    // 3. Load Real Storage Data (No fake seed data)
     await this.loadData();
 
     // 4. Setup Event Listeners & Router
@@ -325,150 +324,89 @@ class App {
     }
   }
 
+  async checkAuth() {
+    let sessionUser = null;
+    if (this.supabase) {
+      try {
+        const { data } = await this.supabase.auth.getSession();
+        sessionUser = data?.session?.user;
+      } catch (e) {}
+    }
+
+    const savedProf = localStorage.getItem('rapport:profile');
+    let localProfile = null;
+    if (savedProf) {
+      try {
+        localProfile = JSON.parse(savedProf);
+      } catch (e) {}
+    }
+
+    // Require active cloud session or verified local user profile
+    if (!sessionUser && (!localProfile || !localProfile.email)) {
+      window.location.replace('auth.html');
+      return false;
+    }
+
+    if (sessionUser) {
+      const name = sessionUser.user_metadata?.full_name || sessionUser.email?.split('@')[0] || 'User';
+      this.profile = {
+        name: name,
+        email: sessionUser.email || '',
+        monthlyBudget: localProfile?.monthlyBudget || 0,
+        role: sessionUser.user_metadata?.role || localProfile?.role || 'Member'
+      };
+      localStorage.setItem('rapport:profile', JSON.stringify(this.profile));
+    } else if (localProfile) {
+      this.profile = { ...this.profile, ...localProfile };
+    }
+
+    this.updateHeaderProfile();
+    return true;
+  }
+
+  async logout() {
+    if (this.supabase) {
+      try {
+        await this.supabase.auth.signOut();
+      } catch (e) {
+        console.warn("Sign out exception:", e);
+      }
+    }
+    localStorage.removeItem('rapport:profile');
+    localStorage.removeItem('rapport:supabase_family_users');
+    window.location.replace('auth.html');
+  }
+
   // ==========================================
-  // DATA LOADING & SEEDING
+  // DATA LOADING & SEEDING (CLEAN REAL DATA ONLY)
   // ==========================================
   async loadData() {
-    // Transactions
-    let txs = await storage.getTransactions();
-    if (!txs || txs.length === 0) {
-      txs = [
-        {
-          id: 'tx_seed_1',
-          dateEpochMillis: Date.now() - 3600000 * 2,
-          merchant: 'Simba Supermarket',
-          category: 'Groceries',
-          amount: 28500,
-          currency: this.selectedCountry.currencyCode,
-          fee: 300,
-          feeCategory: 'Tier 1',
-          source: 'SMS',
-          status: 'COMPLETED'
-        },
-        {
-          id: 'tx_seed_2',
-          dateEpochMillis: Date.now() - 3600000 * 18,
-          merchant: 'MTN Mobile Airtime',
-          category: 'Utilities',
-          amount: 5000,
-          currency: this.selectedCountry.currencyCode,
-          fee: 0,
-          feeCategory: 'Free',
-          source: 'SMS',
-          status: 'COMPLETED'
-        },
-        {
-          id: 'tx_seed_3',
-          dateEpochMillis: Date.now() - 3600000 * 40,
-          merchant: 'Canal+ Subscription',
-          category: 'Entertainment',
-          amount: 14000,
-          currency: this.selectedCountry.currencyCode,
-          fee: 250,
-          feeCategory: 'Standard',
-          source: 'MANUAL',
-          status: 'COMPLETED'
-        },
-        {
-          id: 'tx_seed_4',
-          dateEpochMillis: Date.now() - 3600000 * 70,
-          merchant: 'Kigali Fuel Station',
-          category: 'Transport',
-          amount: 32000,
-          currency: this.selectedCountry.currencyCode,
-          fee: 500,
-          feeCategory: 'Side Fee',
-          source: 'SMS',
-          status: 'COMPLETED'
-        }
-      ];
-      for (const t of txs) await storage.put('transactions', t);
-    }
-    this.transactions = txs;
+    // 1. Transactions (Only real user data)
+    const txs = await storage.getTransactions();
+    this.transactions = txs || [];
 
-    // Categories
+    // 2. Categories (Taxonomy definition)
     let cats = await storage.getCategories();
     if (!cats || cats.length === 0) {
       cats = [
-        { id: 'cat_1', name: 'Groceries', tag: 'Essential', colorHex: '#2E6FF2', keywords: 'simba,market,food,supermarket' },
-        { id: 'cat_2', name: 'Utilities', tag: 'Essential', colorHex: '#10B981', keywords: 'airtime,water,eucl,wasac,cashpower' },
-        { id: 'cat_3', name: 'Transport', tag: 'Lifestyle', colorHex: '#F59E0B', keywords: 'fuel,taxi,yego,moto,sp' },
-        { id: 'cat_4', name: 'Entertainment', tag: 'Lifestyle', colorHex: '#8B5CF6', keywords: 'cinema,canal,bar,pizza,restaurant' },
-        { id: 'cat_5', name: 'Health & Pharmacy', tag: 'Essential', colorHex: '#EC4899', keywords: 'pharma,clinic,med,hospital' },
-        { id: 'cat_6', name: 'Income / Salary', tag: 'Income', colorHex: '#2F7A52', keywords: 'salary,deposit,payroll,transfer' }
+        { id: 'cat_1', name: 'Food & Dining', tag: 'Essential', colorHex: '#2E6FF2', keywords: 'food,dining,restaurant,supermarket,grocery' },
+        { id: 'cat_2', name: 'Utilities', tag: 'Essential', colorHex: '#10B981', keywords: 'airtime,water,electricity,cashpower,internet' },
+        { id: 'cat_3', name: 'Transport', tag: 'Lifestyle', colorHex: '#F59E0B', keywords: 'fuel,taxi,bus,moto,parking' },
+        { id: 'cat_4', name: 'Entertainment', tag: 'Lifestyle', colorHex: '#8B5CF6', keywords: 'cinema,movies,streaming,games,sports' },
+        { id: 'cat_5', name: 'Health', tag: 'Essential', colorHex: '#EC4899', keywords: 'pharma,clinic,med,hospital,doctor' },
+        { id: 'cat_6', name: 'Salary', tag: 'Income', colorHex: '#2F7A52', keywords: 'salary,deposit,payroll,allowance' }
       ];
       for (const c of cats) await storage.put('categories', c);
     }
     this.categories = cats;
 
-    // Loans
-    let savedLoans = localStorage.getItem('promptpay:loans');
-    if (savedLoans) {
-      try { this.loans = JSON.parse(savedLoans); } catch (e) { this.loans = []; }
-    } else {
-      this.loans = [
-        {
-          id: 'loan_1',
-          person: 'Eric Karangwa (Brother)',
-          type: 'LENT',
-          amount: 85000,
-          paid: 45000,
-          dueDate: '2026-11-15',
-          status: 'ACTIVE'
-        },
-        {
-          id: 'loan_2',
-          person: 'SACCO Credit Union',
-          type: 'BORROWED',
-          amount: 150000,
-          paid: 100000,
-          dueDate: '2026-11-05',
-          status: 'ACTIVE'
-        }
-      ];
-      localStorage.setItem('promptpay:loans', JSON.stringify(this.loans));
-    }
+    // 3. Loans (Only real user data)
+    const savedLoans = localStorage.getItem('promptpay:loans');
+    this.loans = savedLoans ? JSON.parse(savedLoans) : [];
 
-    // Notifications
-    let savedNotifs = localStorage.getItem('rapport:notifications');
-    if (savedNotifs) {
-      try { this.notifications = JSON.parse(savedNotifs); } catch (e) {}
-    }
-    if (!this.notifications || this.notifications.length === 0) {
-      this.notifications = [
-        {
-          id: 'n_1',
-          title: 'Payment Request Received',
-          desc: 'Sarah Jenkins requested 45,000 RWF for Household Groceries.',
-          type: 'requests',
-          unread: true,
-          time: '15m ago',
-          actionText: 'View Transactions',
-          actionTarget: 'transactions'
-        },
-        {
-          id: 'n_2',
-          title: 'Family Allowance Notice',
-          desc: 'David used 24,000 RWF at Campus Store. (65% of budget used).',
-          type: 'family',
-          unread: true,
-          time: '1h ago',
-          actionText: 'View Family',
-          actionTarget: 'family'
-        },
-        {
-          id: 'n_3',
-          title: 'MoMo SMS Intercepted',
-          desc: 'Automated on-device parser processed payment of 28,500 RWF.',
-          type: 'payments',
-          unread: false,
-          time: '3h ago',
-          actionText: 'View Log',
-          actionTarget: 'transactions'
-        }
-      ];
-      localStorage.setItem('rapport:notifications', JSON.stringify(this.notifications));
-    }
+    // 4. Notifications (Only real user data)
+    const savedNotifs = localStorage.getItem('rapport:notifications');
+    this.notifications = savedNotifs ? JSON.parse(savedNotifs) : [];
   }
 
   // ==========================================
@@ -529,6 +467,23 @@ class App {
         localStorage.setItem('rapport:country', selectCountry.value);
         this.renderCurrentView();
         this.showToast(`Currency updated to ${this.selectedCountry.currencyCode}`);
+      });
+    }
+
+    // Sign out buttons
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+      btnLogout.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.logout();
+      });
+    }
+
+    const btnSettingsLogout = document.getElementById('btn-settings-logout');
+    if (btnSettingsLogout) {
+      btnSettingsLogout.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.logout();
       });
     }
   }
@@ -616,11 +571,25 @@ class App {
   updateHeaderProfile() {
     const topName = document.getElementById('top-user-name');
     const topAv = document.getElementById('top-avatar');
-    if (topName) topName.textContent = this.profile.name || 'Account';
-    if (topAv) {
-      const initials = (this.profile.name || 'DN').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-      topAv.textContent = initials;
-    }
+    const lblProfName = document.getElementById('lbl-prof-name');
+    const lblProfEmail = document.getElementById('lbl-prof-email');
+    const profAv = document.getElementById('prof-avatar-preview');
+    const inpName = document.getElementById('input-prof-name');
+    const inpEmail = document.getElementById('input-prof-email');
+    const inpBudget = document.getElementById('input-prof-budget');
+
+    const name = this.profile.name || 'User';
+    const email = this.profile.email || '';
+    const initials = name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
+
+    if (topName) topName.textContent = name;
+    if (topAv) topAv.textContent = initials;
+    if (lblProfName) lblProfName.textContent = name;
+    if (lblProfEmail) lblProfEmail.textContent = email;
+    if (profAv) profAv.textContent = initials;
+    if (inpName) inpName.value = this.profile.name || '';
+    if (inpEmail) inpEmail.value = this.profile.email || '';
+    if (inpBudget) inpBudget.value = this.profile.monthlyBudget || '';
   }
 
   // ==========================================
@@ -641,7 +610,7 @@ class App {
     });
 
     const netSavings = totalIncome - totalExpense;
-    const balance = Math.max(0, 1500000 + netSavings);
+    const balance = netSavings;
 
     const elBal = document.getElementById('dash-balance');
     const elInc = document.getElementById('dash-income');
@@ -657,9 +626,11 @@ class App {
       elNet.className = `tnum ${netSavings >= 0 ? 'net-surplus-positive' : 'net-surplus-negative'}`;
     }
 
-    const budget = Number(this.profile.monthlyBudget) || 450000;
-    const utilPct = Math.round((totalExpense / budget) * 100);
-    if (elUtil) elUtil.textContent = `${utilPct}% of budget (${budget.toLocaleString()} ${curr})`;
+    const budget = Number(this.profile.monthlyBudget) || 0;
+    const utilPct = budget > 0 ? Math.round((totalExpense / budget) * 100) : 0;
+    if (elUtil) {
+      elUtil.textContent = budget > 0 ? `${utilPct}% of budget (${budget.toLocaleString()} ${curr})` : `0% of budget (no limit set)`;
+    }
 
     // Recent Transactions (top 5)
     const tbody = document.getElementById('dash-recent-tx-body');
@@ -667,7 +638,7 @@ class App {
       tbody.innerHTML = '';
       const recent = [...this.transactions].sort((a, b) => (b.dateEpochMillis || 0) - (a.dateEpochMillis || 0)).slice(0, 5);
       if (recent.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px;">No transactions recorded yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px;">No transactions recorded yet. Click <strong>+ New Transaction</strong> above to add your first entry.</td></tr>`;
       } else {
         recent.forEach(t => {
           const row = document.createElement('tr');
@@ -719,21 +690,31 @@ class App {
     if (famListEl) {
       famListEl.innerHTML = '';
       // You
+      const displayName = this.profile.name ? this.profile.name.split(' ')[0] : 'You';
       const youRow = document.createElement('div');
       youRow.style.display = 'flex';
       youRow.style.justifyContent = 'space-between';
       youRow.style.fontSize = '13px';
-      youRow.innerHTML = `<span><i class="fam-dot" style="background:var(--pine);display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></i><strong>You (${this.profile.name.split(' ')[0]})</strong></span><strong>${totalExpense.toLocaleString()} ${curr}</strong>`;
+      youRow.innerHTML = `<span><i class="fam-dot" style="background:var(--pine);display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></i><strong>You (${displayName})</strong></span><strong>${totalExpense.toLocaleString()} ${curr}</strong>`;
       famListEl.appendChild(youRow);
 
-      users.slice(0, 3).forEach(u => {
-        const row = document.createElement('div');
-        row.style.display = 'flex';
-        row.style.justifyContent = 'space-between';
-        row.style.fontSize = '13px';
-        row.innerHTML = `<span><i class="fam-dot" style="background:${u.color || '#f2c94c'};display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></i>${u.name}</span><strong>${Number(u.spent || 0).toLocaleString()} ${curr}</strong>`;
-        famListEl.appendChild(row);
-      });
+      if (users.length === 0) {
+        const emptyNote = document.createElement('div');
+        emptyNote.style.color = 'var(--muted)';
+        emptyNote.style.fontSize = '12px';
+        emptyNote.style.padding = '4px 0';
+        emptyNote.textContent = 'No other family members linked.';
+        famListEl.appendChild(emptyNote);
+      } else {
+        users.slice(0, 3).forEach(u => {
+          const row = document.createElement('div');
+          row.style.display = 'flex';
+          row.style.justifyContent = 'space-between';
+          row.style.fontSize = '13px';
+          row.innerHTML = `<span><i class="fam-dot" style="background:${u.color || '#f2c94c'};display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></i>${u.name}</span><strong>${Number(u.spent || 0).toLocaleString()} ${curr}</strong>`;
+          famListEl.appendChild(row);
+        });
+      }
     }
   }
 
@@ -1011,20 +992,37 @@ class App {
       elNet.className = `tnum ${net >= 0 ? 'net-surplus-positive' : 'net-surplus-negative'}`;
     }
 
-    // Historical Spending Velocity Chart (Simulated 6-Month Bins)
+    // Historical Spending Velocity Chart (Calculated from actual transactions)
     const chartTimeline = document.getElementById('report-chart-timeline');
     if (chartTimeline) {
       chartTimeline.innerHTML = '';
-      const months = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
-      const maxVal = Math.max(expense * 1.2, 50000);
-      months.forEach((m, i) => {
-        const val = i === 5 ? expense : Math.round(expense * (0.6 + i * 0.08));
-        const heightPct = Math.min(100, Math.max(12, Math.round((val / maxVal) * 100)));
+      const now = new Date();
+      const monthBuckets = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthName = d.toLocaleDateString(this.lang === 'fr' ? 'fr-FR' : 'en-US', { month: 'short' });
+        const year = d.getFullYear();
+        const month = d.getMonth();
+        let monthSpend = 0;
+        this.transactions.forEach(t => {
+          if (!t.category || !t.category.toLowerCase().includes('income')) {
+            const tDate = new Date(t.dateEpochMillis || 0);
+            if (tDate.getFullYear() === year && tDate.getMonth() === month) {
+              monthSpend += Math.abs(Number(t.amount) || 0);
+            }
+          }
+        });
+        monthBuckets.push({ name: monthName, val: monthSpend });
+      }
+
+      const maxSpend = Math.max(...monthBuckets.map(b => b.val), 1);
+      monthBuckets.forEach((b, i) => {
+        const heightPct = b.val > 0 ? Math.min(100, Math.max(12, Math.round((b.val / maxSpend) * 100))) : 4;
         const col = document.createElement('div');
         col.className = 'chart-bar-col';
         col.innerHTML = `
-          <div class="chart-bar-fill" style="height:${heightPct}%;background:${i === 5 ? 'var(--pine)' : 'var(--line-2)'};" title="${m}: ${val.toLocaleString()} ${curr}"></div>
-          <span class="chart-bar-lbl">${m}</span>
+          <div class="chart-bar-fill" style="height:${heightPct}%;background:${i === 5 ? 'var(--pine)' : 'var(--line-2)'};" title="${b.name}: ${b.val.toLocaleString()} ${curr}"></div>
+          <span class="chart-bar-lbl">${b.name}</span>
         `;
         chartTimeline.appendChild(col);
       });
@@ -1164,7 +1162,8 @@ class App {
     if (famMeterLegend) {
       famMeterLegend.innerHTML = '';
       const userLeg = document.createElement('span');
-      userLeg.innerHTML = `<i class="fam-dot" style="background:var(--pine);display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></i><strong>You (${this.profile.name.split(' ')[0]})</strong>: ${userSpent.toLocaleString()} ${curr}`;
+      const displayName = this.profile.name ? this.profile.name.split(' ')[0] : 'User';
+      userLeg.innerHTML = `<i class="fam-dot" style="background:var(--pine);display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></i><strong>You (${displayName})</strong>: ${userSpent.toLocaleString()} ${curr}`;
       famMeterLegend.appendChild(userLeg);
 
       users.forEach(u => {
@@ -1175,8 +1174,8 @@ class App {
     }
 
     // Current User Card
-    if (famUserName) famUserName.textContent = `${this.profile.name} (You)`;
-    if (famUserEmail) famUserEmail.textContent = this.profile.email;
+    if (famUserName) famUserName.textContent = `${this.profile.name || 'User'} (You)`;
+    if (famUserEmail) famUserEmail.textContent = this.profile.email || '';
     if (famUserSpent) famUserSpent.textContent = `${userSpent.toLocaleString()} ${curr}`;
     if (famUserBar) {
       const ratio = userBudget > 0 ? Math.min(1, userSpent / userBudget) : 0;
@@ -1247,14 +1246,16 @@ class App {
     const lblEmail = document.getElementById('lbl-prof-email');
     const avPreview = document.getElementById('prof-avatar-preview');
 
-    if (elName) elName.value = this.profile.name;
-    if (elEmail) elEmail.value = this.profile.email;
-    if (elBudget) elBudget.value = this.profile.monthlyBudget;
-    if (lblName) lblName.textContent = this.profile.name;
-    if (lblEmail) lblEmail.textContent = this.profile.email;
-    if (avPreview) {
-      avPreview.textContent = (this.profile.name || 'DN').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-    }
+    const name = this.profile.name || 'User';
+    const email = this.profile.email || '';
+    const initials = name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
+
+    if (elName) elName.value = this.profile.name || '';
+    if (elEmail) elEmail.value = this.profile.email || '';
+    if (elBudget) elBudget.value = this.profile.monthlyBudget || '';
+    if (lblName) lblName.textContent = name;
+    if (lblEmail) lblEmail.textContent = email;
+    if (avPreview) avPreview.textContent = initials;
   }
 
   // ==========================================
@@ -1688,8 +1689,8 @@ class App {
           email: u.email,
           relation: u.role || 'Family Member',
           tag: 'Cloud Member',
-          spent: Math.floor(Math.random() * 80000) + 15000,
-          budget: 150000,
+          spent: 0,
+          budget: 0,
           color: ['#f2c94c', '#c8431f', '#6cc59a', '#8cc7b4'][i % 4],
           avTone: ['av--t0', 'av--t1', 'av--t2', 'av--t3'][i % 4]
         }));

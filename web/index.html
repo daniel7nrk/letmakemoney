@@ -19,6 +19,27 @@
       });
     }
   </script>
+  <!-- Authentication Guard: Enforce Login Requirement -->
+  <script>
+    (function() {
+      try {
+        var prof = localStorage.getItem('rapport:profile');
+        var hasSb = false;
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1) {
+            hasSb = true;
+            break;
+          }
+        }
+        if (!prof && !hasSb) {
+          window.location.replace('auth.html');
+        }
+      } catch (e) {
+        window.location.replace('auth.html');
+      }
+    })();
+  </script>
   <meta name="theme-color" content="#ebe8e1" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -256,19 +277,17 @@
             <span id="txt-current-lang">FR</span>
           </button>
 
-          <!-- Supabase Auth / Account Link -->
-          <a href="auth.html" class="btn btn--sm btn--ghost" id="btn-auth-link" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; border-radius: 999px; height: 38px; padding: 0 14px; font-size: 13px; font-weight: 600;">
-            <svg class="ico" viewBox="0 0 24 24" style="width: 15px; height: 15px;">
-              <circle cx="12" cy="8.5" r="3.8"/>
-              <path d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6"/>
-            </svg>
-            <span id="top-user-name">Account</span>
+          <!-- User Profile Chip -->
+          <a class="profile-chip" href="#/settings" aria-label="Your profile" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 4px 12px; border-radius: 999px; background: var(--well); border: 1px solid var(--rim);">
+            <span class="av av--t1 av--sm" id="top-avatar" style="width: 24px; height: 24px; font-size: 11px;">U</span>
+            <span id="top-user-name" style="font-size: 13px; font-weight: 600; color: var(--text);">User</span>
           </a>
 
-          <!-- Profile Avatar Pill -->
-          <a class="profile-chip" href="#/settings" aria-label="Your profile">
-            <span class="av av--t1 av--sm" id="top-avatar">DN</span>
-          </a>
+          <!-- Sign Out Button -->
+          <button type="button" class="btn btn--sm btn--ghost" id="btn-logout" title="Sign Out" style="display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; height: 36px; padding: 0 12px; font-size: 12px; font-weight: 600; color: var(--bad); border-color: rgba(200,67,31,0.25);">
+            <svg class="ico" viewBox="0 0 24 24" style="width: 14px; height: 14px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span data-i18n="btnSignOut">Sign Out</span>
+          </button>
         </div>
       </header>
 
@@ -707,27 +726,28 @@
             <div class="card">
               <h3 class="card__title" style="margin-bottom: 16px;" data-i18n="titleProfile">User Profile</h3>
               <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                <div class="av av--t1 av--lg" id="prof-avatar-preview">DN</div>
+                <div class="av av--t1 av--lg" id="prof-avatar-preview">U</div>
                 <div>
-                  <strong style="font-size: 16px;" id="lbl-prof-name">Daniel Ngaruka</strong>
-                  <p class="card__sub" style="margin: 2px 0 0;" id="lbl-prof-email">daniel@promptpay.app</p>
+                  <strong style="font-size: 16px;" id="lbl-prof-name">User</strong>
+                  <p class="card__sub" style="margin: 2px 0 0;" id="lbl-prof-email"></p>
                 </div>
               </div>
 
               <form id="form-update-profile" style="display: flex; flex-direction: column; gap: 14px;">
                 <label class="field" style="margin-bottom: 0;">
                   <span class="field__label" data-i18n="lblDisplayName">Display Name</span>
-                  <input type="text" id="input-prof-name" value="Daniel Ngaruka" required />
+                  <input type="text" id="input-prof-name" placeholder="Full Name" required />
                 </label>
                 <label class="field" style="margin-bottom: 0;">
                   <span class="field__label" data-i18n="lblEmail">Email Address</span>
-                  <input type="email" id="input-prof-email" value="daniel@promptpay.app" required />
+                  <input type="email" id="input-prof-email" placeholder="email@example.com" required />
                 </label>
                 <label class="field" style="margin-bottom: 0;">
                   <span class="field__label" data-i18n="lblMonthlyBudget">Monthly Spending Budget</span>
-                  <input type="number" id="input-prof-budget" value="450000" />
+                  <input type="number" id="input-prof-budget" placeholder="0" />
                 </label>
                 <button type="submit" class="btn btn--ink" style="margin-top: 6px;" data-i18n="btnSaveProfile">Save Profile</button>
+                <button type="button" class="btn btn--ghost" id="btn-settings-logout" style="color: var(--bad); border-color: rgba(200,67,31,0.3); margin-top: 4px;" data-i18n="btnSignOutWorkspace">Sign Out of Workspace</button>
               </form>
             </div>
 

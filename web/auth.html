@@ -504,12 +504,12 @@
           const idx = users.findIndex(item => item.email && item.email.toLowerCase() === (u.email || '').toLowerCase());
           const newEntry = {
             id: u.id || 'usr_' + Date.now(),
-            name: u.name || u.email.split('@')[0],
-            email: u.email,
+            name: u.name || (u.email ? u.email.split('@')[0] : 'Member'),
+            email: u.email || '',
             relation: u.role || 'Family Member',
             tag: 'Member',
-            spent: u.spent || Math.floor(Math.random() * 800) + 200,
-            budget: u.budget || 1500,
+            spent: Number(u.spent) || 0,
+            budget: Number(u.budget) || 0,
             color: ['#f2c94c', '#c8431f', '#6cc59a', '#8cc7b4'][users.length % 4],
             avTone: ['av--t0', 'av--t1', 'av--t2', 'av--t3'][users.length % 4]
           };
@@ -522,26 +522,6 @@
         } catch (e) {
           console.warn("Storage warning:", e);
         }
-      }
-
-      // Offline direct access button
-      if (btnOfflineEntry) {
-        btnOfflineEntry.addEventListener('click', () => {
-          const t = I18N[currentLang] || I18N.en;
-          showAlert(t.offlineWelcome, false);
-          let currentProfile = JSON.parse(localStorage.getItem('rapport:profile') || '{}');
-          if (!currentProfile.name) {
-            currentProfile = {
-              name: "Daniel Ngaruka",
-              email: "daniel@promptpay.app",
-              role: "Account Executive",
-              quota: 420000,
-              isOffline: true
-            };
-            localStorage.setItem('rapport:profile', JSON.stringify(currentProfile));
-          }
-          setTimeout(() => { window.location.href = 'index.html'; }, 500);
-        });
       }
 
       applyAuthLanguage();
@@ -587,8 +567,8 @@
             localStorage.setItem('rapport:profile', JSON.stringify({
               name: finalName,
               email: email,
-              role: "Account Executive",
-              quota: 420000,
+              role: "User",
+              monthlyBudget: 0,
               isOffline: true
             }));
             recordSupabaseFamilyUser({
@@ -610,7 +590,7 @@
                 options: {
                   data: {
                     full_name: name,
-                    role: "Account Executive"
+                    role: "User"
                   }
                 }
               });
@@ -625,8 +605,8 @@
               localStorage.setItem('rapport:profile', JSON.stringify({
                 name: finalName,
                 email: email,
-                role: "Account Executive",
-                quota: 420000
+                role: "User",
+                monthlyBudget: 0
               }));
               recordSupabaseFamilyUser({
                 id: data?.user?.id,
@@ -656,8 +636,8 @@
             localStorage.setItem('rapport:profile', JSON.stringify({
               name: userName,
               email: email,
-              role: savedProfile.role || "Account Executive",
-              quota: savedProfile.quota || 420000,
+              role: savedProfile.role || "User",
+              monthlyBudget: savedProfile.monthlyBudget || 0,
               isOffline: true
             }));
             recordSupabaseFamilyUser({
@@ -688,8 +668,8 @@
               localStorage.setItem('rapport:profile', JSON.stringify({
                 name: userName,
                 email: email,
-                role: user?.user_metadata?.role || "Account Executive",
-                quota: 420000
+                role: user?.user_metadata?.role || "User",
+                monthlyBudget: 0
               }));
               recordSupabaseFamilyUser({
                 id: user?.id,
