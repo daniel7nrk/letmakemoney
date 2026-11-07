@@ -154,7 +154,7 @@ fun NotificationsScreen(
                     Text(
                         text = "Trigger System & In-App Alerts (Test Suite):",
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = Color(0xFF0F172A)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Row(
@@ -232,7 +232,7 @@ fun NotificationsScreen(
                                 text = f,
                                 fontSize = 13.sp,
                                 fontWeight = if (isSel) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSel) Color.White else Color(0xFF475569),
+                                color = if (isSel) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
                         }
@@ -345,10 +345,10 @@ fun NotificationsScreen(
                                     }
                                 }
                                 .testTag("notification_item_${item.id}"),
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(22.dp),
                             border = androidx.compose.foundation.BorderStroke(
                                 1.dp,
-                                if (isScamItem) Color(0xFFEF5350) else Color(0xFFE5E7EB)
+                                if (isScamItem) Color(0xFFEF5350) else MaterialTheme.colorScheme.outlineVariant
                             ),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (isScamItem)
@@ -356,7 +356,7 @@ fun NotificationsScreen(
                                 else if (item.isUnread)
                                     MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
                                 else
-                                    Color.White
+                                    MaterialTheme.colorScheme.surface
                             )
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {

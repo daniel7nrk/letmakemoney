@@ -70,7 +70,7 @@ fun ReportsPageScreen(
                     fontWeight = FontWeight.Bold,
                     fontSize = 26.sp
                 ),
-                color = Color(0xFF0F172A)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             // Timeframe Segmented Switch (Weekly / Monthly / Yearly)
@@ -95,7 +95,7 @@ fun ReportsPageScreen(
                     ) {
                         Text(
                             text = period,
-                            color = if (isSel) Color.White else Color(0xFF64748B),
+                            color = if (isSel) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = if (isSel) FontWeight.Bold else FontWeight.SemiBold,
                             fontSize = 14.sp
                         )
@@ -118,7 +118,7 @@ fun ReportsPageScreen(
                     Text(
                         "Total $selectedTimeframe Spending",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF64748B)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -208,7 +208,7 @@ fun ReportsPageScreen(
                         Text(
                             "Transactions are automatically sorted by category. Review your categories to keep reports accurate.",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF475569)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -221,7 +221,7 @@ fun ReportsPageScreen(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 ),
-                color = Color(0xFF0F172A)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             val categoryTotals = confirmedTx.groupBy { it.category }
@@ -235,11 +235,11 @@ fun ReportsPageScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(22.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-                        Text("No categorized expenses yet", color = Color(0xFF64748B))
+                        Text("No categorized expenses yet", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             } else {
@@ -248,8 +248,8 @@ fun ReportsPageScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(22.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                     ) {
                         Column(modifier = Modifier.padding(18.dp)) {
@@ -262,7 +262,7 @@ fun ReportsPageScreen(
                                     catName,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
-                                    color = Color(0xFF0F172A)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     FormatUtil.formatCurrency(amount, currencyCode),
@@ -279,7 +279,7 @@ fun ReportsPageScreen(
                                     .height(6.dp)
                                     .clip(RoundedCornerShape(999.dp)),
                                 color = RoyalBlue,
-                                trackColor = Color(0xFFF1F5F9)
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant
                             )
                         }
                     }
@@ -291,9 +291,9 @@ fun ReportsPageScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { showExportDialog = true },
-                shape = RoundedCornerShape(18.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(22.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
                 Row(
@@ -312,19 +312,19 @@ fun ReportsPageScreen(
                             "Export Financial Data",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
-                            color = Color(0xFF0F172A)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             "Download CSV / JSON summary for your records",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF64748B)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Icon(
                         Icons.Default.ChevronRight,
                         contentDescription = null,
-                        tint = Color(0xFF94A3B8),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }

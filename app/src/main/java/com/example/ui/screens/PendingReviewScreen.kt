@@ -169,9 +169,9 @@ fun PendingTransactionCard(
         modifier = Modifier
             .fillMaxWidth()
             .testTag("pending_item_${transaction.id}"),
-        shape = RoundedCornerShape(20.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        shape = RoundedCornerShape(22.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
@@ -179,10 +179,13 @@ fun PendingTransactionCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = transaction.merchant,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
                     Text(
                         text = FormatUtil.formatDateTime(transaction.dateEpochMillis),
@@ -190,6 +193,8 @@ fun PendingTransactionCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+
+                Spacer(modifier = Modifier.width(12.dp))
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
@@ -201,7 +206,7 @@ fun PendingTransactionCard(
                     Text(
                         text = "Fee: ${FormatUtil.formatCurrency(transaction.fee, currencyCode)} (${transaction.feeCategory})",
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp, fontWeight = FontWeight.Medium),
-                        color = if (transaction.fee > 0) Color(0xFFD97706) else Color(0xFF64748B)
+                        color = if (transaction.fee > 0) Color(0xFFD97706) else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -260,7 +265,7 @@ fun PendingTransactionCard(
                     .fillMaxWidth()
                     .height(48.dp)
                     .testTag("confirm_cat_button_${transaction.id}"),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(999.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = RoyalBlue)
             ) {
                 Icon(Icons.Default.CheckCircle, contentDescription = null)

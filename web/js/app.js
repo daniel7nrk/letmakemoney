@@ -1592,7 +1592,94 @@ class App {
     }
 
     try {
-      // 1. Fetch Cloud Family Users
+      // Check active auth session
+      const { data: sessionData } = await this.supabase.auth.getSession();
+      const user = sessionData?.session?.user;
+
+      if (user) {
+        // 1. Upload unsynced local transactions to Supabase public.transactions
+        const localTxs = await this.storage.getTransactions();
+        const unsynced = localTxs.filter(tx => !tx.isSynced);
+
+        if (unsynced.length > 0) {
+          const payload = unsynced.map(tx => ({
+            id: tx.id,
+            user_id: user.id,
+            amount: Number(tx.amount) || 0,
+            currency: tx.currency || 'RWF',
+            merchant: tx.merchant || '',
+            description: tx.description || '',
+            category: tx.category || 'Uncategorized',
+            fee: Number(tx.fee) || 0.0,
+            fee_category: tx.feeCategory || 'Transaction Fee',
+            source: tx.source || 'SMS',
+            status: tx.status || 'CONFIRMED',
+            is_recurring: !!tx.isRecurring,
+            notes: tx.notes || '',
+            payment_method: tx.paymentMethod || 'Mobile Money',
+            date_epoch_millis: Number(tx.dateEpochMillis) || Date.now(),
+            updated_at_epoch_millis: Number(tx.updatedAtEpochMillis) || Date.now(),
+            is_synced: true
+          }));
+
+          const { error: uploadError } = await this.supabase.from('transactions').upsert(payload, { onConflict: 'id' });
+          if (!uploadError) {
+            for (const tx of unsynced) {
+              tx.isSynced = true;
+              await this.storage.put('transactions', tx);
+            }
+          }
+        }
+
+        // 2. Download remote transactions and merge into local storage
+        const { data: remoteTxs, error: dlError } = await this.supabase
+          .from('transactions')
+          .select('*')
+          .order('date_epoch_millis', { ascending: false });
+
+        if (!dlError && remoteTxs && remoteTxs.length > 0) {
+          for (const r of remoteTxs) {
+            const localMerged = {
+              id: Number(r.id),
+              amount: Number(r.amount),
+              currency: r.currency,
+              merchant: r.merchant,
+              description: r.description,
+              category: r.category,
+              fee: Number(r.fee),
+              feeCategory: r.fee_category,
+              source: r.source,
+              status: r.status,
+              isRecurring: !!r.is_recurring,
+              notes: r.notes || '',
+              paymentMethod: r.payment_method || 'Mobile Money',
+              dateEpochMillis: Number(r.date_epoch_millis),
+              updatedAtEpochMillis: Number(r.updated_at_epoch_millis),
+              isSynced: true
+            };
+            await this.storage.put('transactions', localMerged);
+          }
+        }
+
+        // 3. Sync User Profile with public.user_profiles
+        const profile = await this.storage.get('settings', 'user_profile');
+        if (profile) {
+          await this.supabase.from('user_profiles').upsert({
+            id: parseInt(user.id.replace(/-/g, '').slice(0, 14), 16) % 9007199254740991 || 1,
+            user_id: user.id,
+            name: profile.name || user.user_metadata?.full_name || '',
+            email: user.email || '',
+            country_code: profile.countryCode || 'RWANDA',
+            currency_code: profile.currencyCode || 'RWF',
+            language_code: profile.languageCode || 'en',
+            lock_mode: profile.lockMode || 'PIN',
+            push_notifications_enabled: true,
+            biometric_enabled: false
+          }, { onConflict: 'user_id' });
+        }
+      }
+
+      // 4. Fetch Cloud Family Users / Team members
       const { data, error } = await this.supabase.from('profiles').select('*');
       if (!error && data && data.length > 0) {
         const mapped = data.map((u, i) => ({
@@ -1607,10 +1694,11 @@ class App {
           avTone: ['av--t0', 'av--t1', 'av--t2', 'av--t3'][i % 4]
         }));
         localStorage.setItem('rapport:supabase_family_users', JSON.stringify(mapped));
-        this.renderCurrentView();
-        if (showFeedback) {
-          this.showToast(this.lang === 'fr' ? 'Membres synchronisés depuis Supabase !' : 'Family members synced from Supabase!');
-        }
+      }
+
+      this.renderCurrentView();
+      if (showFeedback) {
+        this.showToast(this.lang === 'fr' ? 'Données synchronisées avec Supabase !' : 'Data synchronized with Supabase!');
       }
     } catch (err) {
       console.warn("Background Supabase sync skipped (offline resilience):", err);

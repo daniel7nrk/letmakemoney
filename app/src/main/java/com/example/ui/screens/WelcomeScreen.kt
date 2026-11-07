@@ -141,17 +141,17 @@ fun WelcomeScreen(
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(20.dp)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = RoundedCornerShape(22.dp)
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Speed, contentDescription = null, tint = RoyalBlue)
                             Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text("Automated Categorization", fontWeight = FontWeight.SemiBold)
-                                Text("Transactions are automatically sorted by category locally.", style = MaterialTheme.typography.bodyMedium)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("Automated Categorization", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
+                                Text("Transactions are automatically sorted by category locally.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                         Spacer(modifier = Modifier.height(16.dp))
@@ -160,9 +160,9 @@ fun WelcomeScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Lock, contentDescription = null, tint = RoyalBlue)
                             Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text("Zero Cloud Uploads", fontWeight = FontWeight.SemiBold)
-                                Text("Your financial SMS and data stay in your encrypted Room DB.", style = MaterialTheme.typography.bodyMedium)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("Zero Cloud Uploads", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
+                                Text("Your financial SMS and data stay in your encrypted Room DB.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     }
@@ -197,7 +197,7 @@ fun WelcomeScreen(
                         .fillMaxWidth()
                         .height(52.dp)
                         .testTag("learn_more_button"),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(999.dp)
                 ) {
                     Icon(Icons.Default.Info, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))

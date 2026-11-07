@@ -100,9 +100,9 @@ fun SmsExplainerScreen(
                 // Feature checklist
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(20.dp)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = RoundedCornerShape(22.dp)
                 ) {
                     Column(
                         modifier = Modifier.padding(20.dp),
@@ -135,7 +135,7 @@ fun SmsExplainerScreen(
                         .fillMaxWidth()
                         .height(56.dp)
                         .testTag("enable_sms_button"),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(999.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = RoyalBlue)
                 ) {
                     Icon(Icons.Default.PhonelinkLock, contentDescription = null)
@@ -171,8 +171,8 @@ private fun PrivacyBulletPoint(title: String, desc: String) {
             Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
         }
         Spacer(modifier = Modifier.width(12.dp))
-        Column {
-            Text(text = title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
             Text(text = desc, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }

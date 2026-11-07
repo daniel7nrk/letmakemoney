@@ -253,13 +253,13 @@ fun HomeDashboardScreen(
                                 Text(
                                     text = "${pendingTransactions.size} Transactions Need Review",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = Color(0xFF1E293B)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = "Assign categories to keep reports accurate.",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF92400E)
+                                    color = RapportTomato
                                 )
                             }
 
@@ -342,9 +342,9 @@ fun QuickActionButton(
 ) {
     Card(
         modifier = modifier.clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE5E7EB)),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        shape = RoundedCornerShape(18.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier
@@ -354,7 +354,7 @@ fun QuickActionButton(
         ) {
             Icon(imageVector = icon, contentDescription = title, tint = RoyalBlue)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+            Text(text = title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
         }
     }
 }
@@ -372,9 +372,9 @@ fun TransactionCardItem(
             .fillMaxWidth()
             .clickable { onClick() }
             .testTag("transaction_item_${transaction.id}"),
-        shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(22.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
@@ -383,12 +383,12 @@ fun TransactionCardItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Light blue square with Phone/Mobile Money Icon
+            // Light accent square with Phone/Mobile Money Icon
             Box(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFEFF6FF)),
+                    .background(RoyalBlue.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -405,7 +405,7 @@ fun TransactionCardItem(
                 Text(
                     text = displayName,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF0F172A),
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -418,8 +418,9 @@ fun TransactionCardItem(
                 Text(
                     text = subText,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF64748B),
-                    maxLines = 1
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
@@ -435,7 +436,7 @@ fun TransactionCardItem(
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp
                     ),
-                    color = Color(0xFF0F172A)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 Row(
@@ -445,17 +446,17 @@ fun TransactionCardItem(
                     Text(
                         text = "Fee: ${FormatUtil.formatCurrency(transaction.fee, currencyCode)}",
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp, fontWeight = FontWeight.Medium),
-                        color = if (transaction.fee > 0) Color(0xFFD97706) else Color(0xFF64748B)
+                        color = if (transaction.fee > 0) Color(0xFFD97706) else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Surface(
-                        color = RapportButter.copy(alpha = 0.2f),
+                        color = RapportButter.copy(alpha = 0.25f),
                         shape = RoundedCornerShape(999.dp)
                     ) {
                         Text(
                             text = transaction.feeCategory.ifBlank { "Fee" },
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold),
-                            color = Color(0xFFB45309),
+                            color = RapportPine,
                             modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
                         )
                     }
@@ -467,7 +468,7 @@ fun TransactionCardItem(
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null,
-                tint = Color(0xFF94A3B8),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
             )
         }

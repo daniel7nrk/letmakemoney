@@ -194,7 +194,7 @@ fun PinUnlockScreen(
                 Text(
                     text = "Welcome Back,",
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF0F172A),
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
 
@@ -203,7 +203,7 @@ fun PinUnlockScreen(
                 Text(
                     text = userProfile?.name?.ifBlank { "User" } ?: "User",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF0F172A),
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
 
@@ -212,7 +212,7 @@ fun PinUnlockScreen(
                 Text(
                     text = if (isLockedOut) "Account temporarily locked" else "Enter your 5-digit PIN to unlock",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF64748B),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
 
@@ -222,7 +222,7 @@ fun PinUnlockScreen(
                     text = "5-Digit PIN",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF64748B)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -363,7 +363,7 @@ fun PinUnlockScreen(
                                             text = key,
                                             fontSize = 24.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF0F172A)
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 }

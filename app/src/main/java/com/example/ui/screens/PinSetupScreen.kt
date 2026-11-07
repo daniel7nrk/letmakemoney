@@ -140,7 +140,7 @@ fun PinSetupScreen(
                     text = "5-Digit PIN",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF64748B)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -287,7 +287,7 @@ fun PinSetupScreen(
                                             text = key,
                                             fontSize = 24.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF0F172A)
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 }
