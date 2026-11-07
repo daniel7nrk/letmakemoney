@@ -53,6 +53,7 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
     object CategoryManagement : Screen("category_management", "Categories")
     object PinSetup : Screen("pin_setup", "Set Up PIN")
     object PinUnlock : Screen("pin_unlock", "Unlock App")
+    object SupabaseLogin : Screen("supabase_login", "Cloud Backup")
 }
 
 @Composable
@@ -86,6 +87,10 @@ fun AppNavigation(
                 // Stay on Welcome
             } else if (!hasPin) {
                 navController.navigate(Screen.PinSetup.route) {
+                    popUpTo(0)
+                }
+            } else if (userProfile?.hasCompletedSupabaseLogin == false) {
+                navController.navigate(Screen.SupabaseLogin.route) {
                     popUpTo(0)
                 }
             } else if (lockMode != "NONE") {
@@ -342,6 +347,10 @@ fun AppNavigation(
                             navController.navigate(Screen.PinSetup.route) {
                                 popUpTo(Screen.Welcome.route) { inclusive = true }
                             }
+                        } else if (userProfile?.hasCompletedSupabaseLogin == false) {
+                            navController.navigate(Screen.SupabaseLogin.route) {
+                                popUpTo(Screen.Welcome.route) { inclusive = true }
+                            }
                         } else if (userProfile?.lockMode != "NONE") {
                             navController.navigate(Screen.PinUnlock.route) {
                                 popUpTo(Screen.Welcome.route) { inclusive = true }
@@ -387,8 +396,20 @@ fun AppNavigation(
                 ProfilePhotoScreen(
                     authManager = viewModel.authManager,
                     onComplete = {
-                        navController.navigate(Screen.Home.route) {
+                        navController.navigate(Screen.SupabaseLogin.route) {
                             popUpTo(Screen.Welcome.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            composable(Screen.SupabaseLogin.route) {
+                SupabaseLoginScreen(
+                    onAuthenticated = {
+                        val auth = com.example.auth.SupabaseAuthManager.getInstance(context)
+                        viewModel.completeSupabaseOnboarding(auth.userId)
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(0)
                         }
                     }
                 )
@@ -471,8 +492,11 @@ fun AppNavigation(
                     onSavePin = { pin -> viewModel.savePin(pin) },
                     onVerifyPin = { pin -> viewModel.verifyPin(pin) },
                     onNavigateToCategoryManagement = { navController.navigate(Screen.CategoryManagement.route) },
+                    onNavigateToSupabaseLogin = { navController.navigate(Screen.SupabaseLogin.route) },
+                    onSyncWithSupabase = { viewModel.syncWithSupabase() },
                     onSignOut = {
                         viewModel.authManager.signOut()
+                        viewModel.supabaseAuth.signOut()
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0)
                         }

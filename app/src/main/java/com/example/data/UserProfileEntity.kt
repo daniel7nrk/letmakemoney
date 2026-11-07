@@ -16,5 +16,7 @@ data class UserProfileEntity(
     val biometricEnabled: Boolean = false,
     val hasCompletedOnboarding: Boolean = false,
     val pinHash: String? = null,
-    val lockMode: String = "PIN"
+    val lockMode: String = "PIN",
+    val supabaseUserId: String? = null,
+    val hasCompletedSupabaseLogin: Boolean = false
 )

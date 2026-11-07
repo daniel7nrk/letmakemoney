@@ -18,5 +18,7 @@ data class TransactionEntity(
     val notes: String = "",
     val paymentMethod: String = "Mobile Money",
     val fee: Double = 0.0,
-    val feeCategory: String = "Transaction Fee"
+    val feeCategory: String = "Transaction Fee",
+    val isSynced: Boolean = false,
+    val updatedAtEpochMillis: Long = System.currentTimeMillis()
 )

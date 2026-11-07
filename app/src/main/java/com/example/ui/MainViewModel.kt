@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth.AuthManager
+import com.example.auth.PasswordUtil
+import com.example.auth.SupabaseAuthManager
 import com.example.data.AppDatabase
 import com.example.data.AppNotificationEntity
 import com.example.data.AppRepository
@@ -13,7 +15,8 @@ import com.example.data.UserProfileEntity
 import com.example.model.Country
 import com.example.notification.NotificationHelper
 import com.example.parser.SmsParser
-import com.example.auth.PasswordUtil
+import com.example.sync.NetworkMonitor
+import com.example.sync.SupabaseSyncManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +27,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: AppRepository
     val authManager: AuthManager = AuthManager(application)
+    val supabaseAuth: SupabaseAuthManager = SupabaseAuthManager.getInstance(application)
+    val networkMonitor: NetworkMonitor = NetworkMonitor.getInstance(application)
+
+    val isOnline: StateFlow<Boolean> = networkMonitor.isConnected
 
     val allTransactions: StateFlow<List<TransactionEntity>>
     val pendingTransactions: StateFlow<List<TransactionEntity>>
@@ -104,6 +111,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
+
+        // Automatic Supabase Sync on network restore (matching iOS behavior)
+        viewModelScope.launch {
+            networkMonitor.isConnected.collect { connected ->
+                if (connected) {
+                    SupabaseSyncManager.syncAllPendingData(application)
+                }
+            }
+        }
     }
 
     fun selectCountry(country: Country) {
@@ -115,6 +131,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 currencyCode = country.currencyCode
             )
             repository.updateUserProfile(updated)
+            SupabaseSyncManager.syncAllPendingData(getApplication())
         }
     }
 
@@ -124,7 +141,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val current = userProfile.value ?: UserProfileEntity(id = 1)
             val updated = current.copy(languageCode = language.code)
             repository.updateUserProfile(updated)
+            SupabaseSyncManager.syncAllPendingData(getApplication())
         }
+    }
+
+    fun completeSupabaseOnboarding(supabaseUserId: String?) {
+        viewModelScope.launch {
+            val current = userProfile.value ?: UserProfileEntity(id = 1)
+            val updated = current.copy(
+                hasCompletedSupabaseLogin = true,
+                supabaseUserId = supabaseUserId,
+                hasCompletedOnboarding = true
+            )
+            repository.updateUserProfile(updated)
+            SupabaseSyncManager.syncAllPendingData(getApplication())
+        }
+    }
+
+    fun syncWithSupabase() {
+        SupabaseSyncManager.syncAllPendingData(getApplication())
     }
 
     fun addManualTransaction(
@@ -149,9 +184,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 source = "MANUAL",
                 status = "CONFIRMED",
                 isRecurring = false,
-                paymentMethod = "Manual Entry"
+                paymentMethod = "Manual Entry",
+                isSynced = false,
+                updatedAtEpochMillis = System.currentTimeMillis()
             )
             repository.insertTransaction(newTx)
+            SupabaseSyncManager.syncAllPendingData(getApplication())
         }
     }
 
@@ -173,7 +211,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     description = finalDesc,
                     notes = notes,
                     status = "CONFIRMED",
-                    source = tx.source // Source is immutable
+                    source = tx.source, // Source is immutable
+                    isSynced = false,
+                    updatedAtEpochMillis = System.currentTimeMillis()
                 )
                 repository.updateTransaction(updated)
                 repository.deleteNotificationsByTransactionId(id)
@@ -182,6 +222,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 if (remainingPending.isEmpty()) {
                     NotificationHelper.cancelPendingReviewNotification(getApplication())
                 }
+                SupabaseSyncManager.syncAllPendingData(getApplication())
             }
         }
     }
@@ -203,9 +244,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             // Strictly enforce source immutability (SMS remains SMS, MANUAL remains MANUAL)
             val existing = repository.getTransactionById(tx.id)
             val lockedTx = if (existing != null) {
-                tx.copy(source = existing.source)
+                tx.copy(
+                    source = existing.source,
+                    isSynced = false,
+                    updatedAtEpochMillis = System.currentTimeMillis()
+                )
             } else {
-                tx
+                tx.copy(
+                    isSynced = false,
+                    updatedAtEpochMillis = System.currentTimeMillis()
+                )
             }
             repository.updateTransaction(lockedTx)
             if (lockedTx.status == "CONFIRMED") {
@@ -216,6 +264,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     NotificationHelper.cancelPendingReviewNotification(getApplication())
                 }
             }
+            SupabaseSyncManager.syncAllPendingData(getApplication())
         }
     }
 
@@ -379,7 +428,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     feeCategory = parsed.feeCategory,
                     source = "SMS",
                     status = parsed.status,
-                    paymentMethod = sender
+                    paymentMethod = sender,
+                    isSynced = false,
+                    updatedAtEpochMillis = System.currentTimeMillis()
                 )
                 val insertedId = repository.insertTransaction(newTx)
 
@@ -400,6 +451,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     amount = newTx.amount,
                     currency = newTx.currency
                 )
+
+                SupabaseSyncManager.syncAllPendingData(getApplication())
             }
         }
     }
@@ -478,7 +531,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     category = "Uncategorized",
                     source = "SMS",
                     status = "PENDING",
-                    paymentMethod = scamAlert.sender
+                    paymentMethod = scamAlert.sender,
+                    isSynced = false,
+                    updatedAtEpochMillis = System.currentTimeMillis()
                 )
             } else {
                 TransactionEntity(
@@ -490,7 +545,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     category = "Uncategorized",
                     source = "SMS",
                     status = "PENDING",
-                    paymentMethod = scamAlert.sender
+                    paymentMethod = scamAlert.sender,
+                    isSynced = false,
+                    updatedAtEpochMillis = System.currentTimeMillis()
                 )
             }
 
@@ -519,6 +576,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 "Reclassified as real transaction. Added to Pending Review.",
                 android.widget.Toast.LENGTH_LONG
             ).show()
+
+            SupabaseSyncManager.syncAllPendingData(getApplication())
         }
     }
 
@@ -541,6 +600,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 lockMode = "PIN"
             )
             repository.updateUserProfile(updated)
+            SupabaseSyncManager.syncAllPendingData(getApplication())
         }
     }
 
@@ -552,6 +612,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 biometricEnabled = (mode == "BIOMETRIC")
             )
             repository.updateUserProfile(updated)
+            SupabaseSyncManager.syncAllPendingData(getApplication())
         }
     }
 

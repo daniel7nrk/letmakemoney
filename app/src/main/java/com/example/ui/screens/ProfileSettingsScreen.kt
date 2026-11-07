@@ -34,6 +34,7 @@ import com.example.model.Country
 import com.example.ui.theme.*
 
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.ui.platform.LocalContext
 import com.example.model.AppLanguage
 import com.example.ui.util.LocalAppStrings
@@ -52,6 +53,8 @@ fun ProfileSettingsScreen(
     onSavePin: (String) -> Unit,
     onVerifyPin: (String) -> Boolean,
     onNavigateToCategoryManagement: () -> Unit,
+    onNavigateToSupabaseLogin: () -> Unit = {},
+    onSyncWithSupabase: () -> Unit = {},
     onSignOut: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -180,6 +183,26 @@ fun ProfileSettingsScreen(
                         title = strings.settingsCategoryManagement,
                         subtitle = strings.settingsCategorySubtitle,
                         onClick = onNavigateToCategoryManagement
+                    )
+
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
+                    val supabaseAuth = remember { com.example.auth.SupabaseAuthManager.getInstance(context) }
+                    val isSupabaseAuth by supabaseAuth.isAuthenticated.collectAsState()
+                    val supabaseEmail = supabaseAuth.userEmail
+
+                    SettingsTile(
+                        icon = Icons.Default.CloudSync,
+                        title = "Cloud Sync (Supabase)",
+                        subtitle = if (isSupabaseAuth) "Connected (${supabaseEmail ?: "Active"})" else "Offline only (Tap to connect)",
+                        onClick = {
+                            if (isSupabaseAuth) {
+                                onSyncWithSupabase()
+                                android.widget.Toast.makeText(context, "Supabase cloud sync triggered", android.widget.Toast.LENGTH_SHORT).show()
+                            } else {
+                                onNavigateToSupabaseLogin()
+                            }
+                        }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))

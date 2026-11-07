@@ -39,6 +39,14 @@ class AppRepository(private val database: AppDatabase) {
         database.transactionDao().deleteAllTransactions()
     }
 
+    suspend fun getUnsyncedTransactions(): List<TransactionEntity> {
+        return database.transactionDao().getUnsyncedTransactions()
+    }
+
+    suspend fun markTransactionsAsSynced(ids: List<Long>) {
+        database.transactionDao().markTransactionsAsSynced(ids)
+    }
+
     suspend fun insertCategory(category: CategoryEntity): Long {
         return database.categoryDao().insertCategory(category)
     }

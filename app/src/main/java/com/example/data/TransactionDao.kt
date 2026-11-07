@@ -22,6 +22,12 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE status = 'PENDING' ORDER BY dateEpochMillis DESC")
     suspend fun getPendingTransactionsList(): List<TransactionEntity>
 
+    @Query("SELECT * FROM transactions WHERE isSynced = 0 ORDER BY dateEpochMillis DESC")
+    suspend fun getUnsyncedTransactions(): List<TransactionEntity>
+
+    @Query("UPDATE transactions SET isSynced = 1 WHERE id IN (:ids)")
+    suspend fun markTransactionsAsSynced(ids: List<Long>)
+
     @Query("SELECT * FROM transactions WHERE id = :id")
     suspend fun getTransactionById(id: Long): TransactionEntity?
 

@@ -10,6 +10,7 @@ import com.example.data.AppRepository
 import com.example.data.TransactionEntity
 import com.example.notification.NotificationHelper
 import com.example.parser.SmsParser
+import com.example.sync.SupabaseSyncManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -185,7 +186,9 @@ class SmsReceiver : BroadcastReceiver() {
                 feeCategory = parsed.feeCategory,
                 source = "SMS",
                 status = parsed.status,
-                paymentMethod = sender
+                paymentMethod = sender,
+                isSynced = false,
+                updatedAtEpochMillis = System.currentTimeMillis()
             )
             val insertedId = repository.insertTransaction(transaction)
 
@@ -206,6 +209,9 @@ class SmsReceiver : BroadcastReceiver() {
                 amount = transaction.amount,
                 currency = transaction.currency
             )
+
+            // Trigger background sync if online
+            SupabaseSyncManager.syncAllPendingData(context)
         }
     }
 }
