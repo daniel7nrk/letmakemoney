@@ -110,11 +110,13 @@
 .filter-pill:hover {
   color: var(--text);
 }
+.filter-pill.is-active,
 .filter-pill.active {
   background: var(--glass-3);
   color: var(--text);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
+:root[data-theme=dark] .filter-pill.is-active,
 :root[data-theme=dark] .filter-pill.active {
   background: rgba(255, 255, 255, 0.14);
 }
@@ -147,11 +149,22 @@
 }
 
 /* Responsive and App Layout Adjustments */
+/* Responsive and App Layout Adjustments */
 .view {
   display: none;
 }
-.view.active {
+.view.is-active,
+.view.active,
+.view:not([hidden]) {
   display: block;
+}
+
+/* Active Tab in Top Navigation */
+.tab.is-active,
+.tab.active,
+.tab[aria-current="page"] {
+  background: var(--pill);
+  color: var(--on-pill);
 }
 
 /* Interactive Charts inside Rapport glass cards */
@@ -244,9 +257,11 @@
   visibility: hidden;
   transition: opacity 0.2s ease, visibility 0.2s ease;
 }
+.modal-overlay.is-open,
 .modal-overlay.active {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 .modal-overlay .modal-box {
   background: var(--glass-3);

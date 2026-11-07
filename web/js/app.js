@@ -490,15 +490,16 @@ class App {
 
   handleRoute() {
     const raw = window.location.hash.replace(/^#\/?/, '').trim();
-    const target = raw || 'dashboard';
+    let target = raw || 'dashboard';
+    if (target === 'notifications') target = 'notification';
 
     // Update Dock
     document.querySelectorAll('.dock__btn[data-target]').forEach(btn => {
       if (btn.dataset.target === target) {
-        btn.classList.add('is-active');
+        btn.classList.add('is-active', 'active');
         btn.setAttribute('aria-current', 'page');
       } else {
-        btn.classList.remove('is-active');
+        btn.classList.remove('is-active', 'active');
         btn.removeAttribute('aria-current');
       }
     });
@@ -507,10 +508,12 @@ class App {
     let activeTab = null;
     document.querySelectorAll('.tab[data-target]').forEach(tab => {
       if (tab.dataset.target === target) {
-        tab.classList.add('is-active');
+        tab.classList.add('is-active', 'active');
+        tab.setAttribute('aria-current', 'page');
         activeTab = tab;
       } else {
-        tab.classList.remove('is-active');
+        tab.classList.remove('is-active', 'active');
+        tab.removeAttribute('aria-current');
       }
     });
     this.updateTabPill(activeTab);
@@ -518,11 +521,13 @@ class App {
     // Switch View
     document.querySelectorAll('.view[data-view]').forEach(view => {
       if (view.dataset.view === target) {
-        view.classList.add('is-active');
+        view.classList.add('is-active', 'active');
         view.removeAttribute('hidden');
+        view.style.display = 'block';
       } else {
-        view.classList.remove('is-active');
+        view.classList.remove('is-active', 'active');
         view.setAttribute('hidden', '');
+        view.style.display = 'none';
       }
     });
 
@@ -1245,6 +1250,8 @@ class App {
     const lblName = document.getElementById('lbl-prof-name');
     const lblEmail = document.getElementById('lbl-prof-email');
     const avPreview = document.getElementById('prof-avatar-preview');
+    const selCountry = document.getElementById('select-country');
+    const selLang = document.getElementById('select-language');
 
     const name = this.profile.name || 'User';
     const email = this.profile.email || '';
@@ -1256,6 +1263,12 @@ class App {
     if (lblName) lblName.textContent = name;
     if (lblEmail) lblEmail.textContent = email;
     if (avPreview) avPreview.textContent = initials;
+    if (selCountry && this.selectedCountry) {
+      selCountry.value = this.selectedCountry.name.toUpperCase();
+    }
+    if (selLang) {
+      selLang.value = localStorage.getItem('rapport:lang') || 'en';
+    }
   }
 
   // ==========================================

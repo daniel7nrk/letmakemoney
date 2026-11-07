@@ -165,6 +165,22 @@
     .net-surplus-negative {
       color: var(--bad) !important;
     }
+    /* Views Display Guarantee */
+    .view {
+      display: none;
+    }
+    .view.is-active,
+    .view.active,
+    .view:not([hidden]) {
+      display: block;
+    }
+    /* Active Top Navigation Tab */
+    .tab.is-active,
+    .tab.active,
+    .tab[aria-current="page"] {
+      background: var(--pill);
+      color: var(--on-pill);
+    }
   </style>
 </head>
 <body>
