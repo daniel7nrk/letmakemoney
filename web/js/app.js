@@ -136,6 +136,9 @@ const I18N = {
     btnSaveLoan: "Save Loan",
     btnSignOut: "Sign Out",
     btnSignOutWorkspace: "Sign Out of Workspace",
+    lblClearAllTx: "Clear All Transactions",
+    subClearAllTx: "Permanently delete all local and cloud transaction records.",
+    btnClearAllTx: "Clear All Data",
     statusOnline: "Online",
     statusOffline: "Offline (Local)"
   },
@@ -262,6 +265,9 @@ const I18N = {
     btnSaveLoan: "Enregistrer le Prêt",
     btnSignOut: "Se déconnecter",
     btnSignOutWorkspace: "Se déconnecter de l'espace",
+    lblClearAllTx: "Effacer toutes les transactions",
+    subClearAllTx: "Supprimer définitivement toutes les transactions locales et cloud.",
+    btnClearAllTx: "Effacer les données",
     statusOnline: "En ligne",
     statusOffline: "Hors ligne (Local)"
   }
@@ -380,7 +386,73 @@ class App {
   // ==========================================
   // DATA LOADING & SEEDING (CLEAN REAL DATA ONLY)
   // ==========================================
+  async purgeLegacySeedData() {
+    try {
+      const legacyMerchants = [
+        'simba supermarket',
+        'mtn mobile airtime',
+        'canal+ subscription',
+        'kigali fuel station'
+      ];
+
+      // 1. Purge from local IndexedDB
+      const allLocal = await storage.getTransactions();
+      for (const t of allLocal) {
+        const idStr = String(t.id || '');
+        const merchLower = String(t.merchant || '').toLowerCase();
+        if (idStr.startsWith('tx_seed_') || legacyMerchants.includes(merchLower)) {
+          await storage.delete('transactions', t.id);
+        }
+      }
+
+      // 2. Clear fallback localStorage transactions
+      localStorage.setItem('promptpay_transactions', JSON.stringify([]));
+
+      // 3. Purge self and mock family users from rapport:supabase_family_users
+      try {
+        let users = JSON.parse(localStorage.getItem('rapport:supabase_family_users') || '[]');
+        const selfName = (this.profile?.name || '').toLowerCase();
+        const selfEmail = (this.profile?.email || '').toLowerCase();
+        users = users.filter(u => {
+          const uName = (u.name || '').toLowerCase();
+          const uEmail = (u.email || '').toLowerCase();
+          return uEmail !== selfEmail && uName !== selfName && uName !== 'jane doe' && uName !== 'daniel ngaruka';
+        });
+        localStorage.setItem('rapport:supabase_family_users', JSON.stringify(users));
+      } catch (e) {}
+
+      // 4. Purge mock loans if any
+      const savedLoans = localStorage.getItem('promptpay:loans');
+      if (savedLoans) {
+        try {
+          const loans = JSON.parse(savedLoans).filter(l => !String(l.id).startsWith('loan_'));
+          localStorage.setItem('promptpay:loans', JSON.stringify(loans));
+        } catch (e) {}
+      }
+
+      // 5. Purge from remote Supabase if connected
+      if (this.supabase && navigator.onLine) {
+        try {
+          await this.supabase.from('transactions').delete().in('merchant', [
+            'Simba Supermarket',
+            'MTN Mobile Airtime',
+            'Canal+ Subscription',
+            'Kigali Fuel Station'
+          ]);
+          await this.supabase.from('transactions').delete().like('id', 'tx_seed_%');
+        } catch (e) {
+          console.warn('Supabase remote seed purge notice:', e);
+        }
+      }
+    } catch (e) {
+      console.warn('Purge legacy seed data notice:', e);
+    }
+  }
+
   async loadData() {
+    // 0. Auto-purge any legacy mock seed transactions
+    await this.purgeLegacySeedData();
+
     // 1. Transactions (Only real user data)
     const txs = await storage.getTransactions();
     this.transactions = txs || [];
@@ -667,9 +739,17 @@ class App {
     const famListEl = document.getElementById('dash-family-mini-list');
     const famMeterEl = document.getElementById('dash-family-meter');
 
-    const users = JSON.parse(localStorage.getItem('rapport:supabase_family_users') || '[]');
+    const rawUsers = JSON.parse(localStorage.getItem('rapport:supabase_family_users') || '[]');
+    const selfName = (this.profile?.name || '').toLowerCase();
+    const selfEmail = (this.profile?.email || '').toLowerCase();
+    const otherUsers = rawUsers.filter(u => {
+      const uName = (u.name || '').toLowerCase();
+      const uEmail = (u.email || '').toLowerCase();
+      return uEmail !== selfEmail && uName !== selfName && uName !== 'jane doe' && uName !== 'daniel ngaruka';
+    });
+
     let familySum = totalExpense;
-    users.forEach(u => familySum += (Number(u.spent) || 0));
+    otherUsers.forEach(u => familySum += (Number(u.spent) || 0));
 
     if (famTotalEl) famTotalEl.textContent = `${familySum.toLocaleString()} ${curr}`;
 
@@ -682,7 +762,7 @@ class App {
       userSeg.style.height = '100%';
       famMeterEl.appendChild(userSeg);
 
-      users.forEach(u => {
+      otherUsers.forEach(u => {
         const uShare = familySum > 0 ? ((Number(u.spent) || 0) / familySum) * 100 : 0;
         const seg = document.createElement('div');
         seg.style.width = `${uShare}%`;
@@ -703,7 +783,7 @@ class App {
       youRow.innerHTML = `<span><i class="fam-dot" style="background:var(--pine);display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></i><strong>You (${displayName})</strong></span><strong>${totalExpense.toLocaleString()} ${curr}</strong>`;
       famListEl.appendChild(youRow);
 
-      if (users.length === 0) {
+      if (otherUsers.length === 0) {
         const emptyNote = document.createElement('div');
         emptyNote.style.color = 'var(--muted)';
         emptyNote.style.fontSize = '12px';
@@ -711,7 +791,7 @@ class App {
         emptyNote.textContent = 'No other family members linked.';
         famListEl.appendChild(emptyNote);
       } else {
-        users.slice(0, 3).forEach(u => {
+        otherUsers.slice(0, 3).forEach(u => {
           const row = document.createElement('div');
           row.style.display = 'flex';
           row.style.justifyContent = 'space-between';
@@ -1528,6 +1608,34 @@ class App {
         reader.readAsText(file);
       });
     }
+
+    // 5. Clear All Transactions & Mock Reset
+    const btnClearAll = document.getElementById('btn-clear-all-tx');
+    if (btnClearAll) {
+      btnClearAll.addEventListener('click', async () => {
+        const confirmed = confirm(this.lang === 'fr'
+          ? 'Êtes-vous sûr de vouloir supprimer toutes les transactions ? Cette action est irréversible.'
+          : 'Are you sure you want to delete all transactions? This action cannot be undone.');
+        if (!confirmed) return;
+
+        await storage.clearTransactions();
+        localStorage.setItem('promptpay_transactions', JSON.stringify([]));
+        if (this.supabase) {
+          try {
+            const { data } = await this.supabase.auth.getSession();
+            const user = data?.session?.user;
+            if (user) {
+              await this.supabase.from('transactions').delete().eq('user_id', user.id);
+            }
+          } catch (e) {
+            console.warn('Supabase remote clear error:', e);
+          }
+        }
+        this.transactions = [];
+        this.renderCurrentView();
+        this.showToast(this.lang === 'fr' ? 'Toutes les transactions ont été supprimées.' : 'All transactions cleared successfully.');
+      });
+    }
   }
 
   exportCsv(type) {
@@ -1652,9 +1760,25 @@ class App {
           .order('date_epoch_millis', { ascending: false });
 
         if (!dlError && remoteTxs && remoteTxs.length > 0) {
+          const legacyMerchants = [
+            'simba supermarket',
+            'mtn mobile airtime',
+            'canal+ subscription',
+            'kigali fuel station'
+          ];
           for (const r of remoteTxs) {
+            const idStr = String(r.id || '');
+            const merchLower = String(r.merchant || '').toLowerCase();
+            // Discard and delete remote mock seed transactions
+            if (idStr.startsWith('tx_seed_') || legacyMerchants.includes(merchLower)) {
+              try {
+                await this.supabase.from('transactions').delete().eq('id', r.id);
+              } catch (e) {}
+              continue;
+            }
+
             const localMerged = {
-              id: Number(r.id),
+              id: Number(r.id) || r.id,
               amount: Number(r.amount),
               currency: r.currency,
               merchant: r.merchant,

@@ -176,6 +176,20 @@ class StorageService {
     return this.delete('transactions', id);
   }
 
+  async clearTransactions() {
+    if (!this.db) {
+      localStorage.setItem('promptpay_transactions', JSON.stringify([]));
+      return;
+    }
+    return new Promise((resolve) => {
+      const tx = this.db.transaction('transactions', 'readwrite');
+      const store = tx.objectStore('transactions');
+      const req = store.clear();
+      req.onsuccess = () => resolve();
+      req.onerror = () => resolve();
+    });
+  }
+
   async getCategories() {
     return this.getAll('categories');
   }

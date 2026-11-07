@@ -499,27 +499,8 @@
       });
 
       function recordSupabaseFamilyUser(u) {
-        try {
-          let users = JSON.parse(localStorage.getItem('rapport:supabase_family_users') || '[]');
-          const idx = users.findIndex(item => item.email && item.email.toLowerCase() === (u.email || '').toLowerCase());
-          const newEntry = {
-            id: u.id || 'usr_' + Date.now(),
-            name: u.name || (u.email ? u.email.split('@')[0] : 'Member'),
-            email: u.email || '',
-            relation: u.role || 'Family Member',
-            tag: 'Member',
-            spent: Number(u.spent) || 0,
-            budget: Number(u.budget) || 0,
-            color: ['#f2c94c', '#c8431f', '#6cc59a', '#8cc7b4'][users.length % 4],
-            avTone: ['av--t0', 'av--t1', 'av--t2', 'av--t3'][users.length % 4]
-          };
-          if (idx >= 0) {
-            users[idx] = { ...users[idx], ...newEntry };
-          } else {
-            users.push(newEntry);
-          }
-          localStorage.setItem('rapport:supabase_family_users', JSON.stringify(users));
-        } catch (e) {
+        // No-op: Do not record the user logging in as a separate family member
+      } catch (e) {
           console.warn("Storage warning:", e);
         }
       }

@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "user_profile")
 data class UserProfileEntity(
     @PrimaryKey val id: Int = 1,
-    val name: String = "Jane Doe",
-    val email: String = "jane.doe@promptpay.com",
+    val name: String = "User",
+    val email: String = "",
     val photoUri: String? = null,
     val countryCode: String = "RWANDA",
     val currencyCode: String = "RWF",

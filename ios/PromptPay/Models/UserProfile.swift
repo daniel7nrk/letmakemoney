@@ -20,8 +20,8 @@ public struct UserProfile: Identifiable, Codable, Equatable {
 
     public init(
         id: Int = 1,
-        name: String = "Jane Doe",
-        email: String = "jane.doe@promptpay.com",
+        name: String = "User",
+        email: String = "",
         photoUri: String? = nil,
         countryCode: String = "RWANDA",
         currencyCode: String = "RWF",
