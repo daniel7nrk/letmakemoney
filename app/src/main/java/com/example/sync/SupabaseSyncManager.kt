@@ -6,6 +6,8 @@ import android.net.NetworkCapabilities
 import android.util.Log
 import com.example.auth.SupabaseAuthManager
 import com.example.data.AppDatabase
+import com.example.data.TransactionEntity
+import com.example.data.UserProfileEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -100,11 +102,17 @@ object SupabaseSyncManager {
 
                 val db = AppDatabase.getDatabase(context)
 
-                // 1. Sync User Profile
+                // 1. Sync User Profile (Push)
                 syncUserProfile(db, token, userId)
 
-                // 2. Sync Unsynced Transactions
+                // 2. Sync Unsynced Transactions (Push)
                 syncTransactions(db, token, userId)
+
+                // 3. Download and merge Cloud Transactions (Pull)
+                fetchRemoteTransactions(db, token, userId)
+
+                // 4. Download and merge Cloud Profile (Pull)
+                fetchRemoteUserProfile(db, token, userId)
 
             } catch (e: Exception) {
                 Log.e(TAG, "❌ Background Supabase sync skipped/failed: ${e.message}", e)
@@ -210,6 +218,93 @@ object SupabaseSyncManager {
             }
         } catch (e: Exception) {
             Log.e(TAG, "❌ Transactions upsert network error: ${e.message}")
+        }
+    }
+
+    private suspend fun fetchRemoteTransactions(db: AppDatabase, token: String, userId: String) = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url("$SUPABASE_URL/rest/v1/transactions?select=*&order=date_epoch_millis.desc")
+            .header("Content-Type", "application/json")
+            .header("Accept", "application/json")
+            .header("apikey", SUPABASE_KEY)
+            .header("Authorization", "Bearer $token")
+            .get()
+            .build()
+
+        try {
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val body = response.body?.string() ?: return@use
+                    val jsonArray = JSONArray(body)
+                    val remoteList = mutableListOf<TransactionEntity>()
+                    for (i in 0 until jsonArray.length()) {
+                        val obj = jsonArray.getJSONObject(i)
+                        remoteList.add(
+                            TransactionEntity(
+                                id = obj.getLong("id"),
+                                amount = obj.optDouble("amount", 0.0),
+                                currency = obj.optString("currency", "RWF"),
+                                merchant = obj.optString("merchant", ""),
+                                description = obj.optString("description", ""),
+                                category = obj.optString("category", "Uncategorized"),
+                                fee = obj.optDouble("fee", 0.0),
+                                feeCategory = obj.optString("fee_category", "Transaction Fee"),
+                                source = obj.optString("source", "SMS"),
+                                status = obj.optString("status", "CONFIRMED"),
+                                isRecurring = obj.optBoolean("is_recurring", false),
+                                notes = obj.optString("notes", ""),
+                                paymentMethod = obj.optString("payment_method", "Mobile Money"),
+                                dateEpochMillis = obj.optLong("date_epoch_millis", System.currentTimeMillis()),
+                                updatedAtEpochMillis = obj.optLong("updated_at_epoch_millis", System.currentTimeMillis()),
+                                isSynced = true
+                            )
+                        )
+                    }
+                    if (remoteList.isNotEmpty()) {
+                        db.transactionDao().insertTransactions(remoteList)
+                        Log.d(TAG, "✅ Downloaded and merged ${remoteList.size} remote transaction(s) from Supabase")
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "⚠️ Remote transaction fetch error: ${e.message}")
+        }
+    }
+
+    private suspend fun fetchRemoteUserProfile(db: AppDatabase, token: String, userId: String) = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url("$SUPABASE_URL/rest/v1/user_profiles?user_id=eq.$userId&select=*")
+            .header("Content-Type", "application/json")
+            .header("Accept", "application/json")
+            .header("apikey", SUPABASE_KEY)
+            .header("Authorization", "Bearer $token")
+            .get()
+            .build()
+
+        try {
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val body = response.body?.string() ?: return@use
+                    val jsonArray = JSONArray(body)
+                    if (jsonArray.length() > 0) {
+                        val obj = jsonArray.getJSONObject(0)
+                        val existing = db.userProfileDao().getUserProfileDirect()
+                        val updated = (existing ?: UserProfileEntity(id = 1)).copy(
+                            name = if (existing?.name.isNullOrBlank()) obj.optString("name", "") else existing!!.name,
+                            email = if (existing?.email.isNullOrBlank()) obj.optString("email", "") else existing!!.email,
+                            countryCode = if (existing?.countryCode.isNullOrBlank()) obj.optString("country_code", "RWANDA") else existing!!.countryCode,
+                            currencyCode = if (existing?.currencyCode.isNullOrBlank()) obj.optString("currency_code", "RWF") else existing!!.currencyCode,
+                            languageCode = if (existing?.languageCode.isNullOrBlank()) obj.optString("language_code", "en") else existing!!.languageCode,
+                            supabaseUserId = userId,
+                            hasCompletedSupabaseLogin = true
+                        )
+                        db.userProfileDao().insertOrUpdateProfile(updated)
+                        Log.d(TAG, "✅ Merged remote user profile from Supabase")
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "⚠️ Remote profile fetch error: ${e.message}")
         }
     }
 }
