@@ -33,6 +33,10 @@ public final class SupabaseAuthService: ObservableObject {
     @Published public private(set) var authError: String? = nil
     @Published public private(set) var isLoading: Bool = false
 
+    public func clearError() {
+        self.authError = nil
+    }
+
     private init() {
         // Restore session from keychain on startup (offline-safe)
         if let token = keychainRead(kAccessToken), !token.isEmpty {

@@ -195,7 +195,7 @@ public struct SupabaseLoginView: View {
     private var toggleModeButton: some View {
         Button {
             isSignUp.toggle()
-            auth.authError = nil
+            auth.clearError()
         } label: {
             Text(isSignUp
                  ? "Already have an account? Sign In"
