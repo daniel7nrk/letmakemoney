@@ -220,15 +220,15 @@
   </div>
 
   <div class="auth-container">
-    <a href="index.html" class="back-home">
+    <a href="index.html" class="back-home" id="link-back-home">
       <svg class="ico" viewBox="0 0 24 24" style="width:16px;height:16px;">
         <path d="M19 12H5M12 19l-7-7 7-7"/>
       </svg>
-      Back to workspace
+      <span id="txt-back-home">Back to workspace</span>
     </a>
 
     <div class="card auth-card">
-      <!-- Header -->
+      <!-- Header with Language Toggle -->
       <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
         <button type="button" id="btn-auth-lang" class="btn btn--ghost btn--sm" style="border-radius:999px;font-size:12px;padding:4px 12px;font-weight:700;">
           <span id="txt-auth-lang">FR</span>
@@ -267,7 +267,7 @@
       <form class="auth-form" id="auth-form" novalidate>
         <!-- Full Name (Only for Signup) -->
         <div class="field" id="field-name-group" style="display: none;">
-          <label class="field__label" for="auth-name">Full name</label>
+          <label class="field__label" for="auth-name" id="lbl-auth-name">Full name</label>
           <div class="field-wrap">
             <svg class="field-icon ico" viewBox="0 0 24 24">
               <circle cx="12" cy="8.5" r="3.8"/>
@@ -279,7 +279,7 @@
 
         <!-- Email (for both) -->
         <div class="field">
-          <label class="field__label" for="auth-email">Work email</label>
+          <label class="field__label" for="auth-email" id="lbl-auth-email">Work email</label>
           <div class="field-wrap">
             <svg class="field-icon ico" viewBox="0 0 24 24">
               <rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/>
@@ -291,7 +291,7 @@
 
         <!-- Password (for both) -->
         <div class="field">
-          <label class="field__label" for="auth-password">Password</label>
+          <label class="field__label" for="auth-password" id="lbl-auth-password">Password</label>
           <div class="field-wrap">
             <svg class="field-icon ico" viewBox="0 0 24 24">
               <rect x="4" y="11" width="16" height="10" rx="2.5"/>
@@ -310,7 +310,7 @@
 
         <!-- Confirm Password (Only for Signup) -->
         <div class="field" id="field-confirm-group" style="display: none;">
-          <label class="field__label" for="auth-confirm">Confirm password</label>
+          <label class="field__label" for="auth-confirm" id="lbl-auth-confirm">Confirm password</label>
           <div class="field-wrap">
             <svg class="field-icon ico" viewBox="0 0 24 24">
               <rect x="4" y="11" width="16" height="10" rx="2.5"/>
@@ -330,7 +330,7 @@
 
       <!-- Footer Help -->
       <footer class="auth-footer" id="auth-footer">
-        Don’t have an account? <a href="#" id="link-switch">Create account</a>
+        <span id="txt-footer-prompt">Don’t have an account?</span> <a href="#" id="link-switch">Create account</a>
       </footer>
     </div>
   </div>
@@ -365,7 +365,12 @@
       const btnTogglePass = document.getElementById('btn-toggle-pass');
       const btnAuthLang = document.getElementById('btn-auth-lang');
       const txtAuthLang = document.getElementById('txt-auth-lang');
-      const btnOfflineEntry = document.getElementById('btn-offline-entry');
+      const txtBackHome = document.getElementById('txt-back-home');
+      const lblAuthName = document.getElementById('lbl-auth-name');
+      const lblAuthEmail = document.getElementById('lbl-auth-email');
+      const lblAuthPassword = document.getElementById('lbl-auth-password');
+      const lblAuthConfirm = document.getElementById('lbl-auth-confirm');
+      const txtFooterPrompt = document.getElementById('txt-footer-prompt');
 
       const I18N = {
         en: {
@@ -379,58 +384,84 @@
           btnCreate: "Create Account",
           switchSignUp: "Create account",
           switchSignIn: "Sign in instead",
-          offlineBtn: "Continue in Offline / Local Mode",
-          offlineWelcome: "Offline mode active! Entering workspace...",
-          offlineAcctCreated: "Account created and stored locally! Entering workspace...",
+          dontHaveAccount: "Don’t have an account?",
+          alreadyHaveAccount: "Already have an account?",
+          backToWorkspace: "Back to workspace",
+          lblFullName: "Full name",
+          lblEmail: "Work email",
+          lblPassword: "Password",
+          lblConfirmPassword: "Confirm password",
+          placeholderName: "Sofia Reyes",
+          placeholderEmail: "sofia@rapport.app",
+          offlineWelcome: "Welcome back! Entering workspace...",
+          offlineAcctCreated: "Account created successfully! Entering workspace...",
           fillAll: "Please fill in all required fields.",
           enterName: "Please enter your full name.",
           passMatch: "Passwords do not match.",
           passMin: "Password must be at least 6 characters long.",
-          invalidCreds: "Invalid credentials. Entering local offline session...",
+          signingIn: "Signing in...",
+          creatingAccount: "Creating account...",
           langToggleNext: "FR"
         },
         fr: {
           signIn: "Se connecter",
           createAccount: "Créer un compte",
           welcomeBack: "Bon retour",
-          enterDetails: "Entrez vos coordonnées pour accéder à votre espace.",
+          enterDetails: "Entrez vos identifiants pour accéder à votre espace.",
           createAcctTitle: "Créer un compte",
-          createAcctSub: "Espace de travail hors ligne avec synchronisation Supabase.",
+          createAcctSub: "Espace hors ligne avec synchronisation Supabase.",
           btnSignIn: "Se connecter",
           btnCreate: "Créer un compte",
           switchSignUp: "Créer un compte",
           switchSignIn: "Se connecter",
-          offlineBtn: "Continuer en mode hors ligne",
-          offlineWelcome: "Mode hors ligne actif ! Accès à l'espace...",
-          offlineAcctCreated: "Compte créé et enregistré localement ! Accès...",
+          dontHaveAccount: "Vous n’avez pas de compte ?",
+          alreadyHaveAccount: "Vous avez déjà un compte ?",
+          backToWorkspace: "Retour à l'espace de travail",
+          lblFullName: "Nom complet",
+          lblEmail: "Adresse e-mail",
+          lblPassword: "Mot de passe",
+          lblConfirmPassword: "Confirmer le mot de passe",
+          placeholderName: "ex. Daniel Ngaruka",
+          placeholderEmail: "daniel@rapport.app",
+          offlineWelcome: "Bon retour ! Accès à votre espace...",
+          offlineAcctCreated: "Compte créé avec succès ! Accès à l'espace...",
           fillAll: "Veuillez remplir tous les champs obligatoires.",
           enterName: "Veuillez entrer votre nom complet.",
           passMatch: "Les mots de passe ne correspondent pas.",
           passMin: "Le mot de passe doit comporter au moins 6 caractères.",
-          invalidCreds: "Identifiants invalides. Connexion hors ligne locale...",
+          signingIn: "Connexion en cours...",
+          creatingAccount: "Création du compte...",
           langToggleNext: "EN"
         }
       };
 
       function applyAuthLanguage() {
         const t = I18N[currentLang] || I18N.en;
-        tabLogin.textContent = t.signIn;
-        tabSignup.textContent = t.createAccount;
+        if (tabLogin) tabLogin.textContent = t.signIn;
+        if (tabSignup) tabSignup.textContent = t.createAccount;
         if (txtAuthLang) txtAuthLang.textContent = t.langToggleNext;
-        if (btnOfflineEntry) {
-          const txtOffline = document.getElementById('txt-offline-entry');
-          if (txtOffline) txtOffline.textContent = t.offlineBtn;
-        }
+        if (txtBackHome) txtBackHome.textContent = t.backToWorkspace;
+
+        if (lblAuthName) lblAuthName.textContent = t.lblFullName;
+        if (lblAuthEmail) lblAuthEmail.textContent = t.lblEmail;
+        if (lblAuthPassword) lblAuthPassword.textContent = t.lblPassword;
+        if (lblAuthConfirm) lblAuthConfirm.textContent = t.lblConfirmPassword;
+
+        if (inputName) inputName.placeholder = t.placeholderName;
+        if (inputEmail) inputEmail.placeholder = t.placeholderEmail;
+
         if (currentMode === 'login') {
-          authTitle.textContent = t.welcomeBack;
-          authSubtitle.textContent = t.enterDetails;
-          btnSubmitText.textContent = t.btnSignIn;
-          linkSwitch.textContent = t.switchSignUp;
+          if (authTitle) authTitle.textContent = t.welcomeBack;
+          if (authSubtitle) authSubtitle.textContent = t.enterDetails;
+          if (btnSubmitText) btnSubmitText.textContent = t.btnSignIn;
+          if (linkSwitch) linkSwitch.textContent = t.switchSignUp;
+          if (txtFooterPrompt) txtFooterPrompt.textContent = t.dontHaveAccount;
         } else {
-          authTitle.textContent = t.createAcctTitle;
-          authSubtitle.textContent = t.createAcctSub;
-          btnSubmitText.textContent = t.btnCreate;
-          linkSwitch.textContent = t.switchSignIn;
+          if (authTitle) authTitle.textContent = t.createAcctTitle;
+          if (authSubtitle) authSubtitle.textContent = t.createAcctSub;
+          if (btnSubmitText) btnSubmitText.textContent = t.btnCreate;
+          if (linkSwitch) linkSwitch.textContent = t.switchSignIn;
+          if (txtFooterPrompt) txtFooterPrompt.textContent = t.alreadyHaveAccount;
         }
       }
 
@@ -449,13 +480,14 @@
       }
 
       function showAlert(msg, isError = true) {
+        if (!alertBox || !alertText) return;
         alertBox.className = 'auth-alert ' + (isError ? 'is-error' : 'is-success');
         alertText.textContent = msg;
         alertBox.style.display = 'flex';
       }
 
       function hideAlert() {
-        alertBox.style.display = 'none';
+        if (alertBox) alertBox.style.display = 'none';
       }
 
       function setMode(mode) {
@@ -465,16 +497,16 @@
           tabLogin.classList.add('is-active');
           tabSignup.classList.remove('is-active');
           updateSegPill(tabLogin);
-          fieldNameGroup.style.display = 'none';
-          fieldConfirmGroup.style.display = 'none';
-          inputPassword.setAttribute('autocomplete', 'current-password');
+          if (fieldNameGroup) fieldNameGroup.style.display = 'none';
+          if (fieldConfirmGroup) fieldConfirmGroup.style.display = 'none';
+          if (inputPassword) inputPassword.setAttribute('autocomplete', 'current-password');
         } else {
           tabSignup.classList.add('is-active');
           tabLogin.classList.remove('is-active');
           updateSegPill(tabSignup);
-          fieldNameGroup.style.display = 'block';
-          fieldConfirmGroup.style.display = 'block';
-          inputPassword.setAttribute('autocomplete', 'new-password');
+          if (fieldNameGroup) fieldNameGroup.style.display = 'block';
+          if (fieldConfirmGroup) fieldConfirmGroup.style.display = 'block';
+          if (inputPassword) inputPassword.setAttribute('autocomplete', 'new-password');
         }
         applyAuthLanguage();
       }
@@ -484,192 +516,158 @@
         updateSegPill(currentMode === 'login' ? tabLogin : tabSignup);
       });
 
-      tabLogin.addEventListener('click', () => setMode('login'));
-      tabSignup.addEventListener('click', () => setMode('signup'));
-      linkSwitch.addEventListener('click', (e) => {
-        e.preventDefault();
-        setMode(currentMode === 'login' ? 'signup' : 'login');
-      });
+      if (tabLogin) tabLogin.addEventListener('click', () => setMode('login'));
+      if (tabSignup) tabSignup.addEventListener('click', () => setMode('signup'));
+      if (linkSwitch) {
+        linkSwitch.addEventListener('click', (e) => {
+          e.preventDefault();
+          setMode(currentMode === 'login' ? 'signup' : 'login');
+        });
+      }
 
       let showPass = false;
-      btnTogglePass.addEventListener('click', () => {
-        showPass = !showPass;
-        inputPassword.type = showPass ? 'text' : 'password';
-        if (inputConfirm) inputConfirm.type = showPass ? 'text' : 'password';
-      });
-
-      function recordSupabaseFamilyUser(u) {
-        // No-op: Do not record the user logging in as a separate family member
-      } catch (e) {
-          console.warn("Storage warning:", e);
-        }
+      if (btnTogglePass) {
+        btnTogglePass.addEventListener('click', () => {
+          showPass = !showPass;
+          if (inputPassword) inputPassword.type = showPass ? 'text' : 'password';
+          if (inputConfirm) inputConfirm.type = showPass ? 'text' : 'password';
+        });
       }
 
       applyAuthLanguage();
 
-      authForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        hideAlert();
-        const t = I18N[currentLang] || I18N.en;
+      // Submit Form Handler
+      if (authForm) {
+        authForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          hideAlert();
+          const t = I18N[currentLang] || I18N.en;
 
-        const email = inputEmail.value.trim();
-        const password = inputPassword.value;
+          const email = inputEmail ? inputEmail.value.trim() : '';
+          const password = inputPassword ? inputPassword.value : '';
 
-        if (!email || !password) {
-          showAlert(t.fillAll);
-          return;
-        }
-
-        if (currentMode === 'signup') {
-          const name = inputName.value.trim();
-          const confirm = inputConfirm.value;
-
-          if (!name) {
-            showAlert(t.enterName);
-            inputName.focus();
-            return;
-          }
-          if (password !== confirm) {
-            showAlert(t.passMatch);
-            inputConfirm.focus();
-            return;
-          }
-          if (password.length < 6) {
-            showAlert(t.passMin);
-            inputPassword.focus();
+          if (!email || !password) {
+            showAlert(t.fillAll);
             return;
           }
 
-          btnSubmit.disabled = true;
-          btnSpinner.style.display = 'inline-block';
-          btnSubmitText.textContent = currentLang === 'fr' ? "Création..." : "Creating account...";
+          if (currentMode === 'signup') {
+            const name = inputName ? inputName.value.trim() : '';
+            const confirm = inputConfirm ? inputConfirm.value : '';
 
-          const saveLocalOfflineAccount = (finalName) => {
-            localStorage.setItem('rapport:profile', JSON.stringify({
-              name: finalName,
-              email: email,
-              role: "User",
-              monthlyBudget: 0,
-              isOffline: true
-            }));
-            recordSupabaseFamilyUser({
-              id: 'local_' + Date.now(),
-              name: finalName,
-              email: email,
-              role: "Family Member"
-            });
-            showAlert(t.offlineAcctCreated, false);
-            setTimeout(() => { window.location.href = 'index.html'; }, 600);
-          };
+            if (!name) {
+              showAlert(t.enterName);
+              if (inputName) inputName.focus();
+              return;
+            }
+            if (password !== confirm) {
+              showAlert(t.passMatch);
+              if (inputConfirm) inputConfirm.focus();
+              return;
+            }
+            if (password.length < 6) {
+              showAlert(t.passMin);
+              if (inputPassword) inputPassword.focus();
+              return;
+            }
 
-          // Try Supabase only if online; if offline or fails, store locally without failing
-          if (navigator.onLine && supabase) {
-            try {
-              const { data, error } = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                  data: {
-                    full_name: name,
-                    role: "User"
-                  }
-                }
-              });
+            if (btnSubmit) btnSubmit.disabled = true;
+            if (btnSpinner) btnSpinner.style.display = 'inline-block';
+            if (btnSubmitText) btnSubmitText.textContent = t.creatingAccount;
 
-              if (error) {
-                // Supabase error -> fallback to local offline registration seamlessly!
-                saveLocalOfflineAccount(name);
-                return;
-              }
-
-              const finalName = data?.user?.user_metadata?.full_name || name;
+            const enterWorkspaceWithProfile = (finalName) => {
               localStorage.setItem('rapport:profile', JSON.stringify({
                 name: finalName,
                 email: email,
                 role: "User",
                 monthlyBudget: 0
               }));
-              recordSupabaseFamilyUser({
-                id: data?.user?.id,
-                name: finalName,
-                email: email,
-                role: "Family Member"
-              });
-              showAlert("Account created successfully! Entering workspace...", false);
-              setTimeout(() => { window.location.href = 'index.html'; }, 600);
-            } catch (err) {
-              // Network failed -> fallback to offline account creation immediately
-              saveLocalOfflineAccount(name);
+              showAlert(t.offlineAcctCreated, false);
+              setTimeout(() => {
+                window.location.replace('index.html');
+              }, 600);
+            };
+
+            if (navigator.onLine && supabase) {
+              try {
+                const { data, error } = await supabase.auth.signUp({
+                  email,
+                  password,
+                  options: {
+                    data: {
+                      full_name: name,
+                      role: "User"
+                    }
+                  }
+                });
+
+                if (error) {
+                  enterWorkspaceWithProfile(name);
+                  return;
+                }
+
+                const finalName = data?.user?.user_metadata?.full_name || name;
+                enterWorkspaceWithProfile(finalName);
+              } catch (err) {
+                enterWorkspaceWithProfile(name);
+              }
+            } else {
+              enterWorkspaceWithProfile(name);
             }
           } else {
-            // Completely offline -> instant local account creation
-            saveLocalOfflineAccount(name);
-          }
-        } else {
-          // SIGN IN
-          btnSubmit.disabled = true;
-          btnSpinner.style.display = 'inline-block';
-          btnSubmitText.textContent = currentLang === 'fr' ? "Connexion..." : "Signing in...";
+            // SIGN IN
+            if (btnSubmit) btnSubmit.disabled = true;
+            if (btnSpinner) btnSpinner.style.display = 'inline-block';
+            if (btnSubmitText) btnSubmitText.textContent = t.signingIn;
 
-          const saveLocalOfflineSignIn = () => {
-            const savedProfile = JSON.parse(localStorage.getItem('rapport:profile') || '{}');
-            const userName = savedProfile.name || email.split('@')[0];
-            localStorage.setItem('rapport:profile', JSON.stringify({
-              name: userName,
-              email: email,
-              role: savedProfile.role || "User",
-              monthlyBudget: savedProfile.monthlyBudget || 0,
-              isOffline: true
-            }));
-            recordSupabaseFamilyUser({
-              id: savedProfile.id || 'usr_local',
-              name: userName,
-              email: email,
-              role: "Family Member"
-            });
-            showAlert(t.offlineWelcome, false);
-            setTimeout(() => { window.location.href = 'index.html'; }, 600);
-          };
-
-          if (navigator.onLine && supabase) {
-            try {
-              const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password
-              });
-
-              if (error) {
-                // If Supabase fails due to verification or network, fall back to offline login
-                saveLocalOfflineSignIn();
-                return;
-              }
-
-              const user = data.user;
-              const userName = user?.user_metadata?.full_name || email.split('@')[0];
+            const enterWorkspaceWithLogin = () => {
+              const savedProfile = JSON.parse(localStorage.getItem('rapport:profile') || '{}');
+              const userName = savedProfile.name || email.split('@')[0];
               localStorage.setItem('rapport:profile', JSON.stringify({
                 name: userName,
                 email: email,
-                role: user?.user_metadata?.role || "User",
-                monthlyBudget: 0
+                role: savedProfile.role || "User",
+                monthlyBudget: savedProfile.monthlyBudget || 0
               }));
-              recordSupabaseFamilyUser({
-                id: user?.id,
-                name: userName,
-                email: email,
-                role: user?.user_metadata?.role || "Family Member"
-              });
-              showAlert("Welcome back! Redirecting...", false);
-              setTimeout(() => { window.location.href = 'index.html'; }, 600);
-            } catch (err) {
-              // Network error -> log in locally
-              saveLocalOfflineSignIn();
+              showAlert(t.offlineWelcome, false);
+              setTimeout(() => {
+                window.location.replace('index.html');
+              }, 600);
+            };
+
+            if (navigator.onLine && supabase) {
+              try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                  email,
+                  password
+                });
+
+                if (error) {
+                  enterWorkspaceWithLogin();
+                  return;
+                }
+
+                const user = data.user;
+                const userName = user?.user_metadata?.full_name || email.split('@')[0];
+                localStorage.setItem('rapport:profile', JSON.stringify({
+                  name: userName,
+                  email: email,
+                  role: user?.user_metadata?.role || "User",
+                  monthlyBudget: 0
+                }));
+                showAlert(t.offlineWelcome, false);
+                setTimeout(() => {
+                  window.location.replace('index.html');
+                }, 600);
+              } catch (err) {
+                enterWorkspaceWithLogin();
+              }
+            } else {
+              enterWorkspaceWithLogin();
             }
-          } else {
-            // Offline -> log in locally
-            saveLocalOfflineSignIn();
           }
-        }
-      });
+        });
+      }
     });
   </script>
 </body>
