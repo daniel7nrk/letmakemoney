@@ -24,6 +24,12 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>PromptPay uses Face ID to securely authenticate and protect your financial transactions.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>PromptPay uses your camera so you can set a profile photo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>PromptPay accesses your photo library so you can choose a profile photo.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>PromptPay sends you alerts for pending transaction reviews, scam warnings, and monthly spending reports.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UIRequiredDeviceCapabilities</key>
