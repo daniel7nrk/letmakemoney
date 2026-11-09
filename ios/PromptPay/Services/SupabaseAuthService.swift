@@ -73,22 +73,25 @@ public final class SupabaseAuthService: ObservableObject {
                     let expiresIn    = json["expires_in"]    as? Double ?? 3600
                     let expiresAt    = Date().timeIntervalSince1970 + expiresIn
 
-                    var userId    = ""
-                    var userEmail = email
+                    let resolvedUserId: String
+                    let resolvedEmail: String
                     if let user = json["user"] as? [String: Any] {
-                        userId    = user["id"]    as? String ?? ""
-                        userEmail = user["email"] as? String ?? email
+                        resolvedUserId = user["id"] as? String ?? ""
+                        resolvedEmail = user["email"] as? String ?? email
+                    } else {
+                        resolvedUserId = ""
+                        resolvedEmail = email
                     }
 
                     keychainWrite(kAccessToken,  value: accessToken)
                     keychainWrite(kRefreshToken, value: refreshToken)
-                    keychainWrite(kUserId,       value: userId)
-                    keychainWrite(kUserEmail,    value: userEmail)
+                    keychainWrite(kUserId,       value: resolvedUserId)
+                    keychainWrite(kUserEmail,    value: resolvedEmail)
                     keychainWrite(kExpiresAt,    value: String(expiresAt))
 
                     await MainActor.run {
                         self.isAuthenticated = true
-                        self.supabaseUserId  = userId
+                        self.supabaseUserId  = resolvedUserId
                         self.authError       = nil
                     }
                 }

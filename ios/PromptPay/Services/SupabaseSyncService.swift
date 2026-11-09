@@ -32,7 +32,7 @@ public final class SupabaseSyncService {
             print("[SupabaseSync] ⚠️  Supabase credentials not set — skipping sync")
             return
         }
-        guard auth.isAuthenticated, let token = auth.accessToken else {
+        guard auth.isAuthenticated, auth.accessToken != nil else {
             print("[SupabaseSync] ⚠️  Not authenticated — skipping sync (user must log in once online)")
             return
         }
