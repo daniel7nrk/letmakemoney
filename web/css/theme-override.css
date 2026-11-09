@@ -149,20 +149,31 @@
 }
 
 /* Responsive and App Layout Adjustments */
-/* Responsive and App Layout Adjustments */
+/* Views Display Guarantee */
 .view {
   display: none;
 }
 .view.is-active,
-.view.active,
-.view:not([hidden]) {
-  display: block;
+.view.active {
+  display: block !important;
 }
 
-/* Active Tab in Top Navigation */
+/* Active Tab in Top Navigation & Dock Overrides */
 .tab.is-active,
 .tab.active,
-.tab[aria-current="page"] {
+.tab[aria-current="page"],
+.tab.is-active:hover,
+.tab.active:hover,
+.tab[aria-current="page"]:hover {
+  background: var(--pill) !important;
+  color: var(--on-pill) !important;
+}
+
+/* Settings View Layout Guarantee */
+[data-view="settings"] {
+  min-height: 480px;
+  width: 100%;
+}
   background: var(--pill);
   color: var(--on-pill);
 }

@@ -170,16 +170,18 @@
       display: none;
     }
     .view.is-active,
-    .view.active,
-    .view:not([hidden]) {
-      display: block;
+    .view.active {
+      display: block !important;
     }
     /* Active Top Navigation Tab */
     .tab.is-active,
     .tab.active,
-    .tab[aria-current="page"] {
-      background: var(--pill);
-      color: var(--on-pill);
+    .tab[aria-current="page"],
+    .tab.is-active:hover,
+    .tab.active:hover,
+    .tab[aria-current="page"]:hover {
+      background: var(--pill) !important;
+      color: var(--on-pill) !important;
     }
   </style>
 </head>

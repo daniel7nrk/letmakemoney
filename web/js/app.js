@@ -292,6 +292,7 @@ class App {
     this.notifications = [];
     this.activeTxFilter = 'ALL';
     this.activeNotifFilter = 'all';
+    this.storage = storage;
     this.supabase = getSupabase();
   }
 
@@ -378,6 +379,9 @@ class App {
         console.warn("Sign out exception:", e);
       }
     }
+    try {
+      await storage.clearAllUserData();
+    } catch (e) {}
     localStorage.removeItem('rapport:profile');
     localStorage.removeItem('rapport:supabase_family_users');
     window.location.replace('auth.html');
@@ -392,7 +396,11 @@ class App {
         'simba supermarket',
         'mtn mobile airtime',
         'canal+ subscription',
-        'kigali fuel station'
+        'kigali fuel station',
+        'employer ltd',
+        'shell fuel station',
+        'unknown merchant',
+        'fresh farm groceries'
       ];
 
       // 1. Purge from local IndexedDB
@@ -400,7 +408,7 @@ class App {
       for (const t of allLocal) {
         const idStr = String(t.id || '');
         const merchLower = String(t.merchant || '').toLowerCase();
-        if (idStr.startsWith('tx_seed_') || legacyMerchants.includes(merchLower)) {
+        if (idStr.startsWith('tx_seed_') || /^172772000000\d$/.test(idStr) || legacyMerchants.includes(merchLower)) {
           await storage.delete('transactions', t.id);
         }
       }
@@ -412,11 +420,17 @@ class App {
       try {
         let users = JSON.parse(localStorage.getItem('rapport:supabase_family_users') || '[]');
         const selfName = (this.profile?.name || '').toLowerCase();
+        const selfFirstName = selfName.split(' ')[0] || '';
         const selfEmail = (this.profile?.email || '').toLowerCase();
         users = users.filter(u => {
           const uName = (u.name || '').toLowerCase();
           const uEmail = (u.email || '').toLowerCase();
-          return uEmail !== selfEmail && uName !== selfName && uName !== 'jane doe' && uName !== 'daniel ngaruka';
+          if (!uEmail && !uName) return false;
+          if (uEmail === selfEmail) return false;
+          if (uName === selfName) return false;
+          if (selfFirstName && uName.includes(selfFirstName)) return false;
+          if (uName === 'jane doe' || uName === 'daniel ngaruka') return false;
+          return true;
         });
         localStorage.setItem('rapport:supabase_family_users', JSON.stringify(users));
       } catch (e) {}
@@ -425,7 +439,7 @@ class App {
       const savedLoans = localStorage.getItem('promptpay:loans');
       if (savedLoans) {
         try {
-          const loans = JSON.parse(savedLoans).filter(l => !String(l.id).startsWith('loan_'));
+          const loans = JSON.parse(savedLoans).filter(l => !String(l.id).startsWith('loan_seed'));
           localStorage.setItem('promptpay:loans', JSON.stringify(loans));
         } catch (e) {}
       }
@@ -437,7 +451,11 @@ class App {
             'Simba Supermarket',
             'MTN Mobile Airtime',
             'Canal+ Subscription',
-            'Kigali Fuel Station'
+            'Kigali Fuel Station',
+            'Employer Ltd',
+            'Shell Fuel Station',
+            'Unknown Merchant',
+            'Fresh Farm Groceries'
           ]);
           await this.supabase.from('transactions').delete().like('id', 'tx_seed_%');
         } catch (e) {
@@ -561,49 +579,53 @@ class App {
   }
 
   handleRoute() {
-    const raw = window.location.hash.replace(/^#\/?/, '').trim();
-    let target = raw || 'dashboard';
-    if (target === 'notifications') target = 'notification';
+    try {
+      const raw = window.location.hash.replace(/^#\/?/, '').trim().toLowerCase();
+      let target = raw || 'dashboard';
+      if (target === 'notifications') target = 'notification';
 
-    // Update Dock
-    document.querySelectorAll('.dock__btn[data-target]').forEach(btn => {
-      if (btn.dataset.target === target) {
-        btn.classList.add('is-active', 'active');
-        btn.setAttribute('aria-current', 'page');
-      } else {
-        btn.classList.remove('is-active', 'active');
-        btn.removeAttribute('aria-current');
-      }
-    });
+      // Update Dock
+      document.querySelectorAll('.dock__btn[data-target]').forEach(btn => {
+        if (btn.dataset.target === target) {
+          btn.classList.add('is-active', 'active');
+          btn.setAttribute('aria-current', 'page');
+        } else {
+          btn.classList.remove('is-active', 'active');
+          btn.removeAttribute('aria-current');
+        }
+      });
 
-    // Update Top Tabs
-    let activeTab = null;
-    document.querySelectorAll('.tab[data-target]').forEach(tab => {
-      if (tab.dataset.target === target) {
-        tab.classList.add('is-active', 'active');
-        tab.setAttribute('aria-current', 'page');
-        activeTab = tab;
-      } else {
-        tab.classList.remove('is-active', 'active');
-        tab.removeAttribute('aria-current');
-      }
-    });
-    this.updateTabPill(activeTab);
+      // Update Top Tabs
+      let activeTab = null;
+      document.querySelectorAll('.tab[data-target]').forEach(tab => {
+        if (tab.dataset.target === target) {
+          tab.classList.add('is-active', 'active');
+          tab.setAttribute('aria-current', 'page');
+          activeTab = tab;
+        } else {
+          tab.classList.remove('is-active', 'active');
+          tab.removeAttribute('aria-current');
+        }
+      });
+      this.updateTabPill(activeTab);
 
-    // Switch View
-    document.querySelectorAll('.view[data-view]').forEach(view => {
-      if (view.dataset.view === target) {
-        view.classList.add('is-active', 'active');
-        view.removeAttribute('hidden');
-        view.style.display = 'block';
-      } else {
-        view.classList.remove('is-active', 'active');
-        view.setAttribute('hidden', '');
-        view.style.display = 'none';
-      }
-    });
+      // Switch View
+      document.querySelectorAll('.view[data-view]').forEach(view => {
+        if (view.dataset.view === target) {
+          view.classList.add('is-active', 'active');
+          view.removeAttribute('hidden');
+          view.style.display = 'block';
+        } else {
+          view.classList.remove('is-active', 'active');
+          view.setAttribute('hidden', '');
+          view.style.display = 'none';
+        }
+      });
 
-    this.renderCurrentView(target);
+      this.renderCurrentView(target);
+    } catch (err) {
+      console.error('Error in handleRoute:', err);
+    }
   }
 
   updateTabPill(tab) {
@@ -611,6 +633,7 @@ class App {
     if (!pill || !tab) return;
     pill.style.left = tab.offsetLeft + 'px';
     pill.style.width = tab.offsetWidth + 'px';
+    pill.style.opacity = '1';
   }
 
   renderCurrentView(viewName) {
@@ -678,8 +701,8 @@ class App {
     let totalExpense = 0;
 
     this.transactions.forEach(t => {
-      const amt = Number(t.amount) || 0;
-      if (t.category && t.category.toLowerCase().includes('income')) {
+      const amt = Math.abs(Number(t.amount)) || 0;
+      if (t.category && (t.category.toLowerCase().includes('income') || t.category.toLowerCase().includes('salary'))) {
         totalIncome += amt;
       } else {
         totalExpense += amt;
@@ -719,14 +742,14 @@ class App {
       } else {
         recent.forEach(t => {
           const row = document.createElement('tr');
-          const isIncome = t.category && t.category.toLowerCase().includes('income');
+          const isIncome = t.category && (t.category.toLowerCase().includes('income') || t.category.toLowerCase().includes('salary'));
           const amtColor = isIncome ? 'var(--good)' : 'var(--text)';
           const amtSign = isIncome ? '+' : '-';
           row.innerHTML = `
             <td><strong>${t.merchant || 'Unknown'}</strong></td>
             <td><span class="badge badge--plain">${t.category || 'General'}</span></td>
             <td><span class="status ${t.source === 'SMS' ? 'status--active' : ''}">${t.source || 'MANUAL'}</span></td>
-            <td style="font-weight:700;color:${amtColor};">${amtSign}${Number(t.amount).toLocaleString()} ${curr}</td>
+            <td style="font-weight:700;color:${amtColor};">${amtSign}${Math.abs(Number(t.amount)).toLocaleString()} ${curr}</td>
             <td style="color:var(--muted);">${t.fee ? `+${t.fee} fee` : 'Free'}</td>
           `;
           tbody.appendChild(row);
@@ -741,11 +764,17 @@ class App {
 
     const rawUsers = JSON.parse(localStorage.getItem('rapport:supabase_family_users') || '[]');
     const selfName = (this.profile?.name || '').toLowerCase();
+    const selfFirstName = selfName.split(' ')[0] || '';
     const selfEmail = (this.profile?.email || '').toLowerCase();
     const otherUsers = rawUsers.filter(u => {
       const uName = (u.name || '').toLowerCase();
       const uEmail = (u.email || '').toLowerCase();
-      return uEmail !== selfEmail && uName !== selfName && uName !== 'jane doe' && uName !== 'daniel ngaruka';
+      if (!uEmail && !uName) return false;
+      if (uEmail === selfEmail) return false;
+      if (uName === selfName) return false;
+      if (selfFirstName && uName.includes(selfFirstName)) return false;
+      if (uName === 'jane doe' || uName === 'daniel ngaruka') return false;
+      return true;
     });
 
     let familySum = totalExpense;
@@ -836,7 +865,7 @@ class App {
     filtered.forEach(t => {
       const row = document.createElement('tr');
       const dateStr = t.dateEpochMillis ? new Date(t.dateEpochMillis).toLocaleDateString(this.lang === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
-      const isIncome = t.category && t.category.toLowerCase().includes('income');
+      const isIncome = t.category && (t.category.toLowerCase().includes('income') || t.category.toLowerCase().includes('salary'));
       const amtColor = isIncome ? 'var(--good)' : 'var(--text)';
       const amtSign = isIncome ? '+' : '-';
 
@@ -846,7 +875,7 @@ class App {
         <td><span class="badge badge--plain">${t.category || 'General'}</span></td>
         <td><span class="status ${t.source === 'SMS' ? 'status--active' : ''}">${t.source || 'MANUAL'}</span></td>
         <td><span class="badge badge--plain" style="font-size:11px;">${t.status || 'COMPLETED'}</span></td>
-        <td style="font-weight:700;color:${amtColor};white-space:nowrap;">${amtSign}${Number(t.amount).toLocaleString()} ${curr}</td>
+        <td style="font-weight:700;color:${amtColor};white-space:nowrap;">${amtSign}${Math.abs(Number(t.amount)).toLocaleString()} ${curr}</td>
         <td style="color:var(--muted);white-space:nowrap;">${t.fee ? `+${t.fee} (${t.feeCategory || 'Side'})` : '0 RWF'}</td>
         <td style="text-align:right;">
           <button type="button" class="btn btn--ghost btn--sm btn-del-tx" data-id="${t.id}" style="color:var(--bad);padding:4px 8px;">✕</button>
@@ -1324,30 +1353,35 @@ class App {
   // VIEW RENDERING: 8. SETTINGS
   // ==========================================
   renderSettings() {
-    const elName = document.getElementById('input-prof-name');
-    const elEmail = document.getElementById('input-prof-email');
-    const elBudget = document.getElementById('input-prof-budget');
-    const lblName = document.getElementById('lbl-prof-name');
-    const lblEmail = document.getElementById('lbl-prof-email');
-    const avPreview = document.getElementById('prof-avatar-preview');
-    const selCountry = document.getElementById('select-country');
-    const selLang = document.getElementById('select-language');
+    try {
+      const elName = document.getElementById('input-prof-name');
+      const elEmail = document.getElementById('input-prof-email');
+      const elBudget = document.getElementById('input-prof-budget');
+      const lblName = document.getElementById('lbl-prof-name');
+      const lblEmail = document.getElementById('lbl-prof-email');
+      const avPreview = document.getElementById('prof-avatar-preview');
+      const selCountry = document.getElementById('select-country');
+      const selLang = document.getElementById('select-language');
 
-    const name = this.profile.name || 'User';
-    const email = this.profile.email || '';
-    const initials = name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
+      const name = this.profile?.name || 'User';
+      const email = this.profile?.email || '';
+      const initials = name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
 
-    if (elName) elName.value = this.profile.name || '';
-    if (elEmail) elEmail.value = this.profile.email || '';
-    if (elBudget) elBudget.value = this.profile.monthlyBudget || '';
-    if (lblName) lblName.textContent = name;
-    if (lblEmail) lblEmail.textContent = email;
-    if (avPreview) avPreview.textContent = initials;
-    if (selCountry && this.selectedCountry) {
-      selCountry.value = this.selectedCountry.name.toUpperCase();
-    }
-    if (selLang) {
-      selLang.value = localStorage.getItem('rapport:lang') || 'en';
+      if (elName) elName.value = this.profile?.name || '';
+      if (elEmail) elEmail.value = this.profile?.email || '';
+      if (elBudget) elBudget.value = this.profile?.monthlyBudget || '';
+      if (lblName) lblName.textContent = name;
+      if (lblEmail) lblEmail.textContent = email;
+      if (avPreview) avPreview.textContent = initials;
+      if (selCountry && this.selectedCountry) {
+        const countryKey = Object.keys(COUNTRIES).find(k => COUNTRIES[k].name === this.selectedCountry.name) || 'RWANDA';
+        selCountry.value = countryKey;
+      }
+      if (selLang) {
+        selLang.value = localStorage.getItem('rapport:lang') || this.lang || 'en';
+      }
+    } catch (err) {
+      console.error('Error in renderSettings:', err);
     }
   }
 
@@ -1753,10 +1787,11 @@ class App {
           }
         }
 
-        // 2. Download remote transactions and merge into local storage
+        // 2. Download remote transactions for current user only and merge into local storage
         const { data: remoteTxs, error: dlError } = await this.supabase
           .from('transactions')
           .select('*')
+          .eq('user_id', user.id)
           .order('date_epoch_millis', { ascending: false });
 
         if (!dlError && remoteTxs && remoteTxs.length > 0) {
@@ -1764,13 +1799,17 @@ class App {
             'simba supermarket',
             'mtn mobile airtime',
             'canal+ subscription',
-            'kigali fuel station'
+            'kigali fuel station',
+            'employer ltd',
+            'shell fuel station',
+            'unknown merchant',
+            'fresh farm groceries'
           ];
           for (const r of remoteTxs) {
             const idStr = String(r.id || '');
             const merchLower = String(r.merchant || '').toLowerCase();
             // Discard and delete remote mock seed transactions
-            if (idStr.startsWith('tx_seed_') || legacyMerchants.includes(merchLower)) {
+            if (idStr.startsWith('tx_seed_') || /^172772000000\d$/.test(idStr) || legacyMerchants.includes(merchLower)) {
               try {
                 await this.supabase.from('transactions').delete().eq('id', r.id);
               } catch (e) {}
@@ -1820,17 +1859,30 @@ class App {
       // 4. Fetch Cloud Family Users / Team members
       const { data, error } = await this.supabase.from('profiles').select('*');
       if (!error && data && data.length > 0) {
-        const mapped = data.map((u, i) => ({
-          id: u.id,
-          name: u.full_name || u.email?.split('@')[0] || 'Member',
-          email: u.email,
-          relation: u.role || 'Family Member',
-          tag: 'Cloud Member',
-          spent: 0,
-          budget: 0,
-          color: ['#f2c94c', '#c8431f', '#6cc59a', '#8cc7b4'][i % 4],
-          avTone: ['av--t0', 'av--t1', 'av--t2', 'av--t3'][i % 4]
-        }));
+        const selfName = (this.profile?.name || '').toLowerCase();
+        const selfFirstName = selfName.split(' ')[0] || '';
+        const selfEmail = (this.profile?.email || '').toLowerCase();
+        const mapped = data
+          .filter(u => {
+            const uEmail = (u.email || '').toLowerCase();
+            const uName = (u.full_name || '').toLowerCase();
+            if (user && u.id === user.id) return false;
+            if (uEmail && uEmail === selfEmail) return false;
+            if (uName && (uName === selfName || (selfFirstName && uName.includes(selfFirstName)))) return false;
+            if (uName === 'jane doe' || uName === 'daniel ngaruka') return false;
+            return true;
+          })
+          .map((u, i) => ({
+            id: u.id,
+            name: u.full_name || u.email?.split('@')[0] || 'Member',
+            email: u.email,
+            relation: u.role || 'Family Member',
+            tag: 'Cloud Member',
+            spent: 0,
+            budget: 0,
+            color: ['#f2c94c', '#c8431f', '#6cc59a', '#8cc7b4'][i % 4],
+            avTone: ['av--t0', 'av--t1', 'av--t2', 'av--t3'][i % 4]
+          }));
         localStorage.setItem('rapport:supabase_family_users', JSON.stringify(mapped));
       }
 
@@ -1900,7 +1952,12 @@ class App {
 }
 
 // Instantiate and start app on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    const app = new App();
+    app.init();
+  });
+} else {
   const app = new App();
   app.init();
-});
+}

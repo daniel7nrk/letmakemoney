@@ -190,6 +190,38 @@ class StorageService {
     });
   }
 
+  async clearAllUserData() {
+    if (this.ready) {
+      try {
+        await this.ready;
+      } catch (e) {}
+    }
+    if (this.db) {
+      const stores = ['transactions', 'scam_alerts'];
+      for (const s of stores) {
+        if (this.db.objectStoreNames.contains(s)) {
+          await new Promise((resolve) => {
+            try {
+              const tx = this.db.transaction(s, 'readwrite');
+              const req = tx.objectStore(s).clear();
+              req.onsuccess = () => resolve();
+              req.onerror = () => resolve();
+            } catch (e) {
+              resolve();
+            }
+          });
+        }
+      }
+    }
+    try {
+      localStorage.setItem('promptpay_transactions', JSON.stringify([]));
+      localStorage.removeItem('promptpay_scam_alerts');
+      localStorage.removeItem('promptpay:loans');
+      localStorage.removeItem('rapport:notifications');
+      localStorage.removeItem('rapport:supabase_family_users');
+    } catch (e) {}
+  }
+
   async getCategories() {
     return this.getAll('categories');
   }

@@ -337,6 +337,7 @@
 
   <script type="module">
     import { getSupabase } from './js/supabaseClient.js';
+    import { storage } from './js/services/StorageService.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       const supabase = getSupabase();
@@ -575,7 +576,10 @@
             if (btnSpinner) btnSpinner.style.display = 'inline-block';
             if (btnSubmitText) btnSubmitText.textContent = t.creatingAccount;
 
-            const enterWorkspaceWithProfile = (finalName) => {
+            const enterWorkspaceWithProfile = async (finalName) => {
+              try {
+                await storage.clearAllUserData();
+              } catch (e) {}
               localStorage.setItem('rapport:profile', JSON.stringify({
                 name: finalName,
                 email: email,
@@ -602,17 +606,17 @@
                 });
 
                 if (error) {
-                  enterWorkspaceWithProfile(name);
+                  await enterWorkspaceWithProfile(name);
                   return;
                 }
 
                 const finalName = data?.user?.user_metadata?.full_name || name;
-                enterWorkspaceWithProfile(finalName);
+                await enterWorkspaceWithProfile(finalName);
               } catch (err) {
-                enterWorkspaceWithProfile(name);
+                await enterWorkspaceWithProfile(name);
               }
             } else {
-              enterWorkspaceWithProfile(name);
+              await enterWorkspaceWithProfile(name);
             }
           } else {
             // SIGN IN
@@ -620,7 +624,11 @@
             if (btnSpinner) btnSpinner.style.display = 'inline-block';
             if (btnSubmitText) btnSubmitText.textContent = t.signingIn;
 
-            const enterWorkspaceWithLogin = () => {
+            const enterWorkspaceWithLogin = async () => {
+              const prevProf = JSON.parse(localStorage.getItem('rapport:profile') || '{}');
+              if (prevProf.email && prevProf.email.toLowerCase() !== email.toLowerCase()) {
+                try { await storage.clearAllUserData(); } catch (e) {}
+              }
               const savedProfile = JSON.parse(localStorage.getItem('rapport:profile') || '{}');
               const userName = savedProfile.name || email.split('@')[0];
               localStorage.setItem('rapport:profile', JSON.stringify({
@@ -643,11 +651,15 @@
                 });
 
                 if (error) {
-                  enterWorkspaceWithLogin();
+                  await enterWorkspaceWithLogin();
                   return;
                 }
 
                 const user = data.user;
+                const prevProf = JSON.parse(localStorage.getItem('rapport:profile') || '{}');
+                if (prevProf.email && prevProf.email.toLowerCase() !== email.toLowerCase()) {
+                  try { await storage.clearAllUserData(); } catch (e) {}
+                }
                 const userName = user?.user_metadata?.full_name || email.split('@')[0];
                 localStorage.setItem('rapport:profile', JSON.stringify({
                   name: userName,
@@ -660,10 +672,10 @@
                   window.location.replace('index.html');
                 }, 600);
               } catch (err) {
-                enterWorkspaceWithLogin();
+                await enterWorkspaceWithLogin();
               }
             } else {
-              enterWorkspaceWithLogin();
+              await enterWorkspaceWithLogin();
             }
           }
         });
